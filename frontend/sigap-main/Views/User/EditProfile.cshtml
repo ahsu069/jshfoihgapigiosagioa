@@ -1,0 +1,63 @@
+﻿@{
+	ViewBag.Title = "Edit Profile";
+	ViewBag.TitleLink = "/users/profile";
+	ViewBag.subTitle = "Edit Profile";
+	ViewBag.subTitleLink = "/users";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/tambah-barang.js"></script>
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h1>Edit Profile</h1>
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="NamaBarang">Nama Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="Nama Barang" class="form-control" id="namabarang" value="" placeholder="Masukkan Nama Barang" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="Jumlah">Nomor Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="Jumlah" class="form-control" id="jumlahbarang" maxlength="18" size="18" value="" placeholder="Masukkan Jumlah Barang" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="MSL">Jenis Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control" id="msl" value="" placeholder="internal/external" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="MSL">instansi pekerjaan<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control" id="msl" value="" placeholder="Masukkan MSL" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="userphoto">Upload<span class="text-red">*</span></label><br>
+							<input type="file" id="userphoto" name="userphoto" accept="image/png, image/gif, image/jpeg">
+							<div class="mt-2">
+								<img id="viewer" width="200" class="border border-black d-none" />
+							</div>
+						</div>
+					</div>
+					<div class="card-footer" style="background-color: white;">
+						<button id="submit-tambah-button" type="submit" class="btn btn-info float-end">Tambah</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

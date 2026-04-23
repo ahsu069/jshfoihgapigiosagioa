@@ -1,0 +1,290 @@
+﻿@using Lexa.Helpers
+@{
+    ViewBag.Title = "Dashboard Approval";
+    ViewBag.subTitle = "Approval";
+    ViewBag.subTitleLink = "/approval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var hasApproval = User.HasPermissionOrSuper("approval:approve");
+    @* var hasApprovalNonSafety = User.HasPermissionOrSuper("kategori_barang:read"); *@
+    @* var hasApprovalGudang = User.HasPermissionOrSuper("kategori_barang:read"); *@ 
+    var hasApprovalNonSafety = false;
+    var hasApprovalSafety = false;
+    var hasApprovalGudang = false;
+
+    var userId = @User.FindFirst("UserId")?.Value;
+    var roleCode = @User.FindFirst("RoleCode")?.Value;
+    var fungsi_pekerja = @User.FindFirst("FungsiNama")?.Value;
+    var bagian_pekerja = @User.FindFirst("BagianNama")?.Value;
+}
+
+@section AddToHead {
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/assets/js/app.js"></script>
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/js/pages/approval-permintaan.js"></script>
+
+    <script>
+        window.approval = {
+            hasApproval: @(hasApproval.ToString().ToLower()),
+            hasApprovalNonSafety: @(hasApprovalNonSafety.ToString().ToLower()),
+            hasApprovalSafety: @(hasApprovalSafety.ToString().ToLower()),
+            hasApprovalGudang: @(hasApprovalGudang.ToString().ToLower()),
+            userId: '@userId',
+            roleCode: '@roleCode',
+            fungsi_pekerja: '@fungsi_pekerja',
+            bagian_pekerja: '@bagian_pekerja',
+        };
+    </script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Approval Permintaan Barang</h1>
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                </table>
+                <div class="modal fade bd-detail-modal-xl" id="detailModal" data-bs-focus="false" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                @* <h4>Approval Permintaan Barang</h4> *@
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-header" style="background-color: white;">
+                                    <h4>Approval Permintaan Barang</h4>
+                                    @if(hasApproval) {
+                                        <div class="d-flex flex-wrap gap-2 mt-3 mb-3" style="background-color: white;">
+                                        @* <div class="d-flex flex-wrap gap-2 mb-3" style="background-color: white;"> *@
+                                            <button id="approveDetail" class="btn btn-success text-white">
+                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                <span>Approve</span>
+                                            </button>
+                                            <button id="rejectDetail" class="btn btn-danger text-white">
+                                                <i class="mdi mdi-close-octagon-outline"></i>
+                                                <span>Reject</span>
+                                            </button>
+                                            @* <a href="#" class="btn btn-success text-white">
+                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                <span>Approve Pengawas Gudang</span>
+                                            </a>
+                                            <a href="#" class="btn btn-danger text-white">
+                                                <i class="mdi mdi-close-octagon-outline"></i>
+                                                <span>Reject Pengawas Gudang</span>
+                                            </a>
+                                            <a href="#" class="btn btn-success text-white">
+                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                <span>Approve Health</span>
+                                            </a>
+                                            <a href="#" class="btn btn-danger text-white">
+                                                <i class="mdi mdi-close-octagon-outline"></i>
+                                                <span>Reject Health</span>
+                                            </a>
+                                            <a href="#" class="btn btn-success text-white">
+                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                <span>Approve Safety</span>
+                                            </a>
+                                            <a href="#" class="btn btn-danger text-white">
+                                                <i class="mdi mdi-close-octagon-outline"></i>
+                                                <span>Reject Safety</span>
+                                            </a> *@
+                                        </div>
+                                    }
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>No. MIV</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="no-miv-safety"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Tanggal</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="tanggal"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Nama Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="namapekerja"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Jenis Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="jenispekerja"></p>
+                                                </div>
+                                            </div>
+                                            @* <p id="no-miv-safety"></p>
+                                            <p id="tanggal"></p>
+                                            <p id="namapekerja"></p>
+                                            <p id="jenispekerja"></p> *@
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            @* <p> Nomor Pegawai : XXXXXXXXXX</p> *@
+                                            <div id="id-finger-row" class="row">
+                                                <div class="col-3">
+                                                    <p>ID Finger</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="id-finger"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Bagian Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="bagian"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Fungsi Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="fungsi"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p id="labelstatustransaksi" class="mb-1">Status</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <div class="row">
+                                                        <p id="statustransaksi" class="mb-1"></p>
+                                                    </div>
+                                                    <div id="keterangan" class="alert alert-warning p-2 px-3" role="alert"></div>
+                                                    @* <div class="row">
+                                                        <p id="keterangan"></p>
+                                                    </div> *@
+                                                </div>
+                                            </div>
+                                            <div id="filependukung-row" class="row">
+                                                <div class="col-3">
+                                                    <p>File Pendukung</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="filependukung"></p>
+                                                </div>
+                                            </div>
+                                            @* <p id="id-finger"></p>
+                                            <p id="fungsi"></p>
+                                            <p id="statustransaksi"></p>
+                                            <p id="filependukung"></p> *@
+                                        </div>
+                                    </div>
+                                    @* <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="no-miv-safety"> Nomor MIV : 001/39/HSSE/KPI4XXXX/2025</p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p> Nomor Pegawai : XXXXXXXXXX</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p> Tanggal : 25 Februari 2025</p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p> Bagian : Safety Officer / HSSE</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p> Nama Pekerja : XXXX YYYY</p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p> Status : <span class="badge bg-success">Approved</span></p>
+                                        </div>
+                                    </div> *@
+                                    <hr style="border: 10px solid #2B3A4A; opacity: 1" />
+                                    <div class="row mt-4">
+                                        <div class="table-responsive mb-0 detail-approval" data-pattern="priority-columns">
+                                            @* <table class="table table-bordered border border-1 border-black"> *@
+                                            <table class="table table-bordered">
+                                                <thead class="table-dark text-center align-middle">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Nama Barang</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Satuan</th>
+                                                        @* <th>Keterangan</th> *@
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @* <tr>
+                                                        <td>1.</td>
+                                                        <td>Helm Pertamina (merah)</td>
+                                                        <td>1</td>
+                                                        <td>Pcs</td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2.</td>
+                                                        <td>Suspensi Helm</td>
+                                                        <td>1</td>
+                                                        <td>Pcs</td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3.</td>
+                                                        <td>Tali Dagu</td>
+                                                        <td>1</td>
+                                                        <td>Pcs</td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>4.</td>
+                                                        <td>Safety Blackrhino (size 14)</td>
+                                                        <td>1</td>
+                                                        <td>Pcs</td>
+                                                        <td>Sepatu Rusak Setelah dipakai 4 bulan</td>
+                                                    </tr> *@
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

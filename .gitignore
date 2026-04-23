@@ -1,0 +1,8 @@
+.DS_Store
+backend/.vs/
+backend/api/bin/
+backend/api/obj/
+backend/api/Properties/
+backend/api/wwwroot/
+backend/.vscode
+backend/.DS_Store

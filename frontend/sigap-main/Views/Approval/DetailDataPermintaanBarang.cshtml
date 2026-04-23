@@ -1,0 +1,187 @@
+@{
+    ViewBag.Title = "Detail Data Permintaan Barang";
+    ViewBag.subTitle = "Approval";
+    ViewBag.subTitleLink = "/approval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+    <link href="~/assets/libs/admin-resources/rwd-table/rwd-table.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section scripts {
+    <script src="~/assets/js/app.js"></script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Approval Permintaan Barang</h1>
+				<div class="d-flex flex-wrap gap-2 mb-3" style="background-color: white;">
+					<a href="#" class="btn btn-success text-white">
+						<i class="mdi mdi-check-circle-outline"></i>
+						<span>Approve Pengawas Gudang</span>
+					</a>
+					<a href="#" class="btn btn-danger text-white">
+						<i class="mdi mdi-close-octagon-outline"></i>
+						<span>Reject Pengawas Gudang</span>
+					</a>
+					<a href="#" class="btn btn-success text-white">
+						<i class="mdi mdi-check-circle-outline"></i>
+						<span>Approve Health</span>
+					</a>
+					<a href="#" class="btn btn-danger text-white">
+						<i class="mdi mdi-close-octagon-outline"></i>
+						<span>Reject Health</span>
+					</a>
+					<a href="#" class="btn btn-success text-white">
+						<i class="mdi mdi-check-circle-outline"></i>
+						<span>Approve Safety</span>
+					</a>
+					<a href="#" class="btn btn-danger text-white">
+						<i class="mdi mdi-close-octagon-outline"></i>
+						<span>Reject Safety</span>
+					</a>
+				</div>
+				<div class="card-header" style="background-color: white;">
+					<div class="row">
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Nomor MIV: </a> *@
+                            <p> Nomor MIV : 001/39/HSSE/KPI4XXXX/2025</p>
+						</div>
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Nomor Pegawai: </a> *@
+                            <p> Nomor Pegawai : XXXXXXXXXX</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Tanggal: </a> *@
+                            <p> Tanggal : 25 Februari 2025</p>
+						</div>
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Bagian: </a> *@
+                            <p> Bagian : Safety Officer / HSSE</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Nama Pekerja: </a> *@
+                            <p> Nama Pekerja : XXXX YYYY</p>
+						</div>
+						<div class="col-xl-6 col-sm-12">
+							@* <a> Status: </a> *@
+                            <p> Status : <span class="badge bg-success">Approved</span></p>
+						</div>
+					</div>
+					<hr style="border: 10px solid #2B3A4A; opacity: 0.9" />
+					<div class="row">
+						<div data-pattern="priority-columns">
+							@* <table class="table table-bordered border border-1 border-black"> *@
+							<table class="table table-bordered">
+								<thead class="table-dark">
+									<tr>
+										<th>No.</th>
+										<th>Nama Barang</th>
+										<th>Jumlah</th>
+										<th>Satuan</th>
+										<th>Keterangan</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>1.</td>
+										<td>Helm Pertamina (merah)</td>
+										<td>1</td>
+										<td>Pcs</td>
+										<td>-</td>
+									</tr>
+									<tr>
+										<td>2.</td>
+										<td>Suspensi Helm</td>
+										<td>1</td>
+										<td>Pcs</td>
+										<td>-</td>
+									</tr>
+									<tr>
+										<td>3.</td>
+										<td>Tali Dagu</td>
+										<td>1</td>
+										<td>Pcs</td>
+										<td>-</td>
+									</tr>
+									<tr>
+										<td>4.</td>
+										<td>Safety Blackrhino (size 14)</td>
+										<td>1</td>
+										<td>Pcs</td>
+										<td>Sepatu Rusak Setelah dipakai 4 bulan</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				</<div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+					@* <div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Approval Permintaan Barang</h1>
+                <button type="button" class="btn btn-success waves-effect waves-light">Approve</button>
+                <button type="button" class="btn btn-danger waves-effect waves-light">Reject</button>
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Nomor MIV: </a>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Nomor Pegawai: </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Tanggal: </a>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Bagian: </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Nama Pekerja: </a>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            <a> Status: </a>
+                        </div>
+                    </div>
+                    <hr style="border: 10px solid #2B3A4A" />
+                    <div class="row">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Nama Barang</th>
+                                        <th>Jumlah</th>
+                                        <th>Satuan</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </<div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@

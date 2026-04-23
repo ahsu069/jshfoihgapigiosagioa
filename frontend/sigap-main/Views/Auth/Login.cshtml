@@ -1,0 +1,201 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+}
+
+@model Lexa.Models.LoginRequest
+
+<!-- Background style -->
+<style>
+    @* html, body {
+        height: 100%;
+    } *@
+
+    body {
+        @* display: flex;
+        justify-content: center;
+        align-items: center; *@
+        background: url('/assets/images/Background.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .login-logo {
+        max-width: 70%;        /* limits width inside the card */
+        height: auto;          /* maintain aspect ratio */
+        max-height: 100px;     /* prevents vertical overflow */
+        object-fit: contain;   /* clean scaling without distortion */
+    }
+
+    @@media (max-width: 576px) {
+        .login-logo {
+            max-width: 60%;    /* slightly smaller on very small screens */
+            max-height: 80px;
+        }
+    }
+
+    .card {
+        border-radius: 1rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-login {
+        background-color: #e60000;
+        color: white;
+        font-weight: bold;
+        border-radius: 0.3rem;
+        padding: 0.5rem 2rem;
+
+        &:hover {
+            background-color: #ce0000;
+            color: white;
+        }
+    }
+
+    .input-group-text {
+        background-color: #ffffff;
+    }
+
+    .input-group:focus-within .form-control {
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25); /* Bootstrap default */
+        z-index: 3;
+    }
+
+    .input-group .form-control:focus {
+        box-shadow: none !important; /* prevent double shadow effect */
+    }
+
+    .form-control.is-invalid, .was-validated .form-control:invalid {
+        background-image: none !important;
+    }
+
+    .invalid-feedback.d-none {
+        display: none !important;
+    }
+
+    .swal2-popup.swal-square-popup {
+        width: 200px !important;   /* Equal width and height */
+        height: 200px !important;
+        padding: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border-radius: 1rem !important;
+    }
+
+    .swal2-html-container {
+        margin: 0 !important;
+    }
+</style>
+
+<div class="account-pages d-flex justify-content-center align-items-center min-vh-100">
+    <div class="container d-flex justify-content-center">
+        <div class="row justify-content-center w-100">
+@* <div class="account-pages my-5 pt-sm-5">
+    <div class="container">
+        <div class="row align-items-center justify-content-center"> *@
+            <div class="col-md-6 col-lg-5">
+                <div class="card p-4">
+                    <div class="text-center">
+                        @* <img src="~/assets/images/logo-pertamina.png" alt="Logo" height="100" class="mb-3"> *@
+                        <img src="~/assets/images/logo-pertamina.png" alt="Logo" class="login-logo mb-3">
+                    </div>
+                    @* <form method="post" asp-action="login" class="form-horizontal mt-3"> *@
+                    <form id="formLogin" class="form-horizontal mt-3">
+                        @* <div class="mb-3">
+                            <select class="form-select">
+                                <option selected disabled>- Pilih Perusahaan -</option>
+                                <option>Item 01</option>
+                                <option>Item 02</option>
+                                <option>Item 03</option>
+                                <option>Item 04</option>
+                            </select>
+                        </div> *@
+
+                        <div class="mb-3">
+                            <div class="input-group has-validation">
+                                <span class="input-group-text" id="inputGroupPrependUsername"><i class="mdi mdi-account"></i></span>
+                                <input name="Username" type="text" class="form-control" id="validationServerUsername" aria-describedby="inputGroupPrependUsername validationServerUsernameFeedback" placeholder="Username" required>
+                                <div id="validationServerUsernameFeedback" class="invalid-feedback d-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        @* <div class="mb-3">
+                            <div class="input-group has-validation">
+                                <span class="input-group-text" id="inputGroupPrependPassword"><i class="mdi mdi-key-variant"></i></span>
+                                <input name="Password" type="password" class="form-control" id="validationServerPassword" aria-describedby="inputGroupPrependPassword validationServerPasswordFeedback" placeholder="Password" required>
+                                <div id="validationServerPasswordFeedback" class="invalid-feedback d-none">
+                                </div>
+                            </div>
+                        </div> *@
+
+                        <div class="mb-3">
+                            <div class="input-group has-validation">
+                                <!-- left icon -->
+                                <span class="input-group-text" id="inputGroupPrependPassword">
+                                    <i class="mdi mdi-key-variant"></i>
+                                </span>
+
+                                <!-- wrapper keeps flex layout but allows absolute positioning inside -->
+                                <div class="flex-grow-1 position-relative">
+                                    <input
+                                        name="Password"
+                                        type="password"
+                                        class="form-control pe-5"           
+                                        style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+                                        id="validationServerPassword"
+                                        aria-describedby="inputGroupPrependPassword validationServerPasswordFeedback"
+                                        placeholder="Password"
+                                        required>
+
+                                    <!-- eye icon floating inside the input (no extra input-group-text styling) -->
+                                    <button type="button"
+                                            id="togglePassword"
+                                            class="btn btn-sm position-absolute top-50 end-0 translate-middle-y"
+                                            aria-label="Toggle password visibility"
+                                            style="background: transparent; border: none; padding: 0.25rem 0.5rem;">
+                                        <i class="mdi mdi-eye-off" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+
+                                <!-- validation feedback -->
+                                <div id="validationServerPasswordFeedback" class="invalid-feedback d-none"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-login w-100" type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="mt-4 text-center text-white">
+                    <small><script>document.write(new Date().getFullYear())</script> © PT Kilang Pertamina Internasional</small>
+                    <script>
+                        (function () {
+                            const toggleBtn = document.getElementById('togglePassword');
+                            const passwordInput = document.getElementById('validationServerPassword');
+                            const icon = toggleBtn.querySelector('i');
+
+                            toggleBtn.addEventListener('click', () => {
+                                const isPwd = passwordInput.type === 'password';
+                                passwordInput.type = isPwd ? 'text' : 'password';
+                                icon.classList.toggle('mdi-eye');
+                                icon.classList.toggle('mdi-eye-off');
+                            });
+                        })();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Detail Riwayat Transaksi";
+    ViewBag.subTitle = "Riwayat Transaksi";
+    ViewBag.subTitleLink = "/riwayattransaksi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+    <link href="assets/libs/admin-resources/rwd-table/rwd-table.min.css" rel="stylesheet" type="text/css">
+}
+
+@section scripts {
+    <script src="~/assets/libs/admin-resources/rwd-table/rwd-table.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+}
+
+<div class="mb-3">
+	<a class="btn btn-info waves-effect waves-light" href="/riwayattransaksi" role="button">
+		<i class="mdi mdi-arrow-left"></i>
+		<span>Kembali</span>
+	</a>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header">
+                    <h4>Data Permintaan Barang</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Nomor MIV : 001/39/HSSE/KPI4XXXX/2025</p> *@
+                            <p> Nomor MIV : 001/39/HSSE/KPI4XXXX/2025</p>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> ID Finger : IDXXXXXXX</p> *@
+                            <p> ID Finger : IDXXXXXXX</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Tanggal : </p> *@
+                            <p> Tanggal : 25 Februari 2025</p>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Bagian : </p> *@
+                            <p> Bagian : Safety Officer / HSSE</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Nama Pekerja : </p> *@
+                            <p> Nama Pekerja : XXXX YYYY</p>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Status : </p> *@
+                            <p> Status : <span class="badge bg-success">Approved</span></p>
+                        </div>
+                    </div>
+                    <h4 class="mt-4">Penanggung Jawab</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Nama Pekerja : </p> *@
+                            <p> Nama Pekerja : SuperUser_01>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Bagian : </p> *@
+                            <p> Bagian : E & I</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> Nomor Pegawai : </p> *@
+                            <p> Nomor Pegawai : XXXXXXXXXX</p>
+                        </div>
+                        <div class="col-xl-6 col-sm-12">
+                            @* <p class="fw-bold"> File Pendukung : </p> *@
+                            <p> File Pendukung : <a href="#">FilePendukung.pdf</a></p>
+                        </div>
+                    </div>
+                    <hr style="border: 10px solid #2B3A4A; opacity: 0.9" />
+                    <div class="row">
+                        <div class="table-responsive mb-0 riwayat-stock" data-pattern="priority-columns">
+                            @* <table class="table table-bordered border border-1 border-black"> *@
+                            <table class="table table-bordered">
+                                <thead class="table-dark text-center align-middle">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Barang</th>
+                                        <th>Jumlah</th>
+                                        <th>Satuan</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Sarung Tangan</td>
+                                        <td>33</td>
+                                        <td>pcs</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Sepatu Boots</td>
+                                        <td>20</td>
+                                        <td>pcs</td>
+                                        <td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </<div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

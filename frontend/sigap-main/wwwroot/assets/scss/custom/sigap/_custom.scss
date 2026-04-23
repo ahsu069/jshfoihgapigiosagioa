@@ -1,0 +1,416 @@
+.table.align-middle > :not(caption) > * {
+    vertical-align: middle;
+}
+
+.tbody-custom {
+    border-bottom: none transparent !important;
+    border-right: none transparent !important;
+
+    tr td:not(:last-child) {
+        border-right: 1px solid #dee2e6;
+    }
+
+    //tr td {
+    //    border-right: 1px solid #dee2e6;
+    //}
+
+    tr:not(:last-child) td {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    td:nth-child(2) {
+        text-align: left;
+        padding-left: 10px;
+    }
+
+}
+
+.mdi-custom {
+    font-size: 24px !important;
+    line-height: normal !important;
+}
+
+.nested-table thead {
+    th:first-child {
+      border-left-color: #dee2e6 !important;
+      width: 5%;
+    }
+
+    th:nth-child(2) {
+      width: 40%;
+    }
+
+    th:nth-child(3) {
+      width: 15%;
+    }
+
+    th:nth-child(4) {
+      width: 15%;
+    }
+
+    th:nth-child(5) {
+      width: 25%;
+    }
+}
+
+table.table.dataTable>tbody>tr.selected a {
+    color: #ffffff !important;
+}
+
+table.table.dataTable>tbody>tr.selected>* {
+    box-shadow: inset 0 0 0 9999px rgb(125, 125, 125) !important;
+}
+
+.form-check-input:checked {
+    background-color: #2b3a4a !important;
+    border-color: #ffffff !important;   
+}
+
+.form-check-input[type=checkbox]:indeterminate {
+    background-color: #2b3a4a !important;
+    border-color: #ffffff !important;
+}
+
+.form-select:focus {
+    border-color: #2a3142 !important;
+}
+
+table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after {
+    opacity: 0.3 !important;
+}
+
+table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after {
+    opacity: 1 !important;
+}
+
+.img-barang {
+    width: 100px;
+    height: 100px;
+    max-width: 100px;
+    max-height: 100px;
+    min-width: 40px;
+    min-height: 40px;
+    object-fit: cover;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.card-img-top-custom {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+}
+
+.text-red {
+    color: #dc3545;
+}
+
+.quantity-input {
+    border: 1px solid black;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    &:focus {
+        border: 1px solid black;
+    }
+}
+
+.btn-increment {
+    border: 1px solid black;
+    border-radius: 0px 8px 8px 0px;
+    background-color: #2b3a4a;
+    color: white;
+
+    &:hover {
+        border: 1px solid black;
+        background-color: #2b3a4a;
+        color: white;
+    }
+}
+
+.btn-decrement {
+    border: 1px solid black;
+    border-radius: 8px 0px 0px 8px;
+    background-color: #2b3a4a;
+    color: white;
+
+    &:hover {
+        border: 1px solid black;
+        background-color: #2b3a4a;
+        color: white;
+    }
+}
+
+.input-group {
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+
+        i {
+            font-size: 1.8em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            aspect-ratio: 1 / 1;
+        }
+    }
+}
+
+.group-card {
+    .card {
+        border: 1px solid black;
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background-color: #ffffff;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+    }
+
+    .card-body {
+        background-color: #2b3a4a;
+        border-radius: 0px 0px 8px 8px;
+    }
+
+    .card-title-stok {
+        font-weight: 100;
+        font-size: 14px;
+    }
+}
+
+// Select2 css edit
+.select2-selection__placeholder {
+  color: #636c72 !important;
+}
+
+.select2-container {
+    width: auto !important;
+    display: block !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true]:hover {
+    background-color: #2b3a4a;
+    color: white;
+    opacity: 1;
+}
+
+.select2-container--default .select2-results__option--selected {
+    background-color: #2b3a4a;
+    color: white;
+    opacity: 0.8;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #2b3a4a;
+    color: white;
+    opacity: 0.8;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: white;
+    color: #1f2431;
+    opacity: 1;
+}
+
+.dt-wrap {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+//td.dt-wrap {
+//    vertical-align: middle;
+//}
+
+.img-cell {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+.img-cell .img-barang {
+    flex-shrink: 0;
+}
+
+.riwayat-stock .table tr td:first-child {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+//bagian teguh
+//.detail-card {
+//    background-color: #f0f4f8;
+//    padding: 30px;
+//    border-radius: 15px;
+//    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+//    text-align: center;
+//    max-width: 600px;
+//    margin: auto;
+//    border: 1px solid black;
+//}
+
+//.detail-card img {
+//    width: 100%;
+//    height: auto;
+//    border-radius: 10px;
+//}
+
+//.info-box {
+//    background-color: #1f2a38;
+//    color: white;
+//    padding: 15px;
+//    margin-top: 20px;
+//    border-radius: 10px;
+//    font-size: 16px;
+//}
+
+//.info-box div {
+//    margin-bottom: 10px;
+//    display: flex;
+//    justify-content: space-between;
+//    align-items: center;
+//}
+
+//.badge {
+//    padding: 5px 10px;
+//    border-radius: 5px;
+//    font-weight: bold;
+//    font-size: 14px;
+//}
+
+//.badge-blue {
+//    background-color: #007bff;
+//    color: white;
+//}
+
+//.badge-green {
+//    background-color: #28a745;
+//    color: white;
+//}
+
+//.badge-hitam {
+//    background-color: #000000;
+//}
+
+//.border-h5 {
+//    border: 1px solid black;
+//}
+
+.keterangan-input {
+    border: 1px solid black;
+
+    &:focus {
+        border: 1px solid black;
+    }
+}
+
+// #datepicker4 .datepicker-dropdown {
+//     left: 50% !important;
+//     transform: translateX(-50%) !important;
+// }
+
+// table.dataTable thead th.dt-orderable-asc,
+// table.dataTable thead th.dt-orderable-desc {
+//     position: relative;
+// }
+// table.dataTable thead th .dt-column-order {
+//     position: absolute !important;
+//     right: 0.5em !important;
+//     left: auto !important;
+// }
+
+/* Base header style */
+table.dataTable thead th {
+    position: relative;
+    text-align: center;
+}
+
+/* Sort icon container */
+table.dataTable thead th span.dt-column-order {
+    position: absolute !important;
+    right: 0.75em !important;
+    left: auto !important;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+}
+
+/* Only add right padding for sortable columns */
+table.dataTable thead th.dt-orderable-asc span.dt-column-title,
+table.dataTable thead th.dt-orderable-desc span.dt-column-title {
+    padding-right: 1em;
+    display: inline-block;
+}
+
+/* Remove default validation icon from Bootstrap */
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+    background-image: none !important;
+    padding-right: 2.5rem !important; /* Make room for eye icon */
+}
+
+/* Fix for autofill */
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+}
+
+/* Keep invalid feedback visible */
+.invalid-feedback.d-none {
+    display: none !important;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+}
+
+input::-ms-reveal,
+    input::-ms-clear {
+        display: none;
+    }
+
+// Make disabled inputs consistent with your theme
+input[disabled],
+input:disabled,
+select[disabled],
+select:disabled,
+textarea[disabled],
+textarea:disabled,
+.form-control:disabled,
+.form-select:disabled {
+    // background-color: #EBEBE4 !important; // or your preferred color
+    background-color: #eee !important;
+    opacity: 1; // prevent faded look
+    cursor: not-allowed;
+}
+
+/* Hide the dropdown arrow within a disabled Select2 container */
+.select2-container--disabled .select2-selection__arrow {
+    display: none;
+}
+
+/* Optional: Hide the "clear" (X) button if 'allowClear: true' is used */
+.select2-container--disabled .select2-selection__clear {
+    display: none;
+}

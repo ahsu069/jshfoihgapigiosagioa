@@ -1,0 +1,175 @@
+﻿@{
+	ViewBag.Title = "Edit User";
+	ViewBag.TitleLink = "/users/edituser";
+	ViewBag.subTitle = "Tambah Pengguna";
+	ViewBag.subTitleLink = "/users";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/tambah-barang.js"></script>
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h1>Edit Pengguna</h1>
+					<div class=" col-6 col-md-2 justify-content-end text-end">
+						<a class="btn btn-info waves-effect waves-light" href="/users" role="button">
+							<i class="mdi mdi-arrow-left"></i>
+							<span>Kembali</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+                        <div class="form-group mb-3">
+						<label for="NamaBarang">Nama Pekerja<span class="text-red">*</span></label>
+						<input type="text" name="Nama Barang" class="form-control" id="namabarang" value="" placeholder="Masukkan Nama Barang" required>
+                        </div>
+						<div class="form-group mb-3">
+							<label for="Jumlah">Nomor Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="Jumlah" class="form-control" id="jumlahbarang" maxlength="18" size="18" value="" placeholder="Masukkan Jumlah Barang" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="example-password-input" class="col-md-2 col-form-label">Password<span class="text-red">*</span></label>
+							<input class="form-control" type="password" value="hunter2" id="example-password-input">
+						</div>
+						<div class="form-group mb-3">
+							<label for="example-password-input" class="col-md col-form-label">Konfirmasi Password<span class="text-red">*</span></label>
+							<input class="form-control" type="password" value="hunter2" id="example-password-input">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="MSL">Jenis Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control" id="msl" value="" placeholder="internal/external" required>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Bagian Pekerja<span class="text-red">*</span></label>
+							<select class="form-control select2">
+								<option>Select</option>
+								<optgroup label="Prod. 1">
+									<option value="foc1">FOC 1</option>
+									<option value="foc2">FOC 2</option>
+									<option value="om60">OM 60 & NBBM</option>
+									<option value="om70">OM 70</option>
+								</optgroup>
+								<optgroup label="Prod. 2">
+									<option value="LOC1">LOC1</option>
+									<option value="LOC2">LOC2</option>
+									<option value="LOC3">LOC3</option>
+									<option value="KPC">KPC</option>
+									<option value="SRU">SRU & IPAL</option>
+								</optgroup>
+								<optgroup label="Prod. 3">
+									<option value="#">RFCC</option>
+									<option value="#">Utl. RFCC</option>
+									<option value="#">GTO</option>
+									<option value="#">Utilities</option>
+								</optgroup>
+								<optgroup label="ME 1">
+									<option value="#">General Maintenance</option>
+									<option value="#">MA1</option>
+									<option value="#">MA2</option>
+									<option value="#">MA3</option>
+									<option value="#">MA4</option>
+								</optgroup>
+								<optgroup label="ME 2">
+									<option value="#">MA5</option>
+									<option value="#">MA6</option>
+									<option value="#">MA7</option>
+									<option value="#">Workshop</option>
+								</optgroup>
+								<optgroup label="ENGDEV">
+									<option value="#">Laboratorium</option>
+									<option value="#">Project Engineering 1</option>
+									<option value="#">Project Engineering 2</option>
+									<option value="#">Project Engineering</option>
+									<option value="#">ECLC</option>
+								</optgroup>
+								<optgroup label="MPS">
+									<option value="#">EEIE</option>
+									<option value="#">SSIE</option>
+									<option value="#">REIE</option>
+									<option value="#">P&S</option>
+								</optgroup>
+								<optgroup label="Turn Arround">
+									<option value="#">Turn Arround 1</option>
+									<option value="#">Turn Arround 2</option>
+									<option value="#">Sch. Mat. & Service Support</option>
+									<option value="#">Equipment Overhaul</option>
+									<option value="#"></option>
+								</optgroup>
+								<optgroup label="RBO">
+									<option value="#">Ref. Plan.</option>
+									<option value="#">Supply Chain Distribution</option>
+									<option value="#">Perf. & Evaluation</option>
+								</optgroup>
+								<optgroup label="HSSE">
+									<option value="#">Health</option>
+									<option value="#">Safety</option>
+									<option value="#">Security</option>
+									<option value="#">Emergency & Insurance</option>
+									<option value="#">Environment</option>
+								</optgroup>
+								<optgroup label="Procurement">
+									<option value="#">purchasing</option>
+									<option value="#">inventory control</option>
+									<option value="#">contract office</option>
+									<option value="#">Warehousing</option>
+								</optgroup>
+								<optgroup label="General Supporting">
+									<option value="#">Asset Opt.</option>
+									<option value="#">Legal Counsel</option>
+									<option value="#">Comm. & Rel</option>
+									<option value="#">Warehousing</option>
+								</optgroup>
+
+							</select>
+						</div>
+
+						<div class="form-group mb-3">
+							<label for="kategori">Role/Jabatan<span class="text-red">*</span></label>
+							<select id="kategori" name="kategori" class="form-control" required>
+								<option hidden selected disabled>Role/Jabatan</option>
+								<option value="1">Pekerja</option>
+								<option value="2">Section Head Bagian Non-Safety</option>
+								<option value="3">Section Head Bagian Safety</option>
+								<option value="4">Manajemen</option>
+								<option value="5">Admin Gudang</option>
+								<option value="6">Supervisor Gudang</option>
+								<option value="7">Super Admin</option>
+							</select>
+						</div>
+						<div class="form-group mb-3">
+							<label for="MSL">instansi pekerjaan<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control" id="msl" value="" placeholder="Masukkan MSL" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="userphoto">Upload<span class="text-red">*</span></label><br>
+							<input type="file" id="userphoto" name="userphoto" accept="image/png, image/gif, image/jpeg">
+							<div class="mt-2">
+								<img id="viewer" width="200" class="border border-black d-none" />
+							</div>
+						</div>
+					</div>
+					<div class="card-footer" style="background-color: white;">
+						<button id="submit-tambah-button" type="submit" class="btn btn-info float-end">Tambah</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

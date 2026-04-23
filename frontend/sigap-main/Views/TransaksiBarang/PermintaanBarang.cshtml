@@ -1,0 +1,147 @@
+﻿@{
+	ViewBag.Title = "Permintaan Barang";
+    ViewBag.TitleLink = "/transaksibarang/permintaanbarang";
+	ViewBag.subTitle = "Transaksi Barang";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var fungsi_pekerja = @User.FindFirst("FungsiNama")?.Value;
+    var bagianId_pekerja = @User.FindFirst("BagianId")?.Value;
+    var bagianNama_pekerja = @User.FindFirst("BagianNama")?.Value;
+}
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+@section scripts {
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js"></script>
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/permintaan-barang.js"></script>
+    <script>
+        window.permintaanbarang = {
+            fungsi_pekerja: '@fungsi_pekerja',
+            bagianId_pekerja: '@bagianId_pekerja',
+            bagianNama_pekerja: '@bagianNama_pekerja'
+        };
+    </script>
+}
+
+<form id="permintaan-barang-form">
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<h1 class="mb-3">Form Permintaan Barang</h1>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="NamaPekerja">Nama Pekerja<span class="text-red">*</span></label>
+							<input type="text" class="form-control" id="namapekerja" value="@User.FindFirst("UserNama")?.Value" disabled />
+						</div>
+						<div class="form-group mb-3">
+							<label for="BagianPekerja">Bagian / Fungsi<span class="text-red">*</span></label>
+							<input type="text" class="form-control" id="bagianfungsipekerja" maxlength="18" value="@User.FindFirst("BagianNama")?.Value / @User.FindFirst("FungsiNama")?.Value" disabled />
+						</div>
+						@* <div class="form-check">
+							<input type="checkbox" class="form-check-input" id="tkjpCheckbox">
+							<label class="form-check-label" for="tkjpCheckbox">Untuk Pekerja TKJP</label>
+						</div> *@
+					</div>
+					<div class="col-md-6">
+						@* <div class="form-group mb-3">
+							<label for="NomorPegawai">Nomor Pegawai<span class="text-red">*</span></label>
+							<input type="text" class="form-control" id="nopeg" placeholder="XXXXXXX" style="background-color: #EBEBE4;" disabled />
+						</div> *@
+						<div class="form-group mb-3">
+							<label for="MIV">No. MIV<span class="text-red">*</span></label>
+							<input type="text" id="no_miv_safety" class="form-control" placeholder="masukkan No. MIV" required />
+						</div>
+					</div>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-6">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" id="tkjpCheckbox">
+							<label class="form-check-label" for="tkjpCheckbox">Untuk Pekerja TKJP</label>
+						</div>
+					</div>
+                </div>
+				<div class="col-md-6" id="barang-col-wrapper">
+					<div class="form-group mt-2" id="barang-input-wrapper">
+						<label>Barang<span class="text-red">*</span></label>
+						<select id="barang-select" class="form-control select2 d-block"></select>
+					</div>
+				</div>
+
+				<div id="tkjpSection" style="display:none;">
+					@* <hr class="my-4"> *@
+					@* <h5 class="mb-3">Data Pekerja TKJP</h5> *@
+					<div class="row mt-2">
+						<div class="col-md-6">
+							<div class="form-group">
+                                <label class="form-label d-block mb-2">ID Finger<span class="text-red">*</span></label>
+                                @* <input type="checkbox" class="form-check-input" id="isiManual">
+                                <label class="form-check-label" for="isiManualCheckbox">Isi Manual</label> *@
+                                <select id="id-finger-select" name="id-finger-select" class="form-control select2"></select>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" id="isiManual">
+                                    <label class="form-check-label" for="isiManual">Isi Manual</label>
+                                </div>
+                            </div>
+						</div>
+						<div class="col-md-6 mt-2 mt-md-0">
+							<div class="form-group">
+								<label for="NamaPekerjaTKJP">Nama Pekerja TKJP<span class="text-red">*</span></label>
+								<input id="namapekerjaTKJP" type="text" class="form-control" required disabled />
+								@* <input type="text" class="form-control" required disabled /> *@
+							</div>
+                        </div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for ="BagianPekerjaTKJP">Bagian<span class="text-red">*</span></label>
+								@* <input id="bagianTKJP" type="text" class="form-control" required disabled /> *@
+                                <select id="bagianTKJP" class="form-control select2 d-block" disabled></select>
+								<input id="fungsiTKJP" type="hidden">
+								@* <label for ="FungsiPekerjaTKJP">Fungsi</label>
+								<input id="fungsiTKJP" type="text" class="form-control" required disabled /> *@
+								@* <input type="text" class="form-control" required disabled /> *@
+							</div>
+						</div>
+						<div class="col-md-6 mt-2 mt-md-0">
+							<div class="form-group">
+								<label for ="Perusahaan">Perusahaan<span class="text-red">*</span></label>
+								@* <input id="perusahaanTKJP" type="text" class="form-control" placeholder="masukkan perusahaan pekerja" required disabled /> *@
+								<input id="perusahaanTKJP" type="text" class="form-control" required disabled />
+								@* <input type="text" class="form-control" required disabled /> *@
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-md-6" id="barang-tkjp-col-wrapper">
+						</div>
+						<div class="col-md-6 mt-0 mt-md-2">
+							<div class="form-group">
+								<label for ="FilePendukung">File Pendukung</label><br />
+								<input type="file" id="filependukung" name="filependukung" accept="image/png, image/gif, image/jpeg" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<hr style="border: 10px solid #2b3a4a; opacity: 0.9 !important; margin-bottom: 0px" />
+				<div class="card-footer bg-white">
+					@* <div class="row row-cols-1 row-cols-md-2 g-4" id="input-groups-container"></div> *@
+					<div class="row row-cols-1 row-cols-md-4 row-cols-xxl-6 g-4" id="input-groups-container"></div>
+				</div>
+				<div class="d-flex justify-content-end mt-4">
+					<button id="submit-permintaan-barang" type="submit" class="btn btn-info">Ajukan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</form>

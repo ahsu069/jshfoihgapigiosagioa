@@ -1,0 +1,189 @@
+﻿@{
+    ViewBag.Title = "Laporan Transaksi";
+    ViewBag.TitleLink = "/RiwayatTransaksiLaporan";
+    ViewBag.subTitle = "Laporan Transaksi";
+    ViewBag.subTitleLink = "//RiwayatTransaksiLaporan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+}
+
+@section scripts {
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+    <script src="~/assets/js/pages/RiwayatTransaksiLaporan.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <!-- dashboard-->
+    <!--Morris Chart-->
+    <script src="~/assets/libs/morris.js/morris.min.js"></script>
+    <script src="~/assets/libs/raphael/raphael.min.js"></script>
+
+    <script src="~/assets/js/pages/dashboard.init.js"></script>
+
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Laporan Transaksi</h1>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Laporan Bulanan</h4>
+
+                        <div class="row text-center mt-4">
+                            <div class="col-6">
+                                <h5 class="font-size-20">$ 2548</h5>
+                                <p class="text-muted">Marketplace</p>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="font-size-20">$ 6985</h5>
+                                <p class="text-muted">Total Income</p>
+                            </div>
+                        </div>
+
+                        <div id="morris-bar-stacked" data-colors='["--bs-info","#f0f1f4"]'
+                             class="morris-charts morris-charts-height" dir="ltr"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Laporan Tahunan</h4>
+
+                        <div class="row text-center mt-4">
+                            <div class="col-4">
+                                <h5 class="font-size-20">$ 89425</h5>
+                                <p class="text-muted">Marketplace</p>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="font-size-20">$ 56210</h5>
+                                <p class="text-muted">Total Income</p>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="font-size-20">$ 8974</h5>
+                                <p class="text-muted">Last Month</p>
+                            </div>
+                        </div>
+
+                        <div id="morris-area-example" data-colors='["#f0f1f4","--bs-primary","--bs-info"]'
+                             class="morris-charts morris-charts-height" dir="ltr"></div>
+                    </div>
+                </div>
+                @* 
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                         <button type="button" class="btn btn-success"><a href="/RiwayatTransaksi/RiwayatStock" class="text-white mdi mdi-file-plus-outline">Riwayat Stock</a></button>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Search..." style="width: 200px;">                   
+                </div
+                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @*  <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama Pekerja</th>
+                                <th>No. Pegawai</th>
+                                <th>Perusahaan</th>
+                                <th>Bagian</th>
+                                <th>Tanggal</th>
+                                <th>In/Ex</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>SuperUser_1</td>
+                                <td>2321212</td>
+                                <td>Pekerjaan</td>
+                                <td>MA II</td>
+                                <td>10/12/23</td>
+                                <td>EX</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td> <a href="~/RiwayatTransaksi/DetailRiwayatTransaksi" class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </a>
+                            <tr>
+                                <td>2</td>
+                                <td>Evan</td>
+                                <td>1344345</td>
+                                <td>Pekerjaan</td>
+                                <td>HSSE</td>
+                                <td>13/12/23</td>
+                                <td>IN</td>
+                                <td><span class="badge bg-danger">Rejected</span></td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>                                   
+                                </td>
+                            </tr>
+                            <!-- Additional Rows as Needed -->
+                        </tbody> *@@*  <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama Pekerja</th>
+                                <th>No. Pegawai</th>
+                                <th>Perusahaan</th>
+                                <th>Bagian</th>
+                                <th>Tanggal</th>
+                                <th>In/Ex</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>SuperUser_1</td>
+                                <td>2321212</td>
+                                <td>Pekerjaan</td>
+                                <td>MA II</td>
+                                <td>10/12/23</td>
+                                <td>EX</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td> <a href="~/RiwayatTransaksi/DetailRiwayatTransaksi" class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </a>
+                            <tr>
+                                <td>2</td>
+                                <td>Evan</td>
+                                <td>1344345</td>
+                                <td>Pekerjaan</td>
+                                <td>HSSE</td>
+                                <td>13/12/23</td>
+                                <td>IN</td>
+                                <td><span class="badge bg-danger">Rejected</span></td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>                                   
+                                </td>
+                            </tr>
+                            <!-- Additional Rows as Needed -->
+                        </tbody> *@
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,108 @@
+﻿@{
+	ViewBag.Title = "Akses Role";
+	ViewBag.TitleLink = "/users/rolemanagement/EditRole";
+	ViewBag.subTitle = "Akses Role";
+	ViewBag.subTitleLink = "/users/rolemanagement/EditRole";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/tambah-barang.js"></script>
+	<script src="~/assets/js/pages/form-advanced.init.js"></script>
+	<!-- Init js -->
+	<script src="~/assets/js/app.js"></script>
+	<!-- Required datatable js -->
+	<script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+	<script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+	<!-- Buttons examples -->
+	<script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/jszip/jszip.min.js"></script>
+	<script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+	<script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+	<!-- Responsive examples -->
+	<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+	<script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+	<script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<!-- Users js-->
+	<script src="~/assets/js/pages/rolemanagement2.js"></script>
+
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h1>Edit Role akses</h1>
+					<div class=" col-6 col-md-2 justify-content-end text-end">
+						<a class="btn btn-info waves-effect waves-light" href="/users/rolemanagement" role="button">
+							<i class="mdi mdi-arrow-left"></i>
+							<span>Kembali</span>
+						</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="kategori">Role/Jabatan<span class="text-red">*</span></label>
+							<select id="kategori" name="kategori" class="form-control" disabled>
+								<option value="Dashboard">Dashboard</option>
+								<option value="Users">Users</option>
+								<option value="Stock OPname Barang">Stock OPname Barang</option>
+								<option value="Form Permintaan Barang">Form Permintaan Barang</option>
+								<option value="Daftar Riwayat Transaksi/Permintaan Barang">Daftar Riwayat Transaksi/Permintaan Barang</option>
+								<option value="Daftar Riwayat Stock Gudang">Daftar Riwayat Stock Gudang</option>
+								<option value="Laporan ">Laporan</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-0">
+							<label class="form-label">Role Select</label>
+							<select class="select2 form-control select2-multiple" multiple="multiple" multiple data-placeholder="">
+								<optgroup>
+									<option value="1">Pekerja</option>
+									<option value="2">Section Head Bagian Non-Safety</option>
+									<option value="3">Section Head Bagian Safety</option>
+									<option value="4">Manajemen</option>
+									<option value="5">Admin Gudang</option>
+									<option value="6">Supervisor Gudang</option>
+									<option value="7">Super Admin</option>
+								</optgroup>
+							</select>
+						</div>
+					</div>
+					<div class="card-footer" style="background-color: white;">
+						<button id="submit-tambah-button" type="submit" class="btn btn-info float-end">Tambah</button>
+					</div>
+				</div>
+			<table id="datatable-buttons2" class="table table-bordered dt-responsive nowrap">
+				@* <tfoot class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Barang</th>
+                                <th>Status</th>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </tfoot> *@
+			</table>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,68 @@
+﻿@{
+	ViewBag.Title = "Tambah Permissions";
+	ViewBag.TitleLink = "/users/rolemanagement/addpermissions";
+	ViewBag.subTitle = "Tambah Permissions";
+	ViewBag.subTitleLink = "/users/rolemanagement/addpermissions";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/tambah-barang.js"></script>
+	<script src="~/assets/js/pages/form-advanced.init.js"></script>
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h1>Tambah Permissions</h1>
+					<div class=" col-6 col-md-2 justify-content-end text-end">
+						<a class="btn btn-info waves-effect waves-light" href="/users/rolemanagement" role="button">
+							<i class="mdi mdi-arrow-left"></i>
+							<span>Kembali</span>
+						</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="Permissions">Permissions Baru<span class="text-red">*</span></label>
+							<input type="text" name="Nama Barang" class="form-control" id="namabarang" value="" placeholder="Masukkan Nama Barang" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label class="form-label">Deskripsi</label>
+							<textarea id="textarea" class="form-control" maxlength="225" rows="3" placeholder="Deskripsi Permissions."></textarea>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="kategori">List Fungsi Permissions<span class="text-red">*</span></label>
+							<select id="kategori" name="kategori" class="form-control" required>
+								<option value="Dashboard">Dashboard</option>
+								<option value="Users">Users</option>
+								<option value="Stock OPname Barang">Stock OPname Barang</option>
+								<option value="Form Permintaan Barang">Form Permintaan Barang</option>
+								<option value="Daftar Riwayat Transaksi/Permintaan Barang">Daftar Riwayat Transaksi/Permintaan Barang</option>
+								<option value="Daftar Riwayat Stock Gudang">Daftar Riwayat Stock Gudang</option>
+								<option value="Laporan ">Laporan</option>
+							</select>
+						</div>
+					</div>
+					<div class="card-footer" style="background-color: white;">
+						<button id="submit-tambah-button" type="submit" class="btn btn-info float-end">Tambah</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

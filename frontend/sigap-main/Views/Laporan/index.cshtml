@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.title = "Laporan";
+    ViewBag.subTitle = "Laporan";
+    ViewBag.subTitleLink = "/Laporan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+}
+@section scripts {
+    <!-- Init js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+    <!-- Stock Gudang js-->
+    <script src="~/assets/js/pages/stock-gudang.js"></script>
+
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <!--halaman stock gudang-->
+        <div class="card">
+            <div class="card-body">
+                <h1>Laporan</h1>
+                @*                 <div id="datatable-buttons_wrapper_custom" class="d-flex flex-wrap">
+                    <a href="/StockGudang/TambahBarang" class="btn btn-success text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-plus-circle-outline"></i>
+                        <span>Tambah</span>
+                    </a>
+                    <a href="#" class="btn btn-danger text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-trash-can-outline"></i>
+                        <span>Hapus</span>
+                    </a>
+                    <a href="/transaksibarang/pemasukkanbarang" class="btn btn-success text-white mb-2 mb-xl-0">
+                        <i class="mdi mdi-file-plus-outline"></i>
+                        <span>Pemasukan</span>
+                    </a>
+                </div>
+ *@
+                @* <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @* <tfoot class="table-dark">
+                        <tr>
+							<th></th>
+							<th></th>
+							<th>ID</th>
+							<th>Barang</th>
+							<th>Status</th>
+							<th>Kategori</th>
+							<th>Jumlah</th>
+							<th>Aksi</th>
+                        </tr>
+                    </tfoot> *@                
+                </table>
+
+                @*   <div class="table-responsive mb-0">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" /></th>
+                                <th>Barang</th>
+                                <th>Status</th>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Sarung Tangan Kulit</td>
+                                <td>99%</td>
+                                <td>Sarung Tangan</td>
+                                <td>222</td>
+                                <td>
+                                    <a href="~/StockGudang/DetailBarang" class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </a>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Tissue Majun Roll</td>
+                                <td>-25%</td>
+                                <td>Helm</td>
+                                <td>42</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Tissue Majun Roll</td>
+                                <td>25%</td>
+                                <td>Helm</td>
+                                <td>42</td>                                
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Lampu Exit</td>
+                                <td>58%</td>
+                                <td>Maintenance Equipment</td>
+                                <td>13</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Dust Mask N95</td>
+                                <td>12%</td>
+                                <td>Pelindung Muka</td>
+                                <td>45</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Safety Helmet Putih</td>
+                                <td>200%</td>
+                                <td>Helm</td>
+                                <td>33</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Additional Rows... -->
+                        </tbody>
+                    </table> *@
+            </div>
+        </div>
+    </div>
+</div>
+

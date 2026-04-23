@@ -1,0 +1,58 @@
+﻿@{
+	ViewBag.Title = "Detail Barang";
+	ViewBag.subTitle = "Stock Gudang";
+	ViewBag.subTitleLink = "/stockgudang";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts {
+	<script src="~/assets/js/pages/table-responsive.init.js"></script>
+	<script src="~/assets/js/app.js"></script>
+}
+
+<div class="mb-3">
+	<a class="btn btn-info waves-effect waves-light" href="/stockgudang" role="button">
+		<i class="mdi mdi-arrow-left"></i>
+		<span>Kembali</span>
+	</a>
+	@* <button type="button" class="btn btn-info" >
+        <a href="/stockgudang" class="fas fa-arrow-left text-white"> Kembali</a>
+    </button> *@
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="d-flex justify-content-center mt-4">
+			<div class="card w-100" style="border: 1px solid black; border-radius: 16px; max-width: 450px">
+				<div class="card-header d-flex justify-content-center"
+					style="background-color: #ffffff; border-radius: 16px;">
+					<img class="card-img-top-custom" src="/assets/images/tester/sarung_tangan_kulit.png"
+						alt="Sarung Tangan Kulit" />
+				</div>
+				<div class="card-body text-white text-center p-0"
+					style="background-color: #2b3a4a; border-radius: 0px 0px 16px 16px; border: 1px solid white; padding: 10px 0px 10px 0px ">
+					<div class="p-2 d-flex align-items-center justify-content-center border-top border-top-1 border-white"
+						style="height: 48px;">
+						<h5 class="mb-0"><strong>Sarung Tangan Kulit</strong></h5>
+					</div>
+					<div class="p-2 d-flex align-items-center justify-content-center border-top border-top-1 border-white"
+						style="height: 48px;">
+						<h5 class="mb-0">Kategori: <span>Pelindung Tangan</span></h5>
+					</div>
+					<div class="p-2 d-flex align-items-center justify-content-center border-top border-top-1 border-white"
+						style="height: 48px;">
+						<h5 class="mb-0">Stock: <span class="badge bg-info">400</span></h5>
+					</div>
+					<div class="p-2 d-flex align-items-center justify-content-center border-top border-top-1 border-white"
+						style="height: 48px;">
+						<h5 class="mb-0">Minimum Stock Level: <span class="badge bg-info">200</span></h5>
+					</div>
+					<div class="p-2 d-flex align-items-center justify-content-center border-top border-top-1 border-white"
+						style="height: 48px;">
+						<h5 class="mb-0">Status: <span class="badge bg-success">200%</span></h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

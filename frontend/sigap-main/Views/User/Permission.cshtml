@@ -1,0 +1,228 @@
+@using Lexa.Helpers
+@{
+    ViewBag.title = "Kelola Permission";
+    ViewBag.subTitle = "User";
+    ViewBag.subTitleLink = "/user";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasPermissionCreate = User.HasPermissionOrSuper("permission:create");
+    var hasPermissionEdit = User.HasPermissionOrSuper("permission:update");
+    var hasPermissionDelete = User.HasPermissionOrSuper("permission:delete");
+    var hasPermissionAkses = User.HasPermissionOrSuper("rbac:permission:manage");
+}
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/libs/select2/js/select2.min.js"></script>
+    <!-- Users js-->
+    <script src="~/assets/js/pages/permission.js"></script>
+    <!-- Init js -->
+    <script src="~/assets/js/app.js"></script>
+    <script>
+        window.Role = {
+            hasPermissionCreate: @(hasPermissionCreate.ToString().ToLower()),
+            hasPermissionEdit: @(hasPermissionEdit.ToString().ToLower()),
+            hasPermissionDelete: @(hasPermissionDelete.ToString().ToLower()),
+            hasPermissionAkses: @(hasPermissionAkses.ToString().ToLower()),
+
+        };
+    </script>
+}
+<div class="row">
+    <div class="col-12">
+        <!--halaman Rolemanagement-->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1>Kelola Permission</h1>
+                    <div class=" col-6 col-md-2 justify-content-end text-end">
+                        <a class="btn btn-info waves-effect waves-light" href="/user" role="button">
+                            <i class="mdi mdi-arrow-left"></i>
+                            <span>Kembali</span>
+                        </a>
+                    </div>
+                </div>
+
+                @*                 <div id="datatable-buttons_wrapper_custom" class="d-flex flex-wrap">
+                        <a href="/StockGudang/TambahBarang" class="btn btn-success text-white mb-2 me-2 mb-xl-0">
+                            <i class="mdi mdi-plus-circle-outline"></i>
+                            <span>Tambah</span>
+                        </a>
+                        <a href="#" class="btn btn-danger text-white mb-2 me-2 mb-xl-0">
+                            <i class="mdi mdi-trash-can-outline"></i>
+                            <span>Hapus</span>
+                        </a>
+                    </div>
+                *@
+                @* <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @* <tfoot class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Barang</th>
+                                <th>Status</th>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </tfoot> *@
+                </table>
+                <!-- Modal Tambah Permission -->
+                <div class="modal fade" id="modalTambahPermission" tabindex="-1" aria-labelledby="modalTambahPermissionLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTambahPermissionLabel">
+                                    Tambah Permission
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formTambahPermission">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label for="permissionCode" class="form-label">Kode Permission<span class="text-danger">*</span></label>
+                                            @* <input type="text" class="form-control" id="permissionCode" name="code" placeholder="masukkan kode permission" required /> *@
+                                            <select class="form-control" id="permissionCode" name="code" required></select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label for="permissionName" class="form-label">Nama Permission<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="permissionName" name="name" placeholder="masukkan nama permission" required />
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label for="permissionDescription" class="form-label">Deskripsi</label>
+                                            <textarea class="form-control" id="permissionDescription" name="description" placeholder="masukkan deskripsi permission" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" form="formTambahPermission" class="btn btn-info">
+                                    Simpan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edit Permission Modal -->
+                <div class="modal fade" id="modalEditPermission" tabindex="-1" aria-labelledby="modalEditPermissionLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalEditPermissionLabel">Edit Permission</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="formEditPermission">
+                                <div class="modal-body">
+                                    <input type="hidden" id="editPermissionId" />
+
+                                    <div class="mb-3">
+                                        <label for="editPermissionCode" class="form-label">Kode Permission<span class="text-danger">*</span></label>
+                                        @* <input type="text" class="form-control" id="editPermissionCode" required> *@
+                                        <select class="form-control" id="editPermissionCode" required></select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editPermissionName" class="form-label">Nama Permission<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="editPermissionName" placeholder="masukkan nama permission" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editPermissionDescription" class="form-label">Deskripsi</label>
+                                        <textarea class="form-control" id="editPermissionDescription" rows="3" placeholder="masukkan deskripsi permission"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-info text-white">Simpan Perubahan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Kelola Akses (Manage Roles) Modal -->
+                <div class="modal fade" id="modalKelolaAkses" tabindex="-1" aria-labelledby="modalKelolaAksesLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                @* <h5 class="modal-title" id="modalKelolaAksesLabel">Kelola Akses</h5> *@
+                                <h5 class="modal-title" id="modalKelolaAksesLabel"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <!-- Assigned Roles -->
+                                @* <h6 class="fw-bold mb-2">Role yang sudah memiliki akses</h6> *@
+                                <h5 class="mb-2">Role dengan akses</h5>
+                                @* <table id="tableAssignedRoles" class="table table-striped table-bordered w-100"> *@
+                                <table id="tableAssignedRoles" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th>Nama Role</th>
+                                    <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                </table>
+
+                                <hr class="my-4">
+
+                                <!-- Unassigned Roles -->
+                                @* <h5 class="fw-bold mb-2">Role tanpa akses</h5> *@
+                                <h5 class="mb-2">Role tanpa akses</h5>
+                                @* <table id="tableUnassignedRoles" class="table table-striped table-bordered w-100"> *@
+                                <table id="tableUnassignedRoles" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th>Nama Role</th>
+                                    <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                </table>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Tutup</button>
+                                @* <button type="button" class="btn btn-dark" id="btnSimpanAkses">Simpan Perubahan</button> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

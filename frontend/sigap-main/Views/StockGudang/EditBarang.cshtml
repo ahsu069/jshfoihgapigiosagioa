@@ -1,0 +1,82 @@
+﻿@{
+	ViewBag.Title = "Edit Barang";
+	ViewBag.subTitle = "Stock Gudang";
+	ViewBag.subTitleLink = "/stockgudang";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+	<script src="~/assets/js/app.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/pages/edit-barang.js"></script>
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h1>Edit Barang</h1>
+					<div class=" col-6 col-md-2 justify-content-end text-end">
+						<a class="btn btn-info waves-effect waves-light" href="/stockgudang" role="button">
+							<i class="mdi mdi-arrow-left"></i>
+							<span>Kembali</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="NamaBarang">Nama Barang<span class="text-red">*</span></label>
+							<input type="text" name="Nama Barang" class="form-control " id="namabarang" value="" placeholder="Masukkan Nama Barang" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="Jumlah">Jumlah Awal<span class="text-red">*</span></label>
+							<input type="text" name="Jumlah" class="form-control " maxlength="18" size="18" id="jumlahbarang" value="" placeholder="Masukkan Jumlah Barang" required>
+						</div>
+						<div class="form-group">
+							<label for="kategori">Kategori<span class="text-red">*</span></label>
+							<select id="kategori" name="kategori" class="form-control" required>
+								<option hidden selected disabled>Pilih Kategori</option>
+								<option disabled>-Safety-</option>
+								<option value="1">PELINDUNG TANGAN</option>
+								<option value="2">PELINDUNG KEPALA</option>
+								<option value="3">PELINDUNG MATA</option>
+								<option value="4">FIRE BLANKET & LIFE JACKET</option>
+								<option value="5">SAFETY LINE , SAFETY NET , HARNESS & PADLOCK</option>
+								<option value="6">PELINDUNG KAKI</option>
+								<option disabled>-EMERGENCY & INSURANCE-</option>
+								<option value="7">MAINTENANCE EQUIPMENT</option>
+								<option value="8">FIRE SUPPORT EQUIPMENT</option>
+								<option value="9">-OCCUPATIONAL HEALTH-</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="MSL">Minimum Stock Level(MSL)<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control " id="msl" value="" placeholder="Masukkan MSL" required>
+						</div>
+						<div class="form-group">
+							<label for="userphoto">Upload<span class="text-red">*</span></label><br>
+							<input type="file" id="userphoto" name="userphoto" accept="image/png, image/gif, image/jpeg">
+							<div class="mt-2">
+								<img id="viewer" width="200" class="border border-black d-none" />
+							</div>
+						</div>
+					</div>
+					<div class="card-footer" style="background-color: white;">
+						<button id="submit-edit-button" type="submit" class="btn btn-info float-end">Edit</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>

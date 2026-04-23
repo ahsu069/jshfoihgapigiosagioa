@@ -1,0 +1,414 @@
+﻿@using Lexa.Helpers
+@{
+	ViewBag.Title = "Dashboard";
+	ViewBag.subTitle = "Home";
+	ViewBag.subTitleLink = "/";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var hasPermissionBarangRead = User.HasPermissionOrSuper("barang:read");
+    var hasPermissionApprovalRead = User.HasPermissionOrSuper("approval:read");
+    var hasPermissionRiwayatStockRead = User.HasPermissionOrSuper("riwayat:stock:read");
+    var hasPermissionRiwayatTransaksiRead = User.HasPermissionOrSuper("riwayat:transaksi:read");
+}
+
+@section AddToHead {
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    @* <style>
+        #wrapper-dashboard {
+            position: relative;   /* important */
+        }
+
+        .spinner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+    </style> *@
+}
+
+@section scripts {
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/libs/morris.js/morris.min.js"></script>
+	<script src="~/assets/libs/raphael/raphael.min.js"></script>
+	<script src="~/assets/js/pages/dashboard.init.js"></script>
+	<script src="~/assets/js/app.js"></script>
+    @* <script>
+        window.permission = {
+            hasPermissionBarangRead: @(hasPermissionBarangRead.ToString().ToLower()),
+        }
+    </script> *@
+}
+
+<div id="error-dashboard" hidden>
+    <div class="alert alert-danger" role="alert">
+        Gagal memuat data dashboard!
+    </div>
+</div>
+<div id="wrapper-dashboard" hidden>
+<!--menu-->
+<div class="row card-deck">
+	<!--menu-->
+	<div class="col-xl-3 col-sm-6 d-flex">
+		<div class="card mini-stat flex-fill gradient blue-gradient">
+			<div class="card-body mini-stat-img">
+				<div class="mini-stat-icon">
+					<i class="mdi mdi-folder-download-outline float-end"></i>
+				</div>
+				<div class="text-white">
+					<h6 class="text-uppercase mb-3 font-size-16 text-white">Total Pemasukkan Barang</h6>
+					<h2 id="transact_in_cnt" class="text-white"></h2>
+				</div>
+			</div>
+            @if(hasPermissionRiwayatStockRead) {
+                <div class="card-footer text-center card-footer-bg-color">
+                    <a href="/RiwayatTransaksi/RiwayatStock" class="text-white">Lebih Lanjut <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            }
+		</div>
+	</div>
+	<!--menu-->
+	<div class="col-xl-3 col-sm-6 d-flex">
+		<div class="card mini-stat flex-fill gradient green-gradient">
+			<div class="card-body mini-stat-img">
+				<div class="mini-stat-icon">
+					<i class="mdi mdi-folder-upload-outline float-end"></i>
+				</div>
+				<div class="text-white">
+					<h6 class="text-uppercase mb-3 font-size-16 text-white">Jumlah Permintaan Barang</h6>
+					<h2 id="transact_out_cnt" class="text-white"></h2>
+				</div>
+			</div>
+            @if(hasPermissionRiwayatTransaksiRead) {
+                <div class="card-footer text-center card-footer-bg-color">
+                    <a href="/riwayattransaksi" class="text-white">Lebih Lanjut <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            }
+		</div>
+	</div>
+	<!--menu-->
+	<div class="col-xl-3 col-sm-6 d-flex">
+		<div class="card mini-stat flex-fill gradient orange-gradient">
+			<div class="card-body mini-stat-img">
+				<div class="mini-stat-icon">
+					<i class="mdi mdi-clock-outline float-end"></i>
+				</div>
+				<div class="text-white">
+					<h6 class="text-uppercase mb-3 font-size-16 text-white">Jumlah Permintaan Menunggu</h6>
+					<h2 id="transact_pending_cnt" class="text-white"></h2>
+				</div>
+			</div>
+            @if(hasPermissionApprovalRead) {
+                <div class="card-footer text-center card-footer-bg-color">
+                    <a href="/approval" class="text-white">Lebih Lanjut <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            }
+		</div>
+	</div>
+	<!--menu-->
+	<div class="col-xl-3 col-sm-6 d-flex">
+		<div class="card mini-stat flex-fill gradient red-gradient">
+			<div class="card-body mini-stat-img">
+				<div class="mini-stat-icon">
+					<i class="mdi mdi-alert-outline float-end"></i>
+				</div>
+				<div class="text-white">
+					<h6 class="text-uppercase mb-3 font-size-16 text-white">Peringatan Stock Barang Rendah</h6>
+					<h2 id="item_low_stock_cnt" class="text-white"></h2>
+				</div>
+			</div>
+            @if(hasPermissionBarangRead) {
+                <div class="card-footer text-center card-footer-bg-color">
+                    <a href="/stockgudang" class="text-white">Lebih Lanjut <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            }
+		</div>
+	</div>
+</div>
+
+
+@* <!--Aktivitas Pemasukkan Terbaru--> *@
+<div class="row mb4 card-deck">
+	<div class="col-xl-4 d-flex">
+		<div class="card w-100">
+			<div class="card-body d-flex flex-column h-100">
+				<h5 class="font-size-14 mb-4">Aktivitas Pemasukkan Terbaru :</h5>
+
+				<ul id="pemasukkan-terbaru" class="list-unstyled activity-feed ms-1">
+                    @* <li>Tidak ada data Pemasukkan.</li> *@
+					@* <li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">09:30 WIB, 15 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+							</div>
+						</div>
+					</li>
+
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">13:45 WIB, 14 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Dust Mask</p><p>99pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Merah</p><p>12pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Kuning</p><p>23pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Kaca Mata Pelindung Uvex</p><p>6pcs</p></div>
+							</div>
+						</div>
+					</li>
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">08:13 WIB, 13 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+							</div>
+						</div>
+					</li>
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">12:34 WIB, 12 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+							</div>
+						</div>
+					</li> *@
+				</ul>
+                @if(hasPermissionRiwayatStockRead) {
+                    <div id="tombol-riwayat-transaksi" class="d-flex justify-content-center align-items-end h-100">
+                        <a href="/RiwayatTransaksi/RiwayatStock" class="btn btn-base">Lihat Semua <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                }
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xl-4 d-flex">
+		<div class="card flex-fill d-flex flex-column justify-content-center">
+			<div class="card-body d-flex flex-column justify-content-between">
+				<h4 class="card-title">Readiness: Barang</h4>
+
+				<a id="donut-container" href="#" class="d-flex flex-column justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#donutModal">
+					@* <div id="morris-donut"
+						data-colors='["#3BFF3B","#FF3B3E"]'
+						class="morris-charts morris-donut"
+						dir="ltr">
+					</div>
+					<p class="text-black">Klik untuk melihat detail</p> *@
+				</a>
+
+				<div class="hidden_element"></div>
+			</div>
+		</div>
+	</div>
+
+	@* <!--Aktivitas Pengeluaran Terbaru--> *@
+	<div class="col-xl-4 d-flex">
+		<div class="card w-100">
+			<div class="card-body d-flex flex-column h-100">
+				<h5 class="font-size-14 mb-4">Aktivitas Pengeluaran Terbaru :</h5>
+
+				<ul id="pengeluaran-terbaru" class="list-unstyled activity-feed ms-1">
+					@* <li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">08:11 WIB, 17 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Dust Mask</p><p>99pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+							</div>
+						</div>
+					</li>
+
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">17:33 WIB, 15 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+							</div>
+						</div>
+					</li>
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">12:00 WIB, 13 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+							</div>
+						</div>
+					</li>
+					<li class="feed-item">
+						<div class="feed-item-list">
+							<div>
+								<div class="date">10:55 WIB, 10 April 2025</div>
+								<div class="d-flex justify-content-between gap-3"><p>Sepatu Boots</p><p>20psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Safety Helmet Putih</p><p>9pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Tissue Majun Roll</p><p>123pcs</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Sarung Tangan Kulit</p><p>13psg</p></div>
+								<div class="d-flex justify-content-between gap-3"><p>Dust Mask</p><p>99pcs</p></div>
+							</div>
+						</div>
+					</li> *@
+				</ul> 
+                @if(hasPermissionRiwayatStockRead) {
+                    <div id="tombol-riwayat-stock" class="d-flex justify-content-center align-items-end h-100">
+                        <a href="/RiwayatTransaksi/RiwayatStock" class="btn btn-base">Lihat Semua <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                }
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="donutModal" tabindex="-1" role="dialog" aria-labelledby="donutModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document" style="max-width: 1000px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="donutModalLabel">Detail Readiness</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-striped table-bordered text-center align-middle">
+					<thead class="table-dark">
+						<tr>
+							<th style="width: 50px">Detail</th>
+							<th>Kategori</th>
+							<th>Readiness Stock</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<ul class="list-unstyled">
+					<li>Index :</li>
+					<li><span class="mdi mdi-circle text-success"></span> &ge; 115%</li>
+					<li><span class="mdi mdi-circle text-warning"></span> 100% &le; x &lt; 115%</li>
+					<li><span class="mdi mdi-circle text-danger"></span> &lt; 100%</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<!-- end row -->
+@* <tbody>
+						<!-- Row 1 -->
+						<tr data-bs-toggle="collapse" data-bs-target="#category1">
+							<td><a href="#category1" data-bs-toggle="collapse" aria-expanded="false" aria-controls="category1"><i class="mdi mdi-custom mdi-chevron-right text-black"></i></a></td>
+							<td class="text-start">Pelindung Tangan</td>
+							<td><span class="badge bg-danger">89%</span></td>
+						</tr>
+						<tr class="collapse" id="category1">
+							<td colspan="3" class="p-0">
+								<div class="collapse ps-custom" id="category1">
+									<table class="table table-bordered table-sm mb-0 align-middle nested-table">
+										<thead class="table-dark text-white">
+											<tr>
+												<th>No</th>
+												<th>Nama Material</th>
+												<th>Stock</th>
+												<th>MSL</th>
+												<th>Readiness Stock</th>
+											</tr>
+										</thead>
+										<tbody class="tbody-custom">
+											<tr><td>1</td><td>Sarung Tangan Kulit</td><td>0</td><td>500</td><td><span class="badge bg-danger">0%</span></td></tr>
+											<tr><td>2</td><td>Sarung Tangan Listrik</td><td>50</td><td>25</td><td><span class="badge bg-success">200%</span></td></tr>
+											<tr><td>3</td><td>Sarung Tangan Welder</td><td>611</td><td>100</td><td><span class="badge bg-success">611%</span></td></tr>
+											<tr><td>4</td><td>Sarung Tangan Mekanik</td><td>110</td><td>100</td><td><span class="badge bg-warning">87%</span></td></tr>
+											<tr><td>5</td><td>Sarung Tangan Drum Plant</td><td>202</td><td>250</td><td><span class="badge bg-danger">81%</span></td></tr>
+											<tr><td>6</td><td>Sarung Tangan Kain</td><td>3419</td><td>2500</td><td><span class="badge bg-success">137%</span></td></tr>
+											<tr><td>7</td><td>Sarung Tangan Alumunium</td><td>85</td><td>50</td><td><span class="badge bg-success">170%</span></td></tr>
+											<tr><td>8</td><td>Sarung Tangan Asbes</td><td>33</td><td>40</td><td><span class="badge bg-danger">83%</span></td></tr>
+											<tr><td>9</td><td>Sarung Tangan Tangan</td><td>2141</td><td>500</td><td><span class="badge bg-success">428%</span></td></tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+
+						<!-- Row 2 -->
+						<tr data-bs-toggle="collapse" data-bs-target="#category2">
+							<td><a href="#category2" data-bs-toggle="collapse" aria-expanded="false" aria-controls="category2"><i class="mdi mdi-custom mdi-chevron-right text-black"></i></a></td>
+							<td class="text-start">Pelindung Kepala</td>
+							<td><span class="badge bg-danger">60%</span></td>
+						</tr>
+						<tr class="collapse" id="category2">
+							<td colspan="3" class="p-0">
+								<div class="collapse ps-custom" id="category2">
+									<table class="table table-bordered table-sm mb-0 align-middle nested-table">
+										<thead class="table-dark text-white">
+											<tr>
+												<th>No</th>
+												<th>Nama Material</th>
+												<th>Stock</th>
+												<th>MSL</th>
+												<th>Readiness Stock</th>
+											</tr>
+										</thead>
+										<tbody class="tbody-custom">
+											<tr><td>1</td><td>Helm Safety</td><td>120</td><td>200</td><td><span class="badge bg-danger">60%</span></td></tr>
+											<tr><td>2</td><td>Cap Liner</td><td>90</td><td>90</td><td><span class="badge bg-success">100%</span></td></tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+
+						<!-- Row 3 -->
+						<tr data-bs-toggle="collapse" data-bs-target="#category3">
+							<td><a href="#category3" data-bs-toggle="collapse" aria-expanded="false" aria-controls="category3"><i class="mdi mdi-custom mdi-chevron-right text-black"></i></a></td>
+							<td class="text-start">Test 3</td>
+							<td><span class="badge bg-warning">100%</span></td>
+						</tr>
+						<tr class="collapse" id="category3">
+							<td colspan="3" class="p-0">
+								<div class="collapse ps-custom" id="category3">
+									<table class="table table-bordered table-sm mb-0 align-middle nested-table">
+										<thead class="table-dark text-white">
+											<tr>
+												<th>No</th>
+												<th>Nama Material</th>
+												<th>Stock</th>
+												<th>MSL</th>
+												<th>Readiness Stock</th>
+											</tr>
+										</thead>
+										<tbody class="tbody-custom">
+											<tr><td>1</td><td>Sarung Tangan Kulit</td><td>0</td><td>500</td><td><span class="badge bg-danger">0%</span></td></tr>
+											<tr><td>2</td><td>Sarung Tangan Listrik</td><td>50</td><td>25</td><td><span class="badge bg-success">200%</span></td></tr>
+											<tr><td>3</td><td>Sarung Tangan Welder</td><td>611</td><td>100</td><td><span class="badge bg-success">611%</span></td></tr>
+											<tr><td>4</td><td>Sarung Tangan Mekanik</td><td>110</td><td>100</td><td><span class="badge bg-warning">87%</span></td></tr>
+											<tr><td>5</td><td>Sarung Tangan Drum Plant</td><td>202</td><td>250</td><td><span class="badge bg-danger">81%</span></td></tr>
+											<tr><td>6</td><td>Sarung Tangan Kain</td><td>3419</td><td>2500</td><td><span class="badge bg-success">137%</span></td></tr>
+											<tr><td>7</td><td>Sarung Tangan Alumunium</td><td>85</td><td>50</td><td><span class="badge bg-success">170%</span></td></tr>
+											<tr><td>8</td><td>Sarung Tangan Asbes</td><td>33</td><td>40</td><td><span class="badge bg-danger">83%</span></td></tr>
+											<tr><td>9</td><td>Sarung Tangan Tangan</td><td>2141</td><td>500</td><td><span class="badge bg-success">428%</span></td></tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody> *@

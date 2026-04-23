@@ -1,0 +1,1 @@
+ALTER TABLE transaksi_history ALTER COLUMN status VARCHAR(100);

@@ -1,0 +1,128 @@
+﻿@using Lexa.Helpers
+@{
+	ViewBag.Title = "Kelola Kategori";
+	@* ViewBag.TitleLink = "/stockgudang/tambahkategori"; *@
+	ViewBag.subTitle = "Stock Gudang";
+	ViewBag.subTitleLink = "/stockgudang";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var hasKategoriCreate = User.HasPermissionOrSuper("kategori_barang:create");
+    var hasKategoriDelete = User.HasPermissionOrSuper("kategori_barang:delete");
+    var hasKategoriEdit = User.HasPermissionOrSuper("kategori_barang:update");
+}
+
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+
+	<!-- Init js -->
+	<script src="~/assets/js/app.js"></script>
+	<!-- Required datatable js -->
+	<script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+	<script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+	<!-- Buttons examples -->
+	<script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/jszip/jszip.min.js"></script>
+	<script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+	<script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+	<script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+	<!-- Responsive examples -->
+	<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+	<script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+	<script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<!--Test-->
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<!--Tambah Kategori-->
+	<script src="~/assets/js/pages/kelolakategori.js"></script>
+    <script>
+        window.Permission = {
+            hasKategoriCreate: @(hasKategoriCreate.ToString().ToLower()),
+            hasKategoriDelete: @(hasKategoriDelete.ToString().ToLower()),
+            hasKategoriEdit: @(hasKategoriEdit.ToString().ToLower()),
+        };
+    </script>
+}
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+				    <h1>Kelola Kategori Barang</h1>
+					<div class=" col-6 col-md-2 justify-content-end text-end">
+						<a class="btn btn-info waves-effect waves-light" href="/stockgudang" role="button">
+							<i class="mdi mdi-arrow-left"></i>
+							<span>Kembali</span>
+						</a>
+					</div>
+				</div>
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                </table>
+                <!-- Tambah Kategori Modal-->
+                <div class="modal fade" id="AddKategoriModal" tabindex="-1" aria-labelledby="AddKategoriModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="AddKategoriModalLabel">Tambah Kategori Barang</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="AddKategoriForm">
+                                    <div class="mb-3">
+                                        <label for="AddNamaKategori" class="form-label">Nama Kategori<span class="text-red">*</span></label>
+                                        <input type="text" class="form-control" id="AddNamaKategori" name="AddNamaKategori" placeholder="masukkan nama kategori" required>
+                                        <input type="hidden" id="AddKategoriId">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" form="AddKategoriForm" class="btn btn-info">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edit Kategori Modal -->
+                <div class="modal fade" id="editKategoriModal" tabindex="-1" aria-labelledby="editKategoriModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editKategoriModalLabel">Edit Kategori Barang</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editKategoriForm">
+                                <div class="mb-3">
+                                    <label for="editNamaKategori" class="form-label">Nama Kategori<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" id="editNamaKategori" name="editNamaKategori" placeholder="masukkan nama kategori" required>
+                                    <input type="hidden" id="editKategoriId">
+                                </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" form="editKategoriForm" class="btn btn-info">Simpan Perubahan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>

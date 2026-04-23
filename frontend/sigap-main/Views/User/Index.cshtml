@@ -1,0 +1,222 @@
+﻿@using Lexa.Helpers
+@{
+    ViewBag.title = "Master User";
+    ViewBag.subTitle = "User";
+    ViewBag.subTitleLink = "/user";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var hasUserCreate = User.HasPermissionOrSuper("user:create");
+    var hasUserEdit = User.HasPermissionOrSuper("user:update");
+    var hasUserDelete = User.HasPermissionOrSuper("user:delete");
+    var hasUserRole = User.HasPermissionOrSuper("role:read");
+    var hasUserPermission = User.HasPermissionOrSuper("permission:read");
+}
+
+
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+	<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section scripts {
+    <!-- Init js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/libs/select2/js/select2.min.js"></script>
+    <!-- Users js-->
+    <script src="~/assets/js/pages/user.js"></script>
+
+    <script>
+        window.User = {
+            hasUserCreate: @(hasUserCreate.ToString().ToLower()),
+            hasUserEdit: @(hasUserEdit.ToString().ToLower()),
+            hasUserDelete: @(hasUserDelete.ToString().ToLower()),
+            hasUserRole: @(hasUserRole.ToString().ToLower()),
+            hasUserPermission: @(hasUserPermission.ToString().ToLower()),
+        };
+    </script>
+}
+<div class="row">
+    <div class="col-12">
+        <!--halaman stock gudang-->
+        <div class="card">
+            <div class="card-body">
+                <h1>Master User</h1>
+                @*                 <div id="datatable-buttons_wrapper_custom" class="d-flex flex-wrap">
+                    <a href="/StockGudang/TambahBarang" class="btn btn-success text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-plus-circle-outline"></i>
+                        <span>Tambah</span>
+                    </a>
+                    <a href="#" class="btn btn-danger text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-trash-can-outline"></i>
+                        <span>Hapus</span>
+                    </a>
+                </div>
+ *@
+                @* <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @* <tfoot class="table-dark">
+                        <tr>
+							<th></th>
+							<th></th>
+							<th>ID</th>
+							<th>Barang</th>
+							<th>Status</th>
+							<th>Kategori</th>
+							<th>Jumlah</th>
+							<th>Aksi</th>
+                        </tr>
+                    </tfoot> *@                
+                </table>
+
+                <!-- Add User Modal -->
+                <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content position-static">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUserModalLabel">Tambah User Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="addUserForm">
+                        <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Pekerja<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nama" name="nama" placeholder="masukkan nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bagian_id" class="form-label">Bagian<span class="text-danger">*</span></label>
+                            <select class="form-select" id="bagian_id" name="bagian_id" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role_id" class="form-label">Role<span class="text-danger">*</span></label>
+                            <select class="form-select" id="role_id" name="role_id" required></select>
+                        </div>
+                        @* <div class="mb-3">
+                            <label for="fungsi_id" class="form-label">Bagian</label>
+                            <select class="form-select" id="fungsi_id" name="fungsi_id" required></select>
+                        </div> *@
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="masukkan username" required autocomplete="new-password">
+                        </div>
+                        @* <div class="mb-3"> *@
+                        @*     <label for="password" class="form-label">Password<span class="text-danger">*</span></label> *@
+                        @*     <input type="password" class="form-control" id="password" name="password" placeholder="masukkan password" required autocomplete="new-password"> *@
+                        @*     <label for="password" class="form-label">Password</label> *@
+                        @*     <input type="password" class="form-control" id="password" name="password" placeholder="masukkan password" autocomplete="new-password"> *@
+                        @* </div> *@
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-info">Simpan</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editUserForm">
+                        <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Pekerja<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="namaEdit" name="namaEdit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bagian_id" class="form-label">Bagian<span class="text-danger">*</span></label>
+                            <select class="form-select" id="bagian_idEdit" name="bagian_idEdit" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role_id" class="form-label">Role<span class="text-danger">*</span></label>
+                            <select class="form-select" id="role_idEdit" name="role_idEdit" required></select>
+                        </div>
+                        @* <div class="mb-3">
+                            <label for="fungsi_id" class="form-label">Bagian</label>
+                            <select class="form-select" id="fungsi_id" name="fungsi_id" required></select>
+                        </div> *@
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="usernameEdit" name="usernameEdit" placeholder="masukkan username" required autocomplete="new-password">
+                        </div>
+@*                         <div class="mb-3">
+                            <label for="password" class="form-label">Password<span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="masukkan password" required autocomplete="new-password">
+                            <label for="password" class="form-label">Password Baru</label>
+                            <input type="password" class="form-control" id="passwordEdit" name="passwordEdit" placeholder="masukkan password baru jika dibutuhkan" autocomplete="new-password">
+                        </div> *@
+                        <input type="hidden" id="idEdit" name="idEdit">
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-info">Simpan</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Ubah Password Modal -->
+                <div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editPasswordModalLabel">Ubah Password</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="editPasswordForm">
+                                <div class="modal-body">
+                                    <input type="hidden" id="namaPass" name="namaPass">
+                                    <input type="hidden" id="bagian_idPass" name="bagian_idPass">
+                                    <input type="hidden" id="usernamePass" name="usernamePass">
+                                    <input type="hidden" id="role_idPass" name="role_idPass">
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password Baru<span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control" id="passwordEdit" name="passwordEdit" placeholder="masukkan password baru" autocomplete="new-password" required>
+                                    </div>
+                                    <input type="hidden" id="idPass" name="idPass">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-info">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

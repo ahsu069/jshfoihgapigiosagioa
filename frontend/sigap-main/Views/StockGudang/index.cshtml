@@ -1,0 +1,303 @@
+@using Lexa.Helpers
+@{
+    ViewBag.title = "Master Data";
+    ViewBag.subTitle = "Stock Gudang";
+    ViewBag.subTitleLink = "/stockgudang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasItemCreate = User.HasPermissionOrSuper("barang:create");
+    var hasItemEdit = User.HasPermissionOrSuper("barang:update");
+    var hasItemRead = User.HasPermissionOrSuper("barang:read");
+    var hasItemDelete = User.HasPermissionOrSuper("barang:delete");
+    var hasItemKategori = User.HasPermissionOrSuper("kategori_barang:read");
+
+}
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+}
+@section scripts {
+    <!-- Init js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/libs/select2/js/select2.min.js"></script>
+    <!-- Stock Gudang js-->
+    <script src="~/assets/js/pages/stock-gudang.js"></script>
+    <script>
+        window.User = {
+            hasItemCreate: @(hasItemCreate.ToString().ToLower()),
+            hasItemRead: @(hasItemRead.ToString().ToLower()),
+            hasItemEdit: @(hasItemEdit.ToString().ToLower()),
+            hasItemDelete: @(hasItemDelete.ToString().ToLower()),
+            hasItemKategori: @(hasItemKategori.ToString().ToLower()),
+        };
+    </script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <!--halaman stock gudang-->
+        <div class="card">
+            <div class="card-body">
+                <h1>Master Stock Gudang</h1>
+@*                 <div id="datatable-buttons_wrapper_custom" class="d-flex flex-wrap">
+                    <a href="/StockGudang/TambahBarang" class="btn btn-success text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-plus-circle-outline"></i>
+                        <span>Tambah</span>
+                    </a>
+                    <a href="#" class="btn btn-danger text-white mb-2 me-2 mb-xl-0">
+                        <i class="mdi mdi-trash-can-outline"></i>
+                        <span>Hapus</span>
+                    </a>
+                    <a href="/transaksibarang/pemasukkanbarang" class="btn btn-success text-white mb-2 mb-xl-0">
+                        <i class="mdi mdi-file-plus-outline"></i>
+                        <span>Pemasukan</span>
+                    </a>
+                </div>
+ *@
+                @* <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                @* <tfoot class="table-dark">
+                        <tr>
+							<th></th>
+							<th></th>
+							<th>ID</th>
+							<th>Barang</th>
+							<th>Status</th>
+							<th>Kategori</th>
+							<th>Jumlah</th>
+							<th>Aksi</th>
+                        </tr>
+                    </tfoot> *@                
+                </table>
+
+                <!-- Modal: Tambah Barang -->
+                <div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="modalTambahBarangLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTambahBarangLabel">Tambah Barang</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form id="formTambahBarang" enctype="multipart/form-data">
+                            <div class="modal-body">
+                            <div class="row g-3">
+                                
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Nama Barang<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nama_barang" placeholder="masukkan nama barang" required>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Satuan<span class="text-danger">*</span></label>
+                                <select class="form-control" name="satuanbar_id" required>
+                                    @* <option value="">pilih satuan</option> *@
+                                </select>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Kategori<span class="text-danger">*</span></label>
+                                <select class="form-control " name="kategoribar_id" required>
+                                    @* <option value="">pilih kategori</option> *@
+                                </select>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Jumlah<span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="jumlah_barang" min="0" placeholder="masukkan jumlah barang" required>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">MSL<span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="msl_barang" min="0" placeholder="masukkan msl barang" required>
+                                </div>
+
+                                @* <div class="col-md-6">
+                                <div class="col-md-12">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-control" name="status_bar" placeholder="masukkan status barang">
+                                </div> *@
+
+                                <div class="col-12">
+                                @* <label class="form-label">Gambar<span class="text-danger">*</span></label> *@
+                                <label class="form-label">Gambar</label>
+                                @* <input type="file" class="form-control" name="link_gambar_bar" accept="image/*" required> *@
+                                <input type="file" class="form-control" name="link_gambar_bar" accept="image/*">
+                                <img id="preview_gambar" class="mt-2 rounded shadow-sm d-none" width="120" alt="Preview">
+                                </div>
+
+                                <input type="hidden" name="is_deleted" value="false">
+                                <input type="hidden" id="idEdit" name="idEdit">
+
+                            </div>
+                            </div>
+
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-info">Simpan</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal: Edit Barang -->
+                <div class="modal fade" id="modalEditBarang" tabindex="-1" aria-labelledby="modalEditBarangLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalEditBarangLabel">Edit Barang</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form id="formEditBarang" enctype="multipart/form-data">
+                            <div class="modal-body">
+                            <div class="row g-3">
+                                
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Nama Barang<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nama_barang_edit" placeholder="masukkan nama barang" required>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Satuan<span class="text-danger">*</span></label>
+                                <select class="form-control" name="satuanbar_id_edit" required>
+                                    @* <option value="">pilih satuan</option> *@
+                                </select>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Kategori<span class="text-danger">*</span></label>
+                                <select class="form-control" name="kategoribar_id_edit" required>
+                                    @* <option value="">pilih kategori</option> *@
+                                </select>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">Jumlah<span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="jumlah_barang_edit" min="0" placeholder="masukkan jumlah barang" required>
+                                </div>
+
+                                @* <div class="col-md-6"> *@
+                                <div class="col-md-12">
+                                <label class="form-label">MSL<span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="msl_barang_edit" min="0" placeholder="masukkan msl barang" required>
+                                </div>
+
+                                @* <div class="col-md-6">
+                                <div class="col-md-12">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-control" name="status_bar_edit" placeholder="masukkan status barang">
+                                </div>*@
+
+                                <div class="col-12">
+                                @* <label class="form-label">Gambar<span class="text-danger">*</span></label> *@
+                                <label class="form-label">Gambar</label>
+                                @* <input type="file" class="form-control" name="link_gambar_bar" accept="image/*" required> *@
+                                <input type="file" class="form-control" name="link_gambar_bar_edit" accept="image/*">
+                                <img id="preview_gambar_edit" class="mt-2 rounded shadow-sm d-none" width="120" alt="Preview">
+                                </div>
+
+                                <input type="hidden" name="is_deleted" value="false">
+
+                            </div>
+                            </div>
+
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-info">Simpan</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-labelledby="itemDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 16px; overflow: hidden;">
+                            <div class="modal-body p-0">
+                                <div class="card w-100 m-0" style="border: 1px solid black; border-radius: 16px;">
+                                    <div class="card-header d-flex justify-content-center position-relative"
+                                        style="background-color: #ffffff; border-radius: 16px;">
+                                        <img class="card-img-top-custom" src="/assets/images/dummy.png"
+                                            alt="Gambar Barang" style="max-height: 250px; object-fit: contain;" />
+                                        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="card-body text-white text-center p-0"
+                                        style="background-color: #2b3a4a; border-radius: 0px 0px 16px 16px; border: 1px solid white;">
+                                        
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0"><strong class="nama-barang">-</strong></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Kategori: <span class="kategori-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Satuan: <span class="satuan-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Stok: <span class="badge bg-info stok-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Booked: <span class="badge bg-info booked-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Jumlah: <span class="badge bg-info jumlah-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Minimum Stock Level: <span class="badge bg-info msl-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <h5 class="mb-0">Status: <span class="badge bg-success status-barang">-</span></h5>
+                                        </div>
+                                        <div class="p-2 d-flex align-items-center justify-content-center border-top border-white" style="height: 48px;">
+                                            <button type="button" class="btn btn-info" data-bs-dismiss="modal" aria-label="Close">Tutup</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

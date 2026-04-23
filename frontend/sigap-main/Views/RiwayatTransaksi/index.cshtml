@@ -1,0 +1,367 @@
+﻿@using Lexa.Helpers
+@{
+    ViewBag.Title = "Dashboard Riwayat Transaksi";
+    ViewBag.TitleLink = "/riwayattransaksi";
+    ViewBag.subTitle = "Riwayat Transaksi";
+    ViewBag.subTitleLink = "/riwayattransaksi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var userId = @User.FindFirst("UserId")?.Value;
+    var hasRiwayatStock = User.HasPermissionOrSuper("transaksi:riwayat_stock:read");
+}
+
+@section AddToHead {
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/js/pages/riwayat-transaksi.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <script>
+        window.transaksi = {
+            userId: '@userId',
+            hasRiwayatStock: @(hasRiwayatStock.ToString().ToLower()),
+        };
+    </script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Riwayat Transaksi</h1>
+                @* <div class="col-xl-6 ms-auto">
+                    <div class="card mb-0 border-1 border-dark" style="box-shadow: none !important">
+                        <div class="card-body p-2">
+                        <div class="row align-items-center justify-content-between g-2">
+                            <!-- Label -->
+                            <div class="col-md-2 ps-3">
+                                <label class="form-label mb-0">Filter :</label>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="col-md-10">
+                                <div class="d-flex align-items-center">
+
+                                    <!-- Datepicker Tanggal Awal -->
+                                    <div class="input-group date-input-group">
+                                        <input type="text" id="tanggal_awal" class="form-control" placeholder="Tanggal Awal" autocomplete="off">
+                                        <span class="input-group-text">
+                                            <i id="icon-awal-calendar" class="mdi mdi-calendar"></i>
+                                            <i id="icon-awal-clear" class="mdi mdi-close text-muted" style="cursor:pointer; display:none;"></i>
+                                        </span>
+                                    </div>
+
+                                    <span class="mx-2">-</span>
+
+                                    <!-- Datepicker Tanggal Akhir -->
+                                    <div class="input-group date-input-group">
+                                        <input type="text" id="tanggal_akhir" class="form-control" placeholder="Tanggal Akhir" autocomplete="off">
+                                        <span class="input-group-text">
+                                            <i id="icon-akhir-calendar" class="mdi mdi-calendar"></i>
+                                            <i id="icon-akhir-clear" class="mdi mdi-close text-muted" style="cursor:pointer; display:none;"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div> *@
+                @* <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <button type="button" class="btn btn-success"><a href="/RiwayatTransaksi/RiwayatStock" class="text-white mdi mdi-file-plus-outline">Riwayat Stock</a></button>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Search..." style="width: 200px;">                   
+                </div
+                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns"> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @*  <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama Pekerja</th>
+                                <th>No. Pegawai</th>
+                                <th>Perusahaan</th>
+                                <th>Bagian</th>
+                                <th>Tanggal</th>
+                                <th>In/Ex</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>SuperUser_1</td>
+                                <td>2321212</td>
+                                <td>Pekerjaan</td>
+                                <td>MA II</td>
+                                <td>10/12/23</td>
+                                <td>EX</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td> <a href="~/RiwayatTransaksi/DetailRiwayatTransaksi" class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </a>
+                            <tr>
+                                <td>2</td>
+                                <td>Evan</td>
+                                <td>1344345</td>
+                                <td>Pekerjaan</td>
+                                <td>HSSE</td>
+                                <td>13/12/23</td>
+                                <td>IN</td>
+                                <td><span class="badge bg-danger">Rejected</span></td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>                                   
+                                </td>
+                            </tr>
+                            <!-- Additional Rows as Needed -->
+                        </tbody> *@
+                    </table>
+                <div class="modal fade bd-detail-modal-xl" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                @* <h4>Detail Transaksi</h4> *@
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="card-body">
+                                @* <div class="card-header"> *@
+                                <div class="card-header" style="background-color: white;">
+                                    <h4>Data Transaksi</h4>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Kategori</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="kategori-transaksi"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>No. MIV</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="no-miv-safety"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Tanggal</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="tanggal"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Nama Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="namapekerja"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Jenis Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="jenispekerja"></p>
+                                                </div>
+                                            </div>
+                                            @* <p id="no-miv-safety"></p>
+                                            <p id="tanggal"></p>
+                                            <p id="namapekerja"></p>
+                                            <p id="jenispekerja"></p> *@
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <div id="id-finger-row" class="row">
+                                                <div class="col-3">
+                                                    <p>ID Finger</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="id-finger"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Bagian Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="bagian"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p>Fungsi Pekerja</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="fungsi"></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <p id="labelstatustransaksi" class="mb-1">Status</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <div class="row">
+                                                        <p id="statustransaksi" class="mb-1"></p>
+                                                    </div>
+                                                    <div id="keterangan" class="alert alert-warning p-2 px-3" role="alert"></div>
+                                                    @* <div class="row">
+                                                        <p id="keterangan"></p>
+                                                    </div> *@
+                                                </div>
+                                            </div>
+                                            <div id="filependukung-row" class="row">
+                                                <div class="col-3">
+                                                    <p>File Pendukung</p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p id="filependukung"></p>
+                                                </div>
+                                            </div>
+                                            @* <p id="id-finger"></p>
+                                            <p id="fungsi"></p>
+                                            <p id="statustransaksi"></p>
+                                            <p id="filependukung"></p> *@
+                                        </div>
+                                    </div>
+                                    @* <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="no-miv-safety"></p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="id-finger"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="tanggal"></p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="fungsi"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="namapekerja"></p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="statustransaksi"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="jenispekerja"></p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p id="filependukung"></p>
+                                        </div>
+                                    </div> *@
+                                    <div id="penanggung-jawab">
+                                        <h4 class="mt-4">Penanggung Jawab</h4>
+                                        <div class="row">
+                                            <div class="col-xl-6 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <p>Nama Pekerja</p>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <p id="namapekerjaapprove"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <p>Fungsi Pekerja</p>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <p id="fungsipekerjaapprove"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @* <p id="namapekerjaapprove"></p>
+                                            <p id="fungsipekerjaapprove"></p> *@
+                                        </div>
+                                    </div>
+                                    @* <div class="row">
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p class="fw-bold"> Nomor Pegawai : </p>
+                                            <p> Nomor Pegawai : XXXXXXXXXX</p>
+                                        </div>
+                                        <div class="col-xl-6 col-sm-12">
+                                            <p class="fw-bold"> File Pendukung : </p>
+                                            <p> File Pendukung : <a href="#">FilePendukung.pdf</a></p>
+                                        </div>
+                                    </div> *@
+                                    @* <hr style="border: 10px solid #2B3A4A; opacity: 0.9" /> *@
+                                    <hr style="border: 10px solid #2B3A4A; opacity: 1" />
+                                    <div class="row mt-4">
+                                        <div class="table-responsive mb-0 riwayat-stock" data-pattern="priority-columns">
+                                            @* <table class="table table-bordered border border-1 border-black"> *@
+                                            <table class="table table-bordered">
+                                                <thead class="table-dark text-center align-middle">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Nama Barang</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Satuan</th>
+                                                        @* <th>Keterangan</th> *@
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @* <tr>
+                                                        <td>1</td>
+                                                        <td>Sarung Tangan</td>
+                                                        <td>33</td>
+                                                        <td>pcs</td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td>Sepatu Boots</td>
+                                                        <td>20</td>
+                                                        <td>pcs</td>
+                                                        <td>-</td>
+                                                    </tr> *@
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

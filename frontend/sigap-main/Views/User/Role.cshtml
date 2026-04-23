@@ -1,0 +1,275 @@
+﻿@using Lexa.Helpers
+@{
+    ViewBag.title = "Kelola Role";
+    ViewBag.subTitle = " User";
+    ViewBag.subTitleLink = "/user";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasRoleCreate = User.HasPermissionOrSuper("role:create");
+    var hasRoleEdit = User.HasPermissionOrSuper("role:update");
+    var hasRoleDelete = User.HasPermissionOrSuper("role:delete");
+}
+@section AddToHead {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable -->
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins datatable -->
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+@section scripts {
+    <!-- Init js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Users js-->
+    <script src="~/assets/js/pages/role.js"></script>
+    <script>
+        window.Role = {
+            hasRoleCreate: @(hasRoleCreate.ToString().ToLower()),
+            hasRoleEdit: @(hasRoleEdit.ToString().ToLower()),
+            hasRoleDelete: @(hasRoleDelete.ToString().ToLower()),
+        };
+    </script>
+}
+<div class="row">
+    <div class="col-12">
+        <!--halaman Rolemanagement-->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1>Kelola Role</h1>
+                    <div class=" col-6 col-md-2 justify-content-end text-end">
+                        <a class="btn btn-info waves-effect waves-light" href="/user" role="button">
+                            <i class="mdi mdi-arrow-left"></i>
+                            <span>Kembali</span>
+                        </a>
+                    </div>
+                </div>
+                @* <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap"> *@
+                <table id="datatable-buttons2" class="table table-bordered dt-responsive nowrap">
+                    @* <tfoot class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Barang</th>
+                                <th>Status</th>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </tfoot> *@
+                </table>
+                <!-- Modal: Tambah Barang -->
+                <div class="modal fade" id="modalTambahRoleJabatan" tabindex="-1" aria-labelledby="modalTambahRoleJabatanLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTambahRoleJabatan">Tambah Role</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <form id="formTambahRole">
+                                <div class="modal-body">
+                                    <div class="row g-3">
+
+                                        @* <div class="col-md-6"> *@
+                                        <div class="col-md-12">
+                                            <label class="form-label">Kode Role<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="roleCode" name="code" placeholder="masukkan kode role" required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Nama Role<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="roleName" name="name" placeholder="masukkan nama role" required>
+                                        </div>
+                                        @* <div class="col-md-6"> *@
+                                        <div class="col-md-12">
+                                            <label class="form-label">Deskripsi</label>
+                                            <textarea id="roleDescription" name="description" class="form-control" maxlength="225" rows="3" placeholder="masukkan deskripsi role"></textarea>
+                                        </div>
+
+                                        <input id="roleHidden" type="hidden" name="is_active" value="true">
+
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-info">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Edit Role-->
+                <div class="modal fade" id="modalEditRoleJabatan" tabindex="-1" aria-labelledby="modalEditRoleJabatanLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalEditBarangLabel">Edit Role</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="formEditRole">
+                                <div class="modal-body">
+                                    <div class="row g-3">
+
+                                        @* <div class="col-md-6"> *@
+                                        <div class="col-md-12">
+                                            <label class="form-label">kode role<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="roleCodeEdit" name="code_edit" placeholder="masukkan kode role" required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">nama role<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="roleNameEdit" name="name_edit" placeholder="masukkan nama role" required>
+                                        </div>
+                                        @* <div class="col-md-6"> *@
+                                        <div class="col-md-12">
+                                            <label class="form-label">Deskripsi</label>
+                                            <textarea id="roleDescriptionEdit" name="deksripsi_edit" class="form-control" maxlength="225" rows="3" placeholder="masukkan deskripsi role"></textarea>
+                                        </div>
+
+                                        <input id="roleHiddenEdit" type="hidden" name="is_active" value="true">
+                                        <input id="roleEditId" type="hidden" />
+
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-info">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @*   <div class="table-responsive mb-0">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" /></th>
+                                <th>Barang</th>
+                                <th>Status</th>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Sarung Tangan Kulit</td>
+                                <td>99%</td>
+                                <td>Sarung Tangan</td>
+                                <td>222</td>
+                                <td>
+                                    <a href="~/StockGudang/DetailBarang" class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </a>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Tissue Majun Roll</td>
+                                <td>-25%</td>
+                                <td>Helm</td>
+                                <td>42</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Tissue Majun Roll</td>
+                                <td>25%</td>
+                                <td>Helm</td>
+                                <td>42</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Lampu Exit</td>
+                                <td>58%</td>
+                                <td>Maintenance Equipment</td>
+                                <td>13</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Dust Mask N95</td>
+                                <td>12%</td>
+                                <td>Pelindung Muka</td>
+                                <td>45</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>Safety Helmet Putih</td>
+                                <td>200%</td>
+                                <td>Helm</td>
+                                <td>33</td>
+                                <td>
+                                    <button class="btn btn-detail">
+                                        <i class="mdi mdi-file-find-outline"></i> Detail
+                                    </button>
+                                    <button class="btn btn-edit">
+                                        <i class="mdi mdi-pencil-outline"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Additional Rows... -->
+                        </tbody>
+                    </table> *@
+            </div>
+        </div>
+    </div>
+</div>

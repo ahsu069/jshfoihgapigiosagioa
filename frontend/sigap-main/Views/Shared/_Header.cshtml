@@ -1,0 +1,501 @@
+﻿@using Lexa.Helpers
+@{
+    var gambarUser = User.FindFirst("GambarUser")?.Value;
+    var userId = User.FindFirst("UserId")?.Value;
+    var userNama = User.FindFirst("UserNama")?.Value;
+}
+<!--Top Menu-->
+<header id="page-topbar">
+    <div class="navbar-header">
+        <div class="d-flex">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <a href="/" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="~/assets/images/PertaminaLogo.png" alt="" height="45">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="~/assets/images/Pertamina.png" alt="" height="70">
+                    </span>
+                </a>
+
+                <a href="/" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="~/assets/images/PertaminaLogo.png" alt="" height="45">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="~/assets/images/Pertamina.png" alt="" height="70">
+                    </span>
+                </a>
+            </div>
+
+            <button type="button"
+            class="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn">
+                <i class="mdi mdi-menu"></i>
+            </button>
+
+        </div>
+
+        <div class="d-flex">
+            <a class="logo logo-dark">
+                <span class="logo-topbar-sm">
+                    <img src="~/assets/images/SigapKecil.png" alt="" height="65">
+                </span>
+                <span class="logo-topbar-lg">
+                    <img src="~/assets/images/Sigap.png" alt="" height="70">
+                </span>
+            </a>
+
+            <a class="logo logo-light">
+                <span class="logo-topbar-sm">
+                    <img src="~/assets/images/SigapKecil.png" alt="" height="65">
+                </span>
+                <span class="logo-topbar-lg">
+                    <img src="~/assets/images/Sigap.png" alt="" height="70">
+                </span>
+            </a>
+        </div>
+
+        <div class="d-flex">
+
+            <div class="dropdown d-none d-lg-inline-block">
+                <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
+                    <i class="mdi mdi-fullscreen font-size-24"></i>
+                </button>
+            </div>
+            <!--Notifikasi-->
+            <div class="dropdown d-inline-block ms-1">
+                <button type="button" class="btn header-item noti-icon waves-effect"
+                id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                    <i class="ti-bell"></i>
+                    <span class="badge text-bg-danger rounded-pill">3</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+                aria-labelledby="page-header-notifications-dropdown">
+                    <div class="p-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="m-0"> Notifications (258) </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-simplebar style="max-height: 230px;">
+                        <a href="javascript:void(0);" class="text-reset notification-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-xs">
+                                        <span class="avatar-title border-success rounded-circle ">
+                                            <i class="mdi mdi-cart-outline"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Your order is placed</h6>
+                                    <div class="text-muted">
+                                        <p class="mb-1">If several languages coalesce the grammar</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="javascript:void(0);" class="text-reset notification-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-xs">
+                                        <span class="avatar-title border-warning rounded-circle ">
+                                            <i class="mdi mdi-message"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">New Message received</h6>
+                                    <div class="text-muted">
+                                        <p class="mb-1">You have 87 unread messages</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="javascript:void(0);" class="text-reset notification-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-xs">
+                                        <span class="avatar-title border-info rounded-circle ">
+                                            <i class="mdi mdi-glass-cocktail"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Your item is shipped</h6>
+                                    <div class="text-muted">
+                                        <p class="mb-1">It is a long established fact that a reader will</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="javascript:void(0);" class="text-reset notification-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-xs">
+                                        <span class="avatar-title border-primary rounded-circle ">
+                                            <i class="mdi mdi-cart-outline"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Your order is placed</h6>
+                                    <div class="text-muted">
+                                        <p class="mb-1">Dummy text of the printing and typesetting industry.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="javascript:void(0);" class="text-reset notification-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-xs">
+                                        <span class="avatar-title border-warning rounded-circle ">
+                                            <i class="mdi mdi-message"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">New Message received</h6>
+                                    <div class="text-muted">
+                                        <p class="mb-1">You have 87 unread messages</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="p-2 border-top">
+                        <a class="btn btn-sm btn-link font-size-14 w-100 text-center" href="~/Notifikasi/index">
+                            View all
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="dropdown d-inline-block">
+                <button type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
+                    <i class="mdi mdi-spin mdi-cog"></i>
+                </button>
+            </div>*@
+
+        </div>
+    </div>
+</header>
+<!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu">
+
+    <div data-simplebar class="h-100">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu list-unstyled" id="side-menu">
+                @* profile  *@
+                <li class="menu-title text-white">Selamat Datang,</li>
+                <li>
+                    <a href="javascript: void(0);" class="no-background d-flex align-items-center justify-content-between header-profile-user-sidemenu-wrap">
+                        <div class="d-flex align-items-center">
+                            @* <img class="rounded-circle header-profile-user-sidemenu me-2" src="~/assets/images/users/user-4.jpg" alt="Header Avatar"> *@
+
+                            @if (!string.IsNullOrEmpty(gambarUser))
+                            {
+                                <img class="rounded-circle header-profile-user-sidemenu me-2"
+                                src="@gambarUser"
+                                alt="Header Avatar"/>
+                            }
+                            else
+                            {
+                                <img class="rounded-circle header-profile-user-sidemenu me-2"
+                                src="~/assets/images/pngwing.png"
+                                alt="Header Avatar"/>
+
+                                @* <div class="rounded-circle header-profile-user-sidemenu me-2"></div> *@
+                            }
+
+                            @* <span class="text-white text-break">Super Admin</span> *@
+                            <span class="text-white text-break">@User.FindFirst("UserNama")?.Value</span>
+                        </div>
+                        <i class="arrow-user text-center"></i>
+                    </a>
+                    <ul class="sub-menu-user" aria-expanded="true">
+                        @* <li class="text text-white text-break text-wrap">Role:</li> *@
+                        <li class="text text-white text-break text-wrap">@User.FindFirst("RoleNama")?.Value</li>
+                        @* <li class="text text-white text-break text-wrap">Bagian / Fungsi:</li> *@
+                        <li class="text text-white text-break text-wrap">@User.FindFirst("BagianNama")?.Value / @User.FindFirst("FungsiNama")?.Value</li>
+                        @* <li class="text-white text-break">Officer Safety / HSSE</li>
+                        <li class="text-white text-break">KPI43778</li>
+                        <li class="text-white text-break">PT KPI REFINERY Unit IV</li>
+                        <li><a href="/users/editprofile"> <i class="mdi mdi-account-edit-outline"></i>Edit Profile</a></li>
+                        <li><a href="/users/ubahpassword"><i class="mdi mdi-account-key-outline"></i>Ubah Password</a></li> *@
+                        @* <li>
+                            <a href="/users/editprofile" class="waves-effect">
+                                <i class="mdi mdi-account-edit"></i>
+                                <span>Edit Profile</span>
+                            </a>
+                        </li> *@
+                        @* <li>
+                            <a href="/users/ubahpassword" class="waves-effect">
+                                <i class="mdi mdi-key"></i>
+                                <span>Ubah Password</span>
+                            </a>
+                        </li> *@
+                        <li>
+                            <a href="javascript:void(0);" class="waves-effect" data-bs-toggle="modal" data-bs-target="#ubahPasswordModal">
+                                <i class="mdi mdi-key"></i>
+                                <span>Ubah Password</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </li>
+
+                <hr class="hr-sidemenu" />
+
+                @* batas profile *@
+                <li>
+                    <a href="/" class="waves-effect">
+                        <i class="mdi mdi-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                @if (User.HasPermissionOrSuper("user:read")
+                    || User.HasPermissionOrSuper("role:read")
+                    || User.HasPermissionOrSuper("permission:read"))
+                { 
+                    <li>
+                        @* <a href="/user" class="waves-effect">
+                            <i class="mdi mdi-account-multiple"></i>
+                            <span>User</span>
+                        </a> *@
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="mdi mdi-account-multiple"></i>
+                            <span>User</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            @if (User.HasPermissionOrSuper("user:read"))
+                            {
+                                <li><a href="/user">Master User</a></li>
+                            }
+                            @if (User.HasPermissionOrSuper("role:read"))
+                            {
+                                <li><a href="/user/role">Kelola Role</a></li>
+                            }
+                            @if (User.HasPermissionOrSuper("permission:read"))
+                            {
+                                <li><a href="/user/permission">Kelola Permission</a></li>
+                            }
+                        </ul>
+                    </li>
+                }
+                @if (User.HasPermissionOrSuper("barang:read") 
+                    || User.HasPermissionOrSuper("kategori_barang:read"))
+                {
+                    <li>
+                        @* <a href="/stockgudang">
+                            <i class="mdi mdi-table-large"></i>
+                            <span> Stock Gudang </span>
+                        </a> *@
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="mdi mdi-table-large"></i>
+                            <span> Stock Gudang </span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            @if (User.HasPermissionOrSuper("barang:read"))
+                            {
+                                <li><a href="/stockgudang">Master Stock Gudang</a></li>
+                            }
+                            @if (User.HasPermissionOrSuper("kategori_barang:read"))
+                            {
+                                <li><a href="/stockgudang/kelolakategori">Kelola Kategori</a></li>
+                            }
+                        </ul>
+                    </li>
+                }
+                @if (User.HasPermissionOrSuper("transaksi:pemasukan")
+                    || User.HasPermissionOrSuper("transaksi:permintaan"))
+                { 
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="mdi mdi-basket"></i>
+                            <span class="text-break"> Transaksi Barang </span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            @if (User.HasPermissionOrSuper("transaksi:pemasukan"))
+                            {   
+                                <li><a href="/transaksibarang/pemasukanbarang">Pemasukan Barang</a></li>
+                            } 
+                            @if (User.HasPermissionOrSuper("transaksi:permintaan"))
+                            {   
+                                <li><a href="/transaksibarang/permintaanbarang">Permintaan Barang</a></li>
+                            } 
+                        </ul>
+                    </li>
+                }
+                @if (User.HasPermissionOrSuper("transaksi:riwayat_transaksi:read")
+                    || User.HasPermissionOrSuper("transaksi:riwayat_stock:read"))
+                {
+                    @* <li>
+                        <a href="/riwayattransaksi">
+                            <i class="mdi mdi-file-document"></i>
+                            <span> Riwayat Transaksi </span>
+                        </a>
+                    </li> *@
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="mdi mdi-file-document"></i>
+                            <span class="text-break"> Riwayat Transaksi </span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            @if (User.HasPermissionOrSuper("transaksi:riwayat_transaksi:read"))
+                            {
+                                <li><a href="/riwayattransaksi">Riwayat Transaksi</a></li>
+                            }
+                            @if (User.HasPermissionOrSuper("transaksi:riwayat_stock:read"))
+                            {
+                                <li><a href="/riwayattransaksi/riwayatstock">Riwayat Stock</a></li>
+                            }
+                        </ul>
+                    </li>
+                }
+                @if (User.HasPermissionOrSuper("approval:read"))
+                {
+                    <li>
+                        <a href="/approval">
+                            <i class="mdi mdi-file-check"></i>
+                            <span> Approval permintaan </span>
+                        </a>
+                    </li>
+                }
+                <li>
+                @*  <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-file-check"></i>
+                        <span class="text-break"> Laporan </span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="/laporan">Laporan
+                                
+                            </a>
+                        </li>
+                        <li><a href="/laporan/RiwayatStockLaporan">Laporan Stock</a></li>
+                        <li><a href="/laporan/RiwayatTransaksiLaporan">Laporan Transaksi</a></li>
+                    </ul>
+                </li> *@
+                <li>
+                @* <li>
+                    <a href="/Logout">
+                        <i class="mdi mdi-logout"></i>
+                        <span> Logout </span>
+                    </a>
+                </li> *@
+                <li>
+                    <form id="logoutForm" method="post" asp-controller="auth" asp-action="logout" style="display:inline;">
+                        <a href="/logout" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
+                            <i class="mdi mdi-logout"></i>
+                            <span> Logout </span>
+                        </a>
+                    </form>
+                </li>
+                @* <li>
+                    <form asp-controller="Auth" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li> *@
+                @* <li>
+                    <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                        <button type="submit" class="nav-link btn btn-link p-0" style="border:none; background:none;">
+                            <i class="mdi mdi-logout"></i>
+                            <span> Logout </span>
+                        </button>
+                    </form>
+                </li> *@
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>
+<!-- Left Sidebar End -->
+
+<!-- Modal: Ubah Password -->
+<div class="modal fade" id="ubahPasswordModal" tabindex="-1" aria-labelledby="ubahPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title" id="ubahPasswordLabel">Ubah Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <form id="formUbahPassword">
+        <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrependOldPassword"><i class="mdi mdi-lock"></i></span>
+                        <div class="flex-grow-1 position-relative">
+                            <input name="oldPassword" type="password" class="form-control" id="oldPassword" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" aria-describedby="inputGroupPrependOldPassword oldPasswordFeedback" placeholder="Masukkan password lama" required>
+                            <button type="button"
+                                    class="btn btn-sm position-absolute top-50 end-0 translate-middle-y toggle-password"
+                                    aria-label="Toggle password visibility"
+                                    style="background: transparent; border: none; padding: 0.25rem 0.5rem;"
+                                    data-target="oldPassword">
+                                <i class="mdi mdi-eye-off" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div id="oldPasswordFeedback" class="invalid-feedback d-none">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrependNewPassword"><i class="mdi mdi-lock"></i></span>
+                        <div class="flex-grow-1 position-relative">
+                            <input name="newPassword" type="password" class="form-control" id="newPassword" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" aria-describedby="inputGroupPrependNewPassword newPasswordFeedback" placeholder="Masukkan password baru" required>
+                            <button type="button"
+                                    class="btn btn-sm position-absolute top-50 end-0 translate-middle-y toggle-password"
+                                    aria-label="Toggle password visibility"
+                                    style="background: transparent; border: none; padding: 0.25rem 0.5rem;"
+                                    data-target="newPassword">
+                                <i class="mdi mdi-eye-off" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div id="newPasswordFeedback" class="invalid-feedback d-none">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrependConfirmPassword"><i class="mdi mdi-lock"></i></span>
+                        <div class="flex-grow-1 position-relative">
+                            <input name="confirmPassword" type="password" class="form-control" id="confirmPassword" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" aria-describedby="inputGroupPrependConfirmPassword confirmPasswordFeedback" placeholder="Ulangi password baru" required>
+                            <button type="button"
+                                    class="btn btn-sm position-absolute top-50 end-0 translate-middle-y toggle-password"
+                                    aria-label="Toggle password visibility"
+                                    style="background: transparent; border: none; padding: 0.25rem 0.5rem;"
+                                    data-target="confirmPassword">
+                                <i class="mdi mdi-eye-off" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div id="confirmPasswordFeedback" class="invalid-feedback d-none">
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="userId" value="@userId" />
+                <input type="hidden" id="userNama" value="@userNama" />
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-info" id="btnSavePassword">Simpan</button>
+        </div>
+        </form>
+        
+        </div>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+﻿@using Lexa.Helpers
+@{
+    ViewBag.Title = "Riwayat Stock";
+    ViewBag.TitleLink = "/riwayattransaksi/riwayatstock";
+    ViewBag.subTitle = "Riwayat Transaksi";
+    ViewBag.subTitleLink = "/riwayattransaksi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasRiwayatTransaksi = User.HasPermissionOrSuper("transaksi:riwayat_transaksi:read");
+}
+
+@section AddToHead {
+    <link href="~/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+	<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <!-- materialdesign icon js-->
+    <script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/libs/datatables.net/js/dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+    <script src="~/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+	<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/js/pages/riwayat-stock.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <script>
+        window.Permission = {
+            hasRiwayatTransaksi: @(hasRiwayatTransaksi.ToString().ToLower()),
+        };
+    </script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1>Riwayat Stock</h1>
+                @*  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <button type="button" class="btn btn-success"><a href="/RiwayatTransaksi" class="text-white mdi mdi-file-plus-outline">Riwayat Transaksi</a></button>
+                    </div>
+                    <div>
+                        <div class="input-daterange input-group" id="datepicker4" data-date-format="dd M, yyyy" data-date-autoclose="true" data-provide="datepicker" data-date-container='#datepicker4'>
+                            <input type="text" class="form-control" name="start" placeholder="Start date" />
+                            <input type="text" class="form-control" name="end" placeholder="End date" />
+                        </div>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" placeholder="Search..." />
+                    </div>
+                </div> *@
+                <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap">
+                    @* <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Barang</th>
+                                <th>Kategori</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Jumlah</th>
+                                <th>Stock</th>
+                                <th>Transaksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><img src="path_to_image/sarung_tangan_kulit.jpg" alt="Sarung Tangan Kulit" style="width: 50px;" /> Sarung Tangan Kulit</td>
+                                <td>Sarung Tangan</td>
+                                <td>8/4/2024</td>
+                                <td>Masuk</td>
+                                <td>222</td>
+                                <td>222</td>
+                                <td><button class="btn btn-primary">Detail</button></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><img src="path_to_image/tissue_majun_roll.jpg" alt="Tissue Majun Roll" style="width: 50px;" /> Tissue Majun Roll</td>
+                                <td>Helm</td>
+                                <td>7/4/2024</td>
+                                <td>Keluarnya</td>
+                                <td>42</td>
+                                <td>42</td>
+                                <td><button class="btn btn-primary">Detail</button></td>
+                            </tr>
+                            <!-- Add more rows as per your data -->
+                        </tbody> *@
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

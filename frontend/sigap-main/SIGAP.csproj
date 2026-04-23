@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\images\tester\" />
+    <Folder Include="wwwroot\assets\libs\c3\spec\" />
+    <Folder Include="wwwroot\assets\libs\c3\src\" />
+    <Folder Include="wwwroot\assets\libs\chartist\scss\settings\" />
+    <Folder Include="wwwroot\assets\libs\d3\src\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-autofill-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-autofill\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-buttons-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-buttons\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-keytable-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-keytable\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-responsive-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-responsive\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-select-bs5\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net-select\types\" />
+    <Folder Include="wwwroot\assets\libs\datatables.net\types\" />
+    <Folder Include="wwwroot\assets\libs\flot-charts\examples\" />
+    <Folder Include="wwwroot\assets\libs\flot.curvedlines\examples\" />
+    <Folder Include="wwwroot\assets\libs\flot.curvedlines\tests\" />
+    <Folder Include="wwwroot\assets\libs\gmaps\docs\" />
+    <Folder Include="wwwroot\assets\libs\gmaps\examples\" />
+    <Folder Include="wwwroot\assets\libs\gmaps\test\" />
+    <Folder Include="wwwroot\assets\libs\ion-rangeslider\less\skins\" />
+    <Folder Include="wwwroot\assets\libs\jquery-sparkline\src\" />
+    <Folder Include="wwwroot\assets\libs\jquery.flot.tooltip\examples\" />
+    <Folder Include="wwwroot\assets\libs\jquery.repeater\src\" />
+    <Folder Include="wwwroot\assets\libs\jquery.repeater\test\" />
+    <Folder Include="wwwroot\assets\libs\moment\src\" />
+    <Folder Include="wwwroot\assets\libs\morris.js\examples\" />
+    <Folder Include="wwwroot\assets\libs\morris.js\less\" />
+    <Folder Include="wwwroot\assets\libs\morris.js\lib\" />
+    <Folder Include="wwwroot\assets\libs\morris.js\spec\" />
+    <Folder Include="wwwroot\assets\libs\pdfmake\src\" />
+    <Folder Include="wwwroot\assets\libs\raphael\dev\test\" />
+    <Folder Include="wwwroot\assets\libs\table-edits\src\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
+</Project>

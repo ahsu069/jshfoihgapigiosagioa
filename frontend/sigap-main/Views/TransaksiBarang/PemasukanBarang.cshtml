@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Pemasukan Barang";
+    ViewBag.TitleLink = "/transaksibarang/pemasukanbarang";
+    ViewBag.subTitle = "Transaksi Barang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section AddToHead {
+    <!-- Responsive Table css -->
+    <link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+}
+
+@section scripts {
+    <!-- Init js -->
+    <script src="~/assets/libs/select2/js/select2.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+	<script src="~/assets/js/pages/pemasukan-barang.js"></script>
+	<script src="~/assets/js/app.js"></script>
+}
+<form id="pemasukan-barang-form">
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<h1 class="mb-3">Form Pemasukan Barang</h1>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="NamaPekerja">Nama Pekerja<span class="text-red">*</span></label>
+							<input type="text" name="namapekerja" class="form-control" id="namapekerja" value="@User.FindFirst("UserNama")?.Value" disabled>
+						</div>
+						<div class="form-group mb-3">
+							<label for="BagianPekerja">Bagian / Fungsi<span class="text-red">*</span></label>
+							<input type="text" name="bagianfungsi" class="form-control" id="bagianfungsi" value="@User.FindFirst("BagianNama")?.Value / @User.FindFirst("FungsiNama")?.Value" disabled>
+						</div>
+					</div>
+					@* <div class="col-md-6">
+						<div class="form-group mb-3">
+							<label for="MSL">Nomor Pegawai<span class="text-red">*</span></label>
+							<input type="text" name="MSL" class="form-control " id="nopeg" style="background-color: #EBEBE4;" disabled>
+						</div>
+					</div> *@
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Barang">Barang<span class="text-red">*</span></label>
+							<select id="barang-select" class="form-control select2 d-block">
+								@* <option></option>
+								<optgroup label="TESTER">
+									<option value="1" stok="123" data-img="/assets/images/tester/sarung_tangan_kulit.png">Sarung Tangan Kulit</option>
+									<option value="2" stok="91" data-img="/assets/images/tester/safety_rubber_boots.png">Safety Rubber Boots</option>
+									<option value="3" stok="44" data-img="/assets/images/tester/tissue_majun_roll.png">Tissue Majun Roll</option>
+									<option value="4" stok="34" data-img="/assets/images/tester/lampu_exit.png">Lampu Exit</option>
+									<option value="5" stok="24" data-img="/assets/images/tester/dust_mask_n95.png">Dust Mask N95</option>
+									<option value="6" stok="98" data-img="/assets/images/tester/safety_helmet_putih.png">Safety Helmet Putih</option>
+								</optgroup>
+								<optgroup label="PELINDUNG TANGAN">
+									<option value="STKulit">Sarung Tangan Kulit</option>
+									<option value="STListrik">Sarung Tangan Listrik</option>
+									<option value="STWelder">Sarung Tangan Welder</option>
+									<option value="STMekanik">Sarung Tangan Mekanik</option>
+									<option value="STDrumPlant">Sarung Tangan Drum Plant</option>
+									<option value="STKain">Sarung Tangan Kain</option>
+									<option value="STAlumunium">Sarung Tangan Alumunium</option>
+									<option value="STAsbes">Sarung Tangan Asbes</option>
+									<option value="PenjepitST">Penjepit Sarung Tangan</option>
+								</optgroup>
+								<optgroup label="Pacific Time Zone">
+									<option value="CA">California</option>
+									<option value="NV">Nevada</option>
+									<option value="OR">Oregon</option>
+									<option value="WA">Washington</option>
+								</optgroup> *@
+							</select>
+						</div>
+					</div>
+				</div>
+				<hr style="border: 10px solid #2b3a4a; opacity: 0.9 !important; margin-bottom: 0px" />
+				<div class="card-footer bg-white">
+					<div class="row row-cols-1 row-cols-md-4 row-cols-xxl-6 g-4" id="input-groups-container"></div>
+				</div>
+				<div class="d-flex justify-content-end mt-4">
+					@* <button id="submit-pemasukan-barang" type="submit" class="btn btn-info">Tambahkan Barang</button> *@
+					<button id="submit-pemasukan-barang" type="submit" class="btn btn-info">Tambahkan</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+</form>
