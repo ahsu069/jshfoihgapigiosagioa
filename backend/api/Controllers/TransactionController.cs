@@ -290,17 +290,23 @@ namespace api.Controllers
                 {
                     ApprovalRoleMap? legacy = approvalRoleMaps.FirstOrDefault(x => x.legacy_code == i.ToString());
                     if (legacy == null)
-                        validationRequest.errValidate.Add("approval_legacy" + i.ToString(), new[] { "The field 'approval_legacy' value is not found." });
+                        validationRequest.errValidate.Add("approval_legacy" + i.ToString(), new[] { "The field 'approval_legacy' value is not found!" });
                     else
                     {
-                        UserRole? userLegacy = _context.UserRoles.Include(o => o.SigapUsers).FirstOrDefault(x => x.role_id == legacy.role_id);
+                        UserRole? userLegacy = _context.UserRoles
+                            .FromSqlRaw("SELECT * FROM user_role WHERE role_id = {0}", legacy.role_id)
+                            .FirstOrDefault();
+
                         if (userLegacy == null)
-                            validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found." });
-                        else if(userLegacy.SigapUsers == null)
-                            validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found." });
+                        {
+                            validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found?" });
+                        }
                         else
                         {
-                            UsersCache? usersCache = _context.UsersCaches.FirstOrDefault(o => o.user_id == userLegacy.user_id.ToString());
+                            string targetUserId = userLegacy.user_id.ToString().ToLower();
+                            UsersCache? usersCache = _context.UsersCaches
+                                .FirstOrDefault(o => o.user_id.ToLower() == targetUserId);
+
                             if (usersCache == null)
                                 validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found." });
                             else

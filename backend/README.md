@@ -8,7 +8,7 @@
 `docker build --no-cache -t cognifi.sigap.dev/api .`
 
 3. Run container:
-`docker run -d -p 5000:80 -e ConnectionStrings__DefaultConnection="Server=host.docker.internal,port;Database=SIGAP_DB;User Id=sa;Password=Your_password123;TrustServerCertificate=True;" -e ASPNETCORE_ENVIRONMENT=Development --name sigap.dev.api cognifi.sigap.dev/api`
+`docker run -d -p 5000:80 -e ConnectionStrings__DefaultConnection="Server=host.docker.internal,1433;Database=SIGAP_DB;User Id=sa;Password=BroukenDev123;TrustServerCertificate=True;" -e ASPNETCORE_ENVIRONMENT=Development --name sigap.dev.api cognifi.sigap.dev/api`
 
 4. Cek container berjalan:
 `docker ps`
