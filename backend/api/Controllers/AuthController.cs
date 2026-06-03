@@ -52,7 +52,8 @@ namespace api.Controllers
                 }
                 if (Errors?.Any() == true)
                     return Unauthorized(ApiResponse<object>.Fail("Login failed", Errors));
-                
+                SigapUser!.UserRoleDto = _context.UserRoles
+                    .FirstOrDefault(ur => ur.user_id == SigapUser.user_id);
                 var claims = _authService.GetClaims(SigapUser.MapToDto());
                 var appIdentity = new ClaimsIdentity(claims);
 
@@ -100,7 +101,8 @@ namespace api.Controllers
 
                 if (Errors?.Any() == true)
                     return Unauthorized(ApiResponse<object>.Fail("Refresh token failed", Errors));
-
+                SigapUser!.UserRoleDto = _context.UserRoles
+                    .FirstOrDefault(ur => ur.user_id == SigapUser.user_id);
                 var claims = _authService.GetClaims(SigapUser.MapToDto());
                 var appIdentity = new ClaimsIdentity(claims);
 

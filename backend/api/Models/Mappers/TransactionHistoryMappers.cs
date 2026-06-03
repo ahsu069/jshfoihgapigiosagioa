@@ -31,6 +31,7 @@ namespace api.Models.Mappers
                 approval_sectionhead_id = dto.approval_sectionhead_id,
                 ApprovalSectionheadIdDto = dto.ApprovalSectionheadIdDto.MapToDto(),
                 status = dto.status,
+                keterangan = dto.keterangan,
                 created_at = dto.created_at.ToString("dd/MM/yyyy HH:mm:ss"),
                 updated_at = dto.updated_at.ToString("dd/MM/yyyy HH:mm:ss"),
                 TransactionDetailDto = dto.TransactionDetails.Select(o => new TransactionDetailDto
@@ -61,6 +62,7 @@ namespace api.Models.Mappers
                 no_miv_safety = dto.no_miv_safety,
                 no_miv_custom = dto.no_miv_custom,
                 users_cache_id = dto.users_cache_id,
+                keterangan = dto.keterangan,
                 // pekerja_temp_id = dto.pekerja_temp_id,
             };
         }

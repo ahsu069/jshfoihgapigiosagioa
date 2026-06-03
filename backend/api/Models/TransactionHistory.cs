@@ -25,7 +25,7 @@ namespace api.Models
         [StringLength(50)]
         public string? no_miv_custom { get; set; } = string.Empty;
         [Required]
-        [StringLength(50)]
+        [StringLength(120)]
         [ForeignKey("users_cache_id")]
         public string users_cache_id { get; set; } = string.Empty;
         public virtual UsersCache? UsersCacheDto { get; set; }
@@ -52,6 +52,11 @@ namespace api.Models
         [Required]
         [StringLength(30)]
         public string status { get; set; } = string.Empty;
+        
+        // keterangan berisi alasan permintaan atau peminjaman
+        [Required]
+        [StringLength(1000)]
+        public string keterangan {get; set;} = string.Empty;
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
         // public List<TransactionDetail> TransactionDetails{ get; set; }  = new List<TransactionDetail>();
@@ -77,6 +82,7 @@ namespace api.Models
         public Guid? approval_sectionhead_id { get; set; } = Guid.NewGuid();
         public ApprovalStatusDto? ApprovalSectionheadIdDto { get; set; }
         public string status { get; set; } = string.Empty;
+        public string keterangan { get; set; } = string.Empty;
         public string created_at { get; set; } = string.Empty;
         public string updated_at { get; set; } = string.Empty;
         public List<TransactionDetailDto> TransactionDetailDto { get; set; } = new List<TransactionDetailDto>();
@@ -112,10 +118,13 @@ namespace api.Models
         [DefaultValue("MIV-000-Custom")]
         public string no_miv_custom { get; set; } = string.Empty;
         [Required]
-        [StringLength(50)]
+        [StringLength(120)]
         [ForeignKey("users_cache_id")]
         [DefaultValue("af205c4c-bc1b-49c9-9364-0905d73bf2f4")]
         public string users_cache_id { get; set; } = string.Empty;
+        [Required]
+        [StringLength(1000)]
+        public string keterangan { get; set; } = string.Empty;
         // [ForeignKey("pekerja_temp_id")]
         // [DefaultValue("A4C3B38F-D6BE-43EC-97EC-2BF788AA2B3E")]
         // public Guid? pekerja_temp_id { get; set; } = Guid.Empty;

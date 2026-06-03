@@ -1,4 +1,4 @@
-using api.Data; // Ensure this matches the namespace where ApplicationDbContext is defined
+using api.Data;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -112,6 +112,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .EnableSensitiveDataLogging()        // ← add this
+           .EnableDetailedErrors()
 );
 builder.Services.AddCors(options =>
 {
@@ -122,6 +124,14 @@ builder.Services.AddCors(options =>
 });
 // end new
 var app = builder.Build();
+
+// Auto -migration & seeder
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+    SigapSeeder.Seed(db);
+}
 
 // new
 app.UseCors("AllowSpecificOrigin");

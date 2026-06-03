@@ -131,6 +131,25 @@
 						</div>
 					</div>
 				</div>
+				<div class="row mt-3">
+					<div class="col-12">
+						<div class="form-group">
+							<label for="keterangan">Keterangan / Alasan Permintaan<span class="text-red">*</span></label>
+							<textarea
+								id="keterangan"
+								name="keterangan"
+								class="form-control"
+								rows="4"
+								maxlength="1000"
+								required
+								placeholder="Tuliskan alasan / tujuan permintaan barang ini..."
+								oninput="document.getElementById('keterangan-counter').textContent = this.value.length + ' / 1000'"
+							></textarea>
+							<small class="text-muted" id="keterangan-counter">0 / 1000</small>
+						</div>
+					</div>
+				</div>
+
 
 				<hr style="border: 10px solid #2b3a4a; opacity: 0.9 !important; margin-bottom: 0px" />
 				<div class="card-footer bg-white">

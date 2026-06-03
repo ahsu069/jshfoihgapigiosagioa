@@ -39,7 +39,17 @@ namespace api.Controllers
                     return NotFound(ApiResponse<object>.Fail("Get user detail failed", Errors));
                 }
 
-                FungsiUser fungsiUser = _context.FungsiUsers.FirstOrDefault(f => f.fungsi_id == data.BagianUserDto!.fungsi_id) ?? new FungsiUser();
+                int? fungsiId = data.BagianUserDto?.fungsi_id;
+                FungsiUser fungsiUser;
+                if (fungsiId.HasValue)
+                {
+                    fungsiUser = _context.FungsiUsers
+                        .FirstOrDefault(f => f.fungsi_id == fungsiId.Value) ?? new FungsiUser();
+                }
+                else
+                {
+                    fungsiUser = new FungsiUser();
+                }
                 UserRole userRole = _context.UserRoles.FirstOrDefault(ur => ur.user_id == user_id) ?? new UserRole();
                 Role role = (from r in _context.Roles
                              join ur in _context.UserRoles on r.role_id equals ur.role_id

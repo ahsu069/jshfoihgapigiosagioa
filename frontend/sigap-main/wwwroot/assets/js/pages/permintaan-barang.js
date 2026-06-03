@@ -590,6 +590,15 @@
             return;
         }
 
+        if (!$('#keterangan').val().trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Peringatan',
+                text: 'Keterangan / Alasan Permintaan harus diisi!',
+            });
+            return;
+        }
+
         Swal.fire({
             title: 'Menyimpan...',
             didOpen: () => Swal.showLoading(),
@@ -605,6 +614,7 @@
         formData.append("transactionHistory.no_miv_safety", $('#no_miv_safety').val() ||"MIV-OUT");
         formData.append("transactionHistory.no_miv_custom", "");
         formData.append("transactionHistory.users_cache_id", $("#userId").val());
+        formData.append("transactionHistory.keterangan", $("#keterangan").val());
 
         // TransactionDetail (repeated JSON strings)
         $('#input-groups-container .group-card').each(function () {
