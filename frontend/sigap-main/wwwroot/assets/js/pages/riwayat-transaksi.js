@@ -238,10 +238,10 @@
                         // case 'Done':
                         //     return `<span class="badge bg-info">${data}</span>`;
                         //     break;
-                        case 'Approval Section Head Safety Pending':
+                        case 'Waiting Safety Approval':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
-                        case 'Approval Section Head Pending':
+                        case 'Waiting Section Head Approval':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
                         case 'Menunggu Konfirmasi Gudang':
@@ -250,7 +250,7 @@
                         case 'Approval Section Head Rejected':
                             return `<span class="badge bg-danger">Rejected</span>`;
                             break;
-                        case 'Approval Section Head Safety Rejected':
+                        case 'Approval Safety Rejected':
                             return `<span class="badge bg-danger">Rejected</span>`;
                             break;
                         case 'Approval Gudang Rejected':
@@ -579,14 +579,14 @@
                     $('#statustransaksi').addClass('mb-1');
                     $('#labelstatustransaksi').addClass('mb-1');
                     switch (statustransaksi) {
-                        case 'Approval Section Head Pending':
+                        case 'Waiting Section Head Approval':
                             $('#keterangan').removeClass('alert-danger');
                             $('#keterangan').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;
                             namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
                             fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
                             break;
-                        case 'Approval Section Head Safety Pending':
+                        case 'Waiting Safety Approval':
                             $('#keterangan').removeClass('alert-danger');
                             $('#keterangan').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;
@@ -702,12 +702,12 @@
                     $('#statustransaksi').addClass('mb-1');
                     $('#labelstatustransaksi').addClass('mb-1');
                     switch (statustransaksi) {
-                        case 'Approval Section Head Pending':
+                        case 'Waiting Section Head Approval':
                             $('#keterangan').removeClass('alert-danger');
                             $('#keterangan').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;
                             break;
-                        case 'Approval Section Head Safety Pending':
+                        case 'Waiting Safety Approval':
                             $('#keterangan').removeClass('alert-danger');
                             $('#keterangan').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;

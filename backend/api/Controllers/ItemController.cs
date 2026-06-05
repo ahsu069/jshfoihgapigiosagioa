@@ -140,7 +140,7 @@ namespace api.Controllers
             {
                 string? link_gambar_bar = null;
                 if (!ValidationHelper.TryValidate(request, out var errors))
-                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed", ValidationHelper.GetErrorDictionary(errors)));
+                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed1", ValidationHelper.GetErrorDictionary(errors)));
 
                 if (!string.IsNullOrEmpty(request.satuanbar_id))
                 {
@@ -191,7 +191,7 @@ namespace api.Controllers
                 }
 
                 if (Errors?.Any() == true)
-                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed", Errors));
+                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed2", Errors));
 
                 Item data = request.MapToDtoFromCreate();
                 data.barang_id = Guid.NewGuid();
@@ -241,7 +241,7 @@ namespace api.Controllers
                 }
 
                 if (!ValidationHelper.TryValidate(request, out var errors))
-                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed", ValidationHelper.GetErrorDictionary(errors)));
+                    return StatusCode(400, ApiResponse<object>.Fail("Create item failed3", ValidationHelper.GetErrorDictionary(errors)));
 
                 if (!string.IsNullOrEmpty(request.satuanbar_id))
                 {

@@ -436,7 +436,7 @@ namespace api.Controllers
                 TransactionHistory data = request.MapToDtoFromCreate();
                 string status = "";
                 if(request.kategori_transact_id == "OUT")
-                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Approval Section Head Pending" : "Approval Section Head Safety Pending";
+                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Waiting Safety Approval" : "Waiting Section Head Approval";
                 else
                     status = "Done";
                 data.transact_id = Guid.NewGuid();
@@ -500,15 +500,33 @@ namespace api.Controllers
 
                 return Ok(ApiResponse<TransactionHistoryDto>.Ok("Created transaction successfully", data.MapToDto(Request, User)));
             }
+            // catch (DbUpdateConcurrencyException ex)
+            // {
+            //     transaction.Rollback();
+            //     return StatusCode(500, ApiResponse<object>.Fail("Concurrency error: " + ex.Message));
+            // }
+            // catch (DbUpdateException ex)
+            // {
+            //     transaction.Rollback();
+            //     return StatusCode(500, ApiResponse<object>.Fail("Database error: " + ex.Message));
+            // }
             catch (DbUpdateConcurrencyException ex)
             {
                 transaction.Rollback();
-                return StatusCode(500, ApiResponse<object>.Fail("Concurrency error: " + ex.Message));
+                Console.WriteLine("[DB CONCURRENCY ERROR] " + ex.Message);
+                Console.WriteLine("[DB CONCURRENCY INNER] " + ex.InnerException?.Message);
+                return StatusCode(500, ApiResponse<object>.Fail(
+                    "Concurrency error: " + (ex.InnerException?.Message ?? ex.Message)
+                ));
             }
             catch (DbUpdateException ex)
             {
                 transaction.Rollback();
-                return StatusCode(500, ApiResponse<object>.Fail("Database error: " + ex.Message));
+                Console.WriteLine("[DB UPDATE ERROR] " + ex.Message);
+                Console.WriteLine("[DB UPDATE INNER] " + ex.InnerException?.Message);
+                return StatusCode(500, ApiResponse<object>.Fail(
+                    "Database error: " + (ex.InnerException?.Message ?? ex.Message)
+                ));
             }
             catch (Exception ex)
             {
@@ -534,7 +552,7 @@ namespace api.Controllers
                 {
                     Errors?.Add("transact_id", new[] { "The field 'transact_id' value is not found."} );
                     return NotFound(ApiResponse<object>.Fail("Update transaction failed", Errors));
-                }else if(data.status != "Approval Section Head Pending" && data.status != "Approval Section Head Safety Pending")
+                }else if(data.status != "Waiting Section Head Approval" && data.status != "Waiting Safety Approval")
                 {
                     Errors?.Add("transact_id", new[] { "The transaction approval is on processing or done."} );
                     return StatusCode(400, ApiResponse<object>.Fail("Can't update this transaction.", Errors));
@@ -678,7 +696,7 @@ namespace api.Controllers
                 
                 string status = "";
                 if(request.kategori_transact_id == "OUT")
-                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Approval Section Head Pending" : "Approval Section Head Safety Pending";
+                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Waiting Section Head Approval" : "Waiting Safety Approval";
                 else
                     status = "Done";
                 data.kategori_transact_id = request.kategori_transact_id;

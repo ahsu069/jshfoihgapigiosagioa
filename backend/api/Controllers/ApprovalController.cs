@@ -159,7 +159,7 @@ namespace api.Controllers
                         // d.status = String.Format("Approval {0} Pending", int.TryParse(role_type, out var i) ? i + 1 : role_type);
                         if(role_type == "1")
                         {
-                            d.status = "Approval Section Head Safety Pending";
+                            d.status = "Waiting Safety Approval";
                         }
                         else if(role_type == "2")
                         {

@@ -34,7 +34,7 @@
                             orderable: true,
                             search: { value: `${userId}` }
                         });
-                        status.search.value = "Approval Section Head Safety Pending"
+                        status.search.value = "Waiting Safety Approval"
                         break;
                     case "SPV_GUDANG":
                         d.columns.push({
@@ -215,10 +215,10 @@
                         // case 'Done':
                         //     return `<span class="badge bg-info">${data}</span>`;
                         //     break;
-                        case 'Approval Section Head Safety Pending':
+                        case 'Waiting Safety Approval':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
-                        case 'Approval Section Head Pending':
+                        case 'Waiting Section Head Approval':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
                         case 'Menunggu Konfirmasi Gudang':
@@ -744,14 +744,14 @@
                 $('#approveDetail').show();
                 $('#rejectDetail').show();
                 switch (statustransaksi) {
-                    case 'Approval Section Head Pending':
+                    case 'Waiting Section Head Approval':
                         $('#keterangan').removeClass('alert-danger');
                         $('#keterangan').addClass('alert-warning');
                         badge = `<span class="badge bg-warning">Pending</span>`;
                         namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
                         fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
                         break;
-                    case 'Approval Section Head Safety Pending':
+                    case 'Waiting Safety Approval':
                         $('#keterangan').removeClass('alert-danger');
                         $('#keterangan').addClass('alert-warning');
                         badge = `<span class="badge bg-warning">Pending</span>`;

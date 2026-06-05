@@ -38,6 +38,14 @@
     //     }
     // });
 
+    // keterangan field
+    const keterangan = $('#keterangan');
+
+    keterangan.on('input', function () {
+        const len = $(this).val().length;
+        $('#keterangan-counter').text(len + ' / 1000');
+    });
+
     let cachedBarangData = [];
 
     function initBarangSelect(localData) {
@@ -315,11 +323,12 @@
 
         // TransactionHistory
         formData.append("transactionHistory.kategori_transact_id", "IN");
-        formData.append("transactionHistory.kategori_pekerja", "ORG");
+        formData.append("transactionHistory.kategori_pekerja", "OWN");
         // formData.append("transactionHistory.no_miv_safety", "MIV-IN");
         formData.append("transactionHistory.no_miv_safety", "-");
         formData.append("transactionHistory.no_miv_custom", "");
         formData.append("transactionHistory.users_cache_id", $("#userId").val());
+        formData.append('transactionHistory.keterangan', keterangan.val());
 
         // TransactionDetail (repeated JSON strings)
         $('#input-groups-container .group-card').each(function () {

@@ -36,6 +36,13 @@
 							<label for="BagianPekerja">Bagian / Fungsi<span class="text-red">*</span></label>
 							<input type="text" name="bagianfungsi" class="form-control" id="bagianfungsi" value="@User.FindFirst("BagianNama")?.Value / @User.FindFirst("FungsiNama")?.Value" disabled>
 						</div>
+						<div class="form-group">
+							<label for="keterangan">Keterangan<span class="text-red">*</span></label>
+							<textarea id="keterangan" class="form-control" maxlength="1000" required></textarea>
+							<small id="keterangan-counter" class="form-text text-muted">
+								0 / 1000
+							</small>
+						</div>
 					</div>
 					@* <div class="col-md-6">
 						<div class="form-group mb-3">

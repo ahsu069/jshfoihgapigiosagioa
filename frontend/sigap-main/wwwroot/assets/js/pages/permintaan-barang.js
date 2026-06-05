@@ -633,10 +633,10 @@
             formData.append("employeeRequest.perusahaan_pekerja", $('#perusahaanTKJP').val());
             if (file) formData.append("employeeRequest.link_file_pendukung", file);
             else formData.append("employeeRequest.link_file_pendukung", "");
-            formData.append("employeeRequest.bagian_id", bagianId_pekerja); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  WAJIB GANTI NANTI KALAU UDAH DI FIX BACEND APINYA
-            // formData.append("employeeRequest.bagian_id", $('#bagianTKJP').val()); // Harusnya ini yg benar, bukan yg atas
+            // formData.append("employeeRequest.bagian_id", bagianId_pekerja); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  WAJIB GANTI NANTI KALAU UDAH DI FIX BACEND APINYA
+            formData.append("employeeRequest.bagian_id", $('#bagianTKJP').val()); // Harusnya ini yg benar, bukan yg atas
         } else {
-            formData.append("transactionHistory.kategori_pekerja", "ORG");
+            formData.append("transactionHistory.kategori_pekerja", "OWN");
             formData.append("employeeRequest.nama_pekerja", "");
             formData.append("employeeRequest.fungsi_pekerja", "");
             formData.append("employeeRequest.id_finger", "");

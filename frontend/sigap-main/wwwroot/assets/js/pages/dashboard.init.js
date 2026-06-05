@@ -735,10 +735,10 @@ function generateFeedItemHTML(trans) {
     });
 
     switch (status) {
-        case 'Approval Section Head Pending':
+        case 'Waiting Section Head Approval':
             status = `<span class="badge bg-warning">Pending</span>`;
             break;
-        case 'Approval Section Head Safety Pending':
+        case 'Waiting Safety Approval':
             status = `<span class="badge bg-warning">Pending</span>`;
             break;
         case 'Menunggu Konfirmasi Gudang':
@@ -747,7 +747,7 @@ function generateFeedItemHTML(trans) {
         case 'Approval Section Head Rejected':
             status = `<span class="badge bg-danger">Rejected</span>`;
             break;
-        case 'Approval Section Head Safety Rejected':
+        case 'Approval Safety Rejected':
             status = `<span class="badge bg-danger">Rejected</span>`;
             break;
         case 'Approval Gudang Rejected':
