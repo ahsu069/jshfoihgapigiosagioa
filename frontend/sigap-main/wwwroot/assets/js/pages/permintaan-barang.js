@@ -30,7 +30,13 @@
 
         if (isTKJP) {
             $('#tkjpSection').show();
-
+            const unescapedNama = htmlUnescape(bagianNama_pekerja);
+            $('#bagianTKJP')
+                .empty()
+                .append(new Option(unescapedNama, bagianId_pekerja, true, true))
+                .trigger('change');
+            $('#bagianTKJP').prop('disabled', true); 
+            
             if (isMobile) {
                 // move barang input to bottom of TKJP section
                 $('#barang-input-wrapper').appendTo('#tkjpSection');
@@ -40,6 +46,8 @@
             }
         } else {
             $('#tkjpSection').hide();
+            $('#bagianTKJP').empty().trigger('change');
+            $('#bagianTKJP').prop('disabled', false);
             $('#barang-input-wrapper').appendTo('#barang-col-wrapper');
         }
     });
@@ -146,9 +154,15 @@
 
             const unescapedNama = htmlUnescape(bagianNama_pekerja);
 
+            // $('#bagianTKJP')
+            //     .append(new Option(unescapedNama, bagianId_pekerja, true, true))
+            //     .trigger('change');
+
             $('#bagianTKJP')
+                .empty()
                 .append(new Option(unescapedNama, bagianId_pekerja, true, true))
                 .trigger('change');
+            $('#bagianTKJP').prop('disabled', true);
 
             // Enable the TKJP text fields
             $('#tkjpSection input[type="text"]').prop('disabled', false).val('');
@@ -203,13 +217,13 @@
             $('#namapekerjaTKJP').val(data.nama_pekerja);
             $('#fungsiTKJP').val(data.fungsi_pekerja);
             // $('#bagianTKJP').val(data.bagian_id).trigger('change'); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GANTI APABILA BACKEND UDAH NGEFIX APINYA
-            if (data.bagian_id) {
-                $('#bagianTKJP')
-                    .append(new Option(data.bagian_nm, data.bagian_id, true, true))
-                    .trigger('change');
-            } else {
-                $('#bagianTKJP').empty().trigger('change');
-            }
+            // if (data.bagian_id) {
+            //     $('#bagianTKJP')
+            //         .append(new Option(data.bagian_nm, data.bagian_id, true, true))
+            //         .trigger('change');
+            // } else {
+            //     $('#bagianTKJP').empty().trigger('change');
+            // }
             $('#perusahaanTKJP').val(data.perusahaan_pekerja);
         });
     }
@@ -256,6 +270,26 @@
     //         initBagianSelect2();
     //     }
     // });
+
+    $('#bagianpekerja').select2({
+        dropdownParent: $('#permintaan-barang-form'),
+        ajax: {
+            url: '/api/select2/bagianuser',
+            dataType: 'json',
+            delay: 250,
+            cache: true,
+            data: function (params) {
+                return {
+                    search: params.term,
+                    page: params.page || 1,
+                    pageSize: 9999
+                };
+            },
+            processResults: function (data) {
+                return data;
+            }
+        }
+    });
 
     $('#bagianTKJP').select2({
         dropdownParent: $('#permintaan-barang-form'),
@@ -531,32 +565,32 @@
     $('#permintaan-barang-form').on('submit', function (e) {
         e.preventDefault();
         // Validasi input
-        // if (!$('#namapekerja').val()) {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Peringatan',
-        //         text: 'Nama Pekerja harus diisi!',
-        //     });
-        //     return;
-        // }
+        if (!$('#namapekerja').val()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Peringatan',
+                text: 'Nama Pekerja harus diisi!',
+            });
+            return;
+        }
         
-        // if (!$('#nopeg').val()) {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Peringatan',
-        //         text: 'Nomor Pegawai harus diisi!',
-        //     });
-        //     return;
-        // }
+        if (!$('#nopekerja').val()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Peringatan',
+                text: 'Nomor Pekerja harus diisi!',
+            });
+            return;
+        }
 
-        // if (!$('#jabatan').val()) {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Peringatan',
-        //         text: 'Bagian/Fungsi harus diisi!',
-        //     });
-        //     return;
-        // }
+        if (!$('#bagianpekerja').val()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Peringatan',
+                text: 'Bagian harus diisi!',
+            });
+            return;
+        }
 
         if ($('.group-card').length === 0) {
             Swal.fire({
@@ -633,16 +667,16 @@
             formData.append("employeeRequest.perusahaan_pekerja", $('#perusahaanTKJP').val());
             if (file) formData.append("employeeRequest.link_file_pendukung", file);
             else formData.append("employeeRequest.link_file_pendukung", "");
-            // formData.append("employeeRequest.bagian_id", bagianId_pekerja); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  WAJIB GANTI NANTI KALAU UDAH DI FIX BACEND APINYA
-            formData.append("employeeRequest.bagian_id", $('#bagianTKJP').val()); // Harusnya ini yg benar, bukan yg atas
+            formData.append("employeeRequest.bagian_id", bagianId_pekerja); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  WAJIB GANTI NANTI KALAU UDAH DI FIX BACEND APINYA
+            // formData.append("employeeRequest.bagian_id", $('#bagianTKJP').val()); // Harusnya ini yg benar, bukan yg atas
         } else {
             formData.append("transactionHistory.kategori_pekerja", "OWN");
-            formData.append("employeeRequest.nama_pekerja", "");
+            formData.append("employeeRequest.nama_pekerja", $('#namapekerja').val());
+            formData.append("employeeRequest.id_finger", $('#nopekerja').val());
+            formData.append("employeeRequest.bagian_id", $('#bagianpekerja').val());
             formData.append("employeeRequest.fungsi_pekerja", "");
-            formData.append("employeeRequest.id_finger", "");
-            formData.append("employeeRequest.perusahaan_pekerja", "");
+            formData.append("employeeRequest.perusahaan_pekerja", "Internal Pertamina");
             formData.append("employeeRequest.link_file_pendukung", "");
-            formData.append("employeeRequest.bagian_id", "");
         }
 
         // const file = $("#link_file_pendukung")[0]?.files?.[0];

@@ -36,6 +36,8 @@ namespace api.Models
         public string? refresh_token { get; set; }
         public BagianUserDto BagianUserDto { get; set; } = new BagianUserDto();
         public UserRoleDto UserRoleDto { get; set; } = new UserRoleDto();
+        // check role
+        public string RoleCode { get; set; }
         
     }
     public class SigapUserRequest

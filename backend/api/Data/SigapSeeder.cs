@@ -25,7 +25,7 @@ namespace api.Data
                 new Role { role_id = Guid.NewGuid(), name = "Admin Gudang",        code = "ADMIN_GUDANG",  is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
                 new Role { role_id = Guid.NewGuid(), name = "Section Head",        code = "SH_NON_SAFETY", is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
                 new Role { role_id = Guid.NewGuid(), name = "Safety Section Head", code = "SH_SAFETY",     is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
-                new Role { role_id = Guid.NewGuid(), name = "Manajemen",           code = "MANAJEMEN",     is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
+                new Role { role_id = Guid.NewGuid(), name = "Supervisor",          code = "SUPERVISOR",    is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
                 new Role { role_id = Guid.NewGuid(), name = "Staff",               code = "STAFF",         is_active = true, created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow }
             );
             db.SaveChanges();
@@ -70,15 +70,16 @@ namespace api.Data
         {
             if (db.ApprovalRoleMaps.Any()) return;
 
-            var shNonSafety = db.Roles.FirstOrDefault(r => r.code == "SH_NON_SAFETY");
-            var shSafety    = db.Roles.FirstOrDefault(r => r.code == "SH_SAFETY");
+            // var shNonSafety = db.Roles.FirstOrDefault(r => r.code == "SH_NON_SAFETY");
+            // var shSafety    = db.Roles.FirstOrDefault(r => r.code == "SH_SAFETY");
+            var supervisor = db.Roles.FirstOrDefault(r => r.code == "SUPERVISOR");
             var adminGudang = db.Roles.FirstOrDefault(r => r.code == "ADMIN_GUDANG");
 
-            if (shNonSafety == null || shSafety == null || adminGudang == null) return;
+            if (supervisor == null || adminGudang == null) return;
 
             db.ApprovalRoleMaps.AddRange(
-                new ApprovalRoleMap { approval_role_map_id = Guid.NewGuid(), legacy_code = "1", role_id = shNonSafety.role_id, note = $"Legacy 1 -> {shNonSafety.name}", created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
-                new ApprovalRoleMap { approval_role_map_id = Guid.NewGuid(), legacy_code = "2", role_id = shSafety.role_id,    note = $"Legacy 2 -> {shSafety.name}",    created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
+                new ApprovalRoleMap { approval_role_map_id = Guid.NewGuid(), legacy_code = "1", role_id = supervisor.role_id, note = $"Legacy 1 -> {supervisor.name}", created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
+                // new ApprovalRoleMap { approval_role_map_id = Guid.NewGuid(), legacy_code = "2", role_id = shSafety.role_id,    note = $"Legacy 2 -> {shSafety.name}",    created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow },
                 new ApprovalRoleMap { approval_role_map_id = Guid.NewGuid(), legacy_code = "3", role_id = adminGudang.role_id, note = $"Legacy 3 -> {adminGudang.name}", created_at = DateTime.UtcNow, updated_at = DateTime.UtcNow }
             );
             db.SaveChanges();
@@ -139,6 +140,8 @@ namespace api.Data
             var permissions = new List<Permission>
             {
                 new() { permission_id = Guid.NewGuid(), code = "approval:read",                 name = "Approval Read",              description = "Access approval pages", created_at = now, updated_at = now },
+                new() { permission_id = Guid.NewGuid(), code = "approval:approve",              name = "Approval Approve",           description = "Access approval pages", created_at = now, updated_at = now },
+                new() { permission_id = Guid.NewGuid(), code = "approval:process",              name = "Approval Process",           description = "Access approval pages", created_at = now, updated_at = now },
                 new() { permission_id = Guid.NewGuid(), code = "barang:create",                 name = "Barang Create",              description = "Create barang/master stock", created_at = now, updated_at = now },
                 new() { permission_id = Guid.NewGuid(), code = "barang:delete",                 name = "Barang Delete",              description = "Delete barang/master stock", created_at = now, updated_at = now },
                 new() { permission_id = Guid.NewGuid(), code = "barang:read",                   name = "Barang Read",                description = "View barang/master stock", created_at = now, updated_at = now },
@@ -208,11 +211,15 @@ namespace api.Data
                 "barang:read",
                 "transaksi:permintaan",
                 "riwayat:transaksi:read",
-                "approval:read"
+                "approval:read",
+                "approval:approve",
+                "approval:process",
             });
 
             Grant("SH_SAFETY", new[] {
                 "approval:read",
+                "approval:approve",
+                "approval:process",
                 "barang:read",
                 "kategori_barang:read",
                 "riwayat:stock:read",
@@ -221,15 +228,7 @@ namespace api.Data
                 "transaksi:permintaan"
             });
 
-            Grant("MANAJEMEN", new[] {
-                "approval:read",
-                "barang:read",
-                "riwayat:stock:read",
-                "riwayat:transaksi:read",
-                "transaksi:permintaan"
-            });
-
-            Grant("ADMIN_GUDANG", new[] {
+            Grant("SUPERVISOR", new[] {
                 "approval:read",
                 "barang:create",
                 "barang:delete",
@@ -260,8 +259,36 @@ namespace api.Data
                 "user:update"
             });
 
+            Grant("ADMIN_GUDANG", new[] {
+                "approval:read",
+                "barang:create",
+                "barang:delete",
+                "barang:read",
+                "barang:update",
+                "kategori_barang:create",
+                "kategori_barang:delete",
+                "kategori_barang:read",
+                "kategori_barang:update",
+                "riwayat:stock:read",
+                "riwayat:transaksi:read",
+                "role:create",
+                "role:delete",
+                "role:read",
+                "role:update",
+                "transaksi:addtransaksi",
+                "transaksi:pemasukan",
+                "transaksi:permintaan",
+                "transaksi:riwayat:read",
+                "user:create",
+                "user:delete",
+                "user:read",
+                "user:update"
+            });
+
             Grant("SUPER_ADMIN", new[] {
                 "approval:read",
+                "approval:approve",
+                "approval:process",
                 "barang:create",
                 "barang:delete",
                 "barang:read",

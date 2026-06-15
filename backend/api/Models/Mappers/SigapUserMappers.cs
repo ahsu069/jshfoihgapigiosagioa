@@ -6,6 +6,8 @@ namespace api.Models.Mappers
         {
             if (dto == null) return new SigapUserDto();
 
+            Console.WriteLine($"[MAPPER] SigapUserMap user_id={dto.user_id}, role_userRole={dto.UserRoleDto?.RoleDto?.code}");
+
             return new SigapUserDto
             {
                 user_id = dto.user_id,
@@ -17,6 +19,7 @@ namespace api.Models.Mappers
                 username = dto.username,
                 password = dto.password,
                 UserRoleDto = dto.UserRoleDto.MapToDto(),
+                RoleCode = dto.UserRoleDto?.RoleDto?.code,
             };
         }
         public static SigapUser MapToDtoFromCreate(this SigapUserRequest? dto)

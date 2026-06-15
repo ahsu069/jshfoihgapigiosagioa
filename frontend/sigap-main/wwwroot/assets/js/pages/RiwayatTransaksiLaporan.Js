@@ -94,16 +94,47 @@
 
             //kolom gambar + nama pekerja
             {
-                data: null,
+                data: "usersCacheDto.nama_pekerja",
                 title: "Nama Pekerja",
                 render: function (data, type, row) {
-                return `
+                    const nama =
+                        row.employeeDto?.nama_pekerja ??
+                        row.usersCacheDto?.nama_pekerja ??
+                        "-";
+
+                    const foto = row.gambar || "/assets/images/pngwing.png";
+
+                    return `
                         <div class="d-flex img-cell align-items-center gap-1">
-                            <img src="${row.gambar}" alt="${row.nama_pekerja}" class="rounded-circle header-profile-user me-2">
-                            <span>${row.nama_pekerja}</span>
+                            <img 
+                                src="${foto}"
+                                alt="${nama}"
+                                class="rounded-circle header-profile-user me-2"
+                                onerror="this.onerror=null; this.src='/assets/images/pngwing.png';">
+                            <span>${nama}</span>
                         </div>
                     `;
-                }
+                },
+                orderable: true,
+                searchable: true
+            },
+            {
+                data: "employeeDto.nama_pekerja",
+                visible: false,
+                searchable: true,
+                orderable: false
+            },
+            {
+                data: "usersCacheDto.bagian_pekerja",
+                visible: false,
+                searchable: true,
+                orderable: false
+            },
+            {
+                data: "employeeDto.bagianUserDto.nama",
+                visible: false,
+                searchable: true,
+                orderable: false
             },
 
             //kolom pegawai

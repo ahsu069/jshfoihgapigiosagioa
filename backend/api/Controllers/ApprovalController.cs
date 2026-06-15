@@ -90,15 +90,51 @@ namespace api.Controllers
                             .ThenInclude(d => d.itemDto);
 
                 var tokenUserid = User.Identity?.Name;
-                query = query.Where(o => request.transact_id!.Contains(o.transact_id) && (o.status.ToLower().Contains("pending") || o.status.ToLower().Contains("menunggu")))
-                .Where(o => (
-                    (o.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid && o.ApprovalManajemenPekerjaIdDto.is_approved == null) ||
-                    (o.ApprovalGudangIdDto!.user_id == tokenUserid && o.ApprovalGudangIdDto.is_approved == null) ||
-                    (o.ApprovalSectionheadIdDto!.user_id == tokenUserid && o.ApprovalSectionheadIdDto.is_approved == null)
-                ))
-                ;
+                var roleCode    = User.FindFirst("RoleCode")?.Value;
+                var isSuperAdmin = string.Equals(roleCode, "SUPER_ADMIN", StringComparison.OrdinalIgnoreCase);
+
+                foreach (var c in User.Claims)
+                {
+                    Console.WriteLine($"[CLAIM] {c.Type} = {c.Value}");
+                }
+
+                if (!isSuperAdmin)
+                {
+                    // Non-superadmin: only their own pending slot, with status matching new 2-level flow
+                    query = query.Where(o =>
+                        request.transact_id!.Contains(o.transact_id) &&
+                        (
+                            (
+                                o.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid &&
+                                o.ApprovalManajemenPekerjaIdDto.is_approved == null &&
+                                o.status == "Menunggu Approval Supervisor"
+                            )
+                            ||
+                            (
+                                o.ApprovalGudangIdDto!.user_id == tokenUserid &&
+                                o.ApprovalGudangIdDto.is_approved == null &&
+                                o.status == "Diproses Gudang"
+                            )
+                        )
+                    );
+                }
+
+                // query = query.Where(o => request.transact_id!.Contains(o.transact_id) && (o.status.ToLower().Contains("pending") || o.status.ToLower().Contains("menunggu")))
+                // .Where(o => (
+                //     (o.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid && o.ApprovalManajemenPekerjaIdDto.is_approved == null) ||
+                //     (o.ApprovalGudangIdDto!.user_id == tokenUserid && o.ApprovalGudangIdDto.is_approved == null) ||
+                //     (o.ApprovalSectionheadIdDto!.user_id == tokenUserid && o.ApprovalSectionheadIdDto.is_approved == null)
+                // ))
+                // ;
                 
                 List<TransactionHistory> transactionHistories = query.ToList();
+                Console.WriteLine($"[APPROVAL] isSuperAdmin={isSuperAdmin}, tokenUserId={tokenUserid}");
+                Console.WriteLine($"[APPROVAL] request.transact_id: {string.Join(",", request.transact_id)}");
+                Console.WriteLine($"[APPROVAL] transactionHistories.Count={transactionHistories.Count}");
+                foreach (var th in transactionHistories)
+                {
+                    Console.WriteLine($"[APPROVAL] DB transact_id={th.transact_id}, status={th.status}");
+                }
 
                 if(request?.transact_id?.Count != transactionHistories.Count)
                     Errors?.Add("transact_id", new[] { "One or more 'transact_id' is invalid." });
@@ -109,82 +145,164 @@ namespace api.Controllers
                 string role_type = String.Empty;
                 foreach (var (d, index) in transactionHistories.Select((value, index) => (value, index)))
                 {
-                    if (d.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid && d.ApprovalManajemenPekerjaIdDto.is_approved == null)
+                    ApprovalStatus? target = null;
+
+                    if (isSuperAdmin)
                     {
-                        d.ApprovalManajemenPekerjaIdDto.is_approved = request?.is_approved;
-                        d.ApprovalManajemenPekerjaIdDto.remark = request?.remark;
-                        d.ApprovalManajemenPekerjaIdDto.updated_at = DateTime.Now;
-                        approvalStatuses.Add(d.ApprovalManajemenPekerjaIdDto);
-                        role_type = d.ApprovalManajemenPekerjaIdDto.role_type;
+                        // SUPER_ADMIN: pick the first pending slot in order 1 → 2 → 3
+                        if (d.ApprovalManajemenPekerjaIdDto?.is_approved == null)
+                            target = d.ApprovalManajemenPekerjaIdDto;
+                        else if (d.ApprovalSectionheadIdDto?.is_approved == null)
+                            target = d.ApprovalSectionheadIdDto;
+                        else if (d.ApprovalGudangIdDto?.is_approved == null)
+                            target = d.ApprovalGudangIdDto;
                     }
-                    else if (d.ApprovalGudangIdDto!.user_id == tokenUserid && d.ApprovalGudangIdDto.is_approved == null)
+                    else
                     {
-                        d.ApprovalGudangIdDto.is_approved = request?.is_approved;
-                        d.ApprovalGudangIdDto.remark = request?.remark;
-                        d.ApprovalGudangIdDto.updated_at = DateTime.Now;
-                        approvalStatuses.Add(d.ApprovalGudangIdDto);
-                        role_type = d.ApprovalGudangIdDto.role_type;
+                        // Normal approver: only their own pending slot
+                        if (d.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid && d.ApprovalManajemenPekerjaIdDto.is_approved == null)
+                            target = d.ApprovalManajemenPekerjaIdDto;
+                        else if (d.ApprovalGudangIdDto!.user_id == tokenUserid && d.ApprovalGudangIdDto.is_approved == null)
+                            target = d.ApprovalGudangIdDto;
+                        else if (d.ApprovalSectionheadIdDto!.user_id == tokenUserid && d.ApprovalSectionheadIdDto.is_approved == null)
+                            target = d.ApprovalSectionheadIdDto;
                     }
-                    else if (d.ApprovalSectionheadIdDto!.user_id == tokenUserid && d.ApprovalSectionheadIdDto.is_approved == null)
+
+                    if (target == null)
+                        continue;
+
+                    // Apply decision
+                    target.is_approved = request?.is_approved;
+                    target.remark     = request?.remark;
+                    target.updated_at = DateTime.Now;
+                    approvalStatuses.Add(target);
+                    role_type = target.role_type;
+
+                    // 2‑level approval flow
+                    if (request?.is_approved == "A")
                     {
-                        d.ApprovalSectionheadIdDto.is_approved = request?.is_approved;
-                        d.ApprovalSectionheadIdDto.remark = request?.remark;
-                        d.ApprovalSectionheadIdDto.updated_at = DateTime.Now;
-                        approvalStatuses.Add(d.ApprovalSectionheadIdDto);
-                        role_type = d.ApprovalSectionheadIdDto.role_type;
-                    }
-                    if (request?.is_approved == "A" && role_type == "3")
-                    {
-                        d.status = "Done";
-                        d.updated_at = DateTime.Now;
-                        List<Item> items = new List<Item>();
-                        foreach (var (d2, index2) in d.TransactionDetails.Select((value, index) => (value, index)))
+                        if (role_type == "1")
                         {
-                            Item? item = _context.Items.FirstOrDefault(o => o.barang_id == d2.barang_id);
-                            if (item != null)
+                            // Supervisor approved → warehouse will process
+                            d.status = "Diproses Gudang";
+                            d.updated_at = DateTime.Now;
+                        }
+                        else if (role_type == "2" || role_type == "3")
+                        {
+                            // Warehouse finished processing → request is complete
+                            d.status = "done";
+                            d.updated_at = DateTime.Now;
+
+                            // Stock deduction on final approval (similar to old role_type == "3" logic)
+                            List<Item> items = new List<Item>();
+                            foreach (var (d2, index2) in d.TransactionDetails.Select((value, index) => (value, index)))
                             {
-                                item.updated_at = DateTime.Now;
-                                if (CategoryTransOut.Contains(d.kategori_transact_id))
-                                    item.jumlah_barang = item.jumlah_barang - d2.jumlah_bar;
-                                // else
-                                //     item.jumlah_barang = item.jumlah_barang + d2.jumlah_bar;
-                                items.Add(item);
+                                Item? item = _context.Items.FirstOrDefault(o => o.barang_id == d2.barang_id);
+                                if (item != null)
+                                {
+                                    item.updated_at = DateTime.Now;
+                                    if (CategoryTransOut.Contains(d.kategori_transact_id))
+                                    {
+                                        item.jumlah_barang = item.jumlah_barang - d2.jumlah_bar;
+                                    }
+                                    items.Add(item);
+                                }
                             }
+                            _context.Items.UpdateRange(items);
+                            _context.SaveChanges();
                         }
-                        _context.Items.UpdateRange(items);
-                        _context.SaveChanges();
-                    }
-                    else if (request?.is_approved == "A")
-                    {
-                        // d.status = String.Format("Approval {0} Pending", int.TryParse(role_type, out var i) ? i + 1 : role_type);
-                        if(role_type == "1")
-                        {
-                            d.status = "Waiting Safety Approval";
-                        }
-                        else if(role_type == "2")
-                        {
-                            d.status = "Menunggu Konfirmasi Gudang";
-                        }
-                        d.updated_at = DateTime.Now;
                     }
                     else if (request?.is_approved == "R")
                     {
-                        // d.status = String.Format("Approval {0} Rejected", role_type);
-
-                        if(role_type == "1")
+                        if (role_type == "1")
                         {
-                            d.status = "Approval Section Head Rejected";
+                            d.status = "Ditolak Supervisor";
                         }
-                        else if(role_type == "2")
+                        else if (role_type == "2" || role_type == "3")
                         {
-                            d.status = "Approval Section Head Safety Rejected";
-                        }else if(role_type == "3")
-                        {
-                            d.status = "Approval Gudang Rejected";
+                            d.status = "Ditolak Gudang";
                         }
                         d.updated_at = DateTime.Now;
                     }
                 }
+                // foreach (var (d, index) in transactionHistories.Select((value, index) => (value, index)))
+                // {
+                //     if (d.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid && d.ApprovalManajemenPekerjaIdDto.is_approved == null)
+                //     {
+                //         d.ApprovalManajemenPekerjaIdDto.is_approved = request?.is_approved;
+                //         d.ApprovalManajemenPekerjaIdDto.remark = request?.remark;
+                //         d.ApprovalManajemenPekerjaIdDto.updated_at = DateTime.Now;
+                //         approvalStatuses.Add(d.ApprovalManajemenPekerjaIdDto);
+                //         role_type = d.ApprovalManajemenPekerjaIdDto.role_type;
+                //     }
+                //     else if (d.ApprovalGudangIdDto!.user_id == tokenUserid && d.ApprovalGudangIdDto.is_approved == null)
+                //     {
+                //         d.ApprovalGudangIdDto.is_approved = request?.is_approved;
+                //         d.ApprovalGudangIdDto.remark = request?.remark;
+                //         d.ApprovalGudangIdDto.updated_at = DateTime.Now;
+                //         approvalStatuses.Add(d.ApprovalGudangIdDto);
+                //         role_type = d.ApprovalGudangIdDto.role_type;
+                //     }
+                //     else if (d.ApprovalSectionheadIdDto!.user_id == tokenUserid && d.ApprovalSectionheadIdDto.is_approved == null)
+                //     {
+                //         d.ApprovalSectionheadIdDto.is_approved = request?.is_approved;
+                //         d.ApprovalSectionheadIdDto.remark = request?.remark;
+                //         d.ApprovalSectionheadIdDto.updated_at = DateTime.Now;
+                //         approvalStatuses.Add(d.ApprovalSectionheadIdDto);
+                //         role_type = d.ApprovalSectionheadIdDto.role_type;
+                //     }
+                //     if (request?.is_approved == "A" && role_type == "3")
+                //     {
+                //         d.status = "Done";
+                //         d.updated_at = DateTime.Now;
+                //         List<Item> items = new List<Item>();
+                //         foreach (var (d2, index2) in d.TransactionDetails.Select((value, index) => (value, index)))
+                //         {
+                //             Item? item = _context.Items.FirstOrDefault(o => o.barang_id == d2.barang_id);
+                //             if (item != null)
+                //             {
+                //                 item.updated_at = DateTime.Now;
+                //                 if (CategoryTransOut.Contains(d.kategori_transact_id))
+                //                     item.jumlah_barang = item.jumlah_barang - d2.jumlah_bar;
+                //                 // else
+                //                 //     item.jumlah_barang = item.jumlah_barang + d2.jumlah_bar;
+                //                 items.Add(item);
+                //             }
+                //         }
+                //         _context.Items.UpdateRange(items);
+                //         _context.SaveChanges();
+                //     }
+                //     else if (request?.is_approved == "A")
+                //     {
+                //         // d.status = String.Format("Approval {0} Pending", int.TryParse(role_type, out var i) ? i + 1 : role_type);
+                //         if(role_type == "1")
+                //         {
+                //             d.status = "Waiting Safety Approval";
+                //         }
+                //         else if(role_type == "2")
+                //         {
+                //             d.status = "Menunggu Konfirmasi Gudang";
+                //         }
+                //         d.updated_at = DateTime.Now;
+                //     }
+                //     else if (request?.is_approved == "R")
+                //     {
+                //         // d.status = String.Format("Approval {0} Rejected", role_type);
+
+                //         if(role_type == "1")
+                //         {
+                //             d.status = "Approval Section Head Rejected";
+                //         }
+                //         else if(role_type == "2")
+                //         {
+                //             d.status = "Approval Section Head Safety Rejected";
+                //         }else if(role_type == "3")
+                //         {
+                //             d.status = "Approval Gudang Rejected";
+                //         }
+                //         d.updated_at = DateTime.Now;
+                //     }
+                // }
 
                 _context.ApprovalStatuses.UpdateRange(approvalStatuses);
                 _context.TransactionHistories.UpdateRange(transactionHistories);

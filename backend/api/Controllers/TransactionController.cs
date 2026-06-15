@@ -268,12 +268,17 @@ namespace api.Controllers
                     out var UsersCachesErrors))
                     validationRequest.errValidate.Add("users_cache_id", new[] { UsersCachesErrors });
             }
-            if (employeeRequest?.bagian_id != null){
-                if (!ValidationHelper.TryValidateForeignKey(
-                    employeeRequest?.bagian_id,
-                    id => _context.BagianUsers.Any(d => d.bagian_id == id),
-                    out var BagianUsersErrors))
-                    validationRequest.errValidate.Add("employeeRequest.bagian_id", new[] { BagianUsersErrors });
+            if (employeeRequest?.bagian_id != null)
+            {
+                var bagianIdInt = employeeRequest.bagian_id.Value;
+
+                var bagianExists = _context.BagianUsers.Any(d => d.bagian_id == bagianIdInt);
+
+                if (!bagianExists)
+                {
+                    validationRequest.errValidate
+                        .Add("employeeRequest.bagian_id", new[] { "The field 'bagian_id' value is not found." });
+                }
             }
             // if (request.pekerja_temp_id != null)
             // {
@@ -385,9 +390,50 @@ namespace api.Controllers
                         employee.nama_pekerja = employeeRequest.nama_pekerja;
                         employee.fungsi_pekerja = employeeRequest.fungsi_pekerja;
                         employee.id_finger = employeeRequest.id_finger;
-                        employee.perusahaan_pekerja = employeeRequest.perusahaan_pekerja;
+                        // employee.perusahaan_pekerja = employeeRequest.perusahaan_pekerja;
+                        // Default perusahaan_pekerja for internal (OWN) if empty/null
+                        if (string.IsNullOrWhiteSpace(employeeRequest.perusahaan_pekerja)
+                            && request.kategori_pekerja == "OWN")
+                        {
+                            employee.perusahaan_pekerja = "Internal Pertamina";
+                        }
+                        else
+                        {
+                            employee.perusahaan_pekerja = employeeRequest.perusahaan_pekerja;
+                        }
                         employee.link_file_pendukung = link_file_pendukung ?? employee.link_file_pendukung;
                         employee.bagian_id = employeeRequest.bagian_id;
+                        // employee.synced_at = DateTime.Now;
+                        // employee.updated_at = DateTime.Now;
+                        // if (employee.pekerja_temp_id == Guid.Empty)
+                        // {
+                        //     employee.pekerja_temp_id = Guid.NewGuid();
+                        //     employee.created_at = DateTime.Now;
+                        //     _context.Employees.Add(employee);
+                        // }
+                        // else
+                        // {
+                        //     _context.Employees.Update(employee);
+                        // }
+                        // _context.SaveChanges();
+                        // employee.BagianUserDto = _context.BagianUsers.FirstOrDefault(b => b.bagian_id == employeeRequest.bagian_id);
+
+                        // NEW: resolve fungsi from bagian_id
+                        if (employeeRequest.bagian_id != null && request.kategori_pekerja == "OWN")
+                        {
+                            var bagianIdInt = employeeRequest.bagian_id.Value;
+
+                            var bagian = _context.BagianUsers.FirstOrDefault(b => b.bagian_id == bagianIdInt);
+                            if (bagian != null)
+                            {
+                                var fungsi = _context.FungsiUsers.FirstOrDefault(f => f.fungsi_id == bagian.fungsi_id);
+                                if (fungsi != null)
+                                {
+                                    employee.fungsi_pekerja = fungsi.nama; // or another property as needed
+                                }
+                            }
+                        }
+
                         employee.synced_at = DateTime.Now;
                         employee.updated_at = DateTime.Now;
                         if (employee.pekerja_temp_id == Guid.Empty)
@@ -401,14 +447,19 @@ namespace api.Controllers
                             _context.Employees.Update(employee);
                         }
                         _context.SaveChanges();
-                        employee.BagianUserDto = _context.BagianUsers.FirstOrDefault(b => b.bagian_id == employeeRequest.bagian_id);
+
+                        if (employeeRequest.bagian_id != null)
+                        {
+                            var bagianIdInt2 = employeeRequest.bagian_id.Value;
+                            employee.BagianUserDto = _context.BagianUsers.FirstOrDefault(b => b.bagian_id == bagianIdInt2);
+                        }
                     }
                 }
-                SigapUser sigapUser = _context.SigapUsers
-                .Include(o => o.BagianUserDto)
-                .Include(o => o.UserRoleDto!).ThenInclude(o => o.RoleDto)
-                .FirstOrDefault(o => o.user_id.ToString() == request.users_cache_id)!;
-                FungsiUser? fungsiUser = _context.FungsiUsers.FirstOrDefault(o => o.fungsi_id == sigapUser.BagianUserDto!.fungsi_id);
+                // SigapUser sigapUser = _context.SigapUsers
+                //     .Include(o => o.BagianUserDto)
+                //     .Include(o => o.UserRoleDto!).ThenInclude(o => o.RoleDto)
+                //     .FirstOrDefault(o => o.user_id.ToString() == request.users_cache_id)!;
+                // FungsiUser? fungsiUser = _context.FungsiUsers.FirstOrDefault(o => o.fungsi_id == sigapUser.BagianUserDto!.fungsi_id);
 
                 UsersCache? usersCache = _context.UsersCaches.FirstOrDefault(o => o.user_id == request.users_cache_id);
                 List<ApprovalStatus> approvalLegacy = new List<ApprovalStatus>();
@@ -422,10 +473,7 @@ namespace api.Controllers
                             , user_id = validationRequest.legacyUserId[i - 1].ToString()
                             , role_type = i.ToString()
                             , approval_role_id = validationRequest.legacyRoleId[i - 1]
-                            , is_approved =
-                                (sigapUser.bagian_id == 42 || sigapUser.BagianUserDto?.nama == "Safety") 
-                                && (fungsiUser?.fungsi_id == 11 || fungsiUser?.nama == "HSSE")
-                                && i == 1 ? "A" : null
+                            , is_approved = null
                             , created_at = DateTime.Now
                             , updated_at = DateTime.Now
                             , usersCacheDto = _context.UsersCaches.FirstOrDefault(o => o.user_id == validationRequest.legacyUserId[i - 1].ToString())
@@ -435,10 +483,15 @@ namespace api.Controllers
 
                 TransactionHistory data = request.MapToDtoFromCreate();
                 string status = "";
-                if(request.kategori_transact_id == "OUT")
-                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Waiting Safety Approval" : "Waiting Section Head Approval";
+
+                if (request.kategori_transact_id == "OUT")
+                {
+                    status = "Menunggu Approval Supervisor";
+                }
                 else
+                {
                     status = "Done";
+                }
                 data.transact_id = Guid.NewGuid();
                 data.CategoryTransactionsDto = _context.CategoryTransactions.FirstOrDefault(b => b.kategori_transact_id == data.kategori_transact_id);
                 data.CategoryEmployeeDto = _context.CategoryEmployees.FirstOrDefault(b => b.kategori_pekerja_id == data.kategori_pekerja);
@@ -552,7 +605,7 @@ namespace api.Controllers
                 {
                     Errors?.Add("transact_id", new[] { "The field 'transact_id' value is not found."} );
                     return NotFound(ApiResponse<object>.Fail("Update transaction failed", Errors));
-                }else if(data.status != "Waiting Section Head Approval" && data.status != "Waiting Safety Approval")
+                }else if(data.status != "Menunggu Approval Supervisor")
                 {
                     Errors?.Add("transact_id", new[] { "The transaction approval is on processing or done."} );
                     return StatusCode(400, ApiResponse<object>.Fail("Can't update this transaction.", Errors));
@@ -633,11 +686,11 @@ namespace api.Controllers
                         _context.SaveChanges();
                     }
                 }
-                SigapUser sigapUser = _context.SigapUsers
-                .Include(o => o.BagianUserDto)
-                .Include(o => o.UserRoleDto!).ThenInclude(o => o.RoleDto)
-                .FirstOrDefault(o => o.user_id.ToString() == request.users_cache_id)!;
-                FungsiUser? fungsiUser = _context.FungsiUsers.FirstOrDefault(o => o.fungsi_id == sigapUser.BagianUserDto!.fungsi_id);
+                // SigapUser sigapUser = _context.SigapUsers
+                // .Include(o => o.BagianUserDto)
+                // .Include(o => o.UserRoleDto!).ThenInclude(o => o.RoleDto)
+                // .FirstOrDefault(o => o.user_id.ToString() == request.users_cache_id)!;
+                // FungsiUser? fungsiUser = _context.FungsiUsers.FirstOrDefault(o => o.fungsi_id == sigapUser.BagianUserDto!.fungsi_id);
 
                 UsersCache? usersCache = _context.UsersCaches.FirstOrDefault(o => o.user_id == request.users_cache_id);
                 approvalLegacy = new List<ApprovalStatus>();
@@ -680,10 +733,7 @@ namespace api.Controllers
                             ,
                             approval_role_id = validationRequest.legacyRoleId[i - 1]
                             ,
-                            is_approved =
-                                (sigapUser.bagian_id == 42 || sigapUser.BagianUserDto?.nama == "Safety")
-                                && (fungsiUser?.fungsi_id == 11 || fungsiUser?.nama == "HSSE")
-                                && i == 1 ? "A" : null
+                            is_approved = null
                             ,
                             created_at = DateTime.Now
                             ,
@@ -694,11 +744,19 @@ namespace api.Controllers
                     }
                 }
                 
-                string status = "";
-                if(request.kategori_transact_id == "OUT")
-                    status = approvalLegacy.Where(o => o.is_approved == "A").Count() == 0 ? "Waiting Section Head Approval" : "Waiting Safety Approval";
+                string status = data.status; // default keep current
+
+                if (request.kategori_transact_id == "OUT")
+                {
+                    if (data.status == "Menunggu Approval Supervisor")
+                    {
+                        status = "Menunggu Approval Supervisor";
+                    }
+                }
                 else
+                {
                     status = "Done";
+                }
                 data.kategori_transact_id = request.kategori_transact_id;
                 data.CategoryTransactionsDto = _context.CategoryTransactions.FirstOrDefault(b => b.kategori_transact_id == data.kategori_transact_id);
                 data.kategori_pekerja = request.kategori_pekerja;

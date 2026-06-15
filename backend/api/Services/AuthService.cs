@@ -36,6 +36,7 @@ public class AuthService
     }
     public List<Claim> GetClaims(SigapUserDto sigapUser)
     {
+        Console.WriteLine($"[AUTH] Building claims for user_id={sigapUser.user_id}, RoleCode={sigapUser.RoleCode}");
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, sigapUser.user_id.ToString())
@@ -46,6 +47,12 @@ public class AuthService
             , new Claim("bagian_nama", sigapUser.BagianUserDto?.nama?.ToString() ?? "")
             // , new Claim(ClaimTypes.Role, "admin")
         };
+
+        if (!string.IsNullOrEmpty(sigapUser.RoleCode))
+        {
+            claims.Add(new Claim("RoleCode", sigapUser.RoleCode));
+            claims.Add(new Claim(ClaimTypes.Role, sigapUser.RoleCode));
+        }
         return claims;
     }
      public static string HashPassword(string password)

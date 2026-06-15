@@ -38,11 +38,11 @@
 					<div class="col-md-6">
 						<div class="form-group mb-3">
 							<label for="NamaPekerja">Nama Pekerja<span class="text-red">*</span></label>
-							<input type="text" class="form-control" id="namapekerja" value="@User.FindFirst("UserNama")?.Value" disabled />
+							<input type="text" class="form-control" id="namapekerja" />
 						</div>
 						<div class="form-group mb-3">
-							<label for="BagianPekerja">Bagian / Fungsi<span class="text-red">*</span></label>
-							<input type="text" class="form-control" id="bagianfungsipekerja" maxlength="18" value="@User.FindFirst("BagianNama")?.Value / @User.FindFirst("FungsiNama")?.Value" disabled />
+							<label for="BagianPekerja">Bagian<span class="text-red">*</span></label>
+							<select name="bagianpekerja" class="form-control select2" id="bagianpekerja"></select>
 						</div>
 						@* <div class="form-check">
 							<input type="checkbox" class="form-check-input" id="tkjpCheckbox">
@@ -57,6 +57,10 @@
 						<div class="form-group mb-3">
 							<label for="MIV">No. MIV<span class="text-red">*</span></label>
 							<input type="text" id="no_miv_safety" class="form-control" placeholder="masukkan No. MIV" required />
+						</div>
+						<div class="form-group mb-3">
+							<label for="MIV">Nomor Pekerja<span class="text-red">*</span></label>
+							<input type="text" id="nopekerja" class="form-control" placeholder="masukkan No. Pekerja" required />
 						</div>
 					</div>
 				</div>
@@ -101,15 +105,15 @@
 					</div>
 					<div class="row mt-2">
 						<div class="col-md-6">
-							<div class="form-group">
+							@*<div class="form-group">
 								<label for ="BagianPekerjaTKJP">Bagian<span class="text-red">*</span></label>
-								@* <input id="bagianTKJP" type="text" class="form-control" required disabled /> *@
+								@* <input id="bagianTKJP" type="text" class="form-control" required disabled /> 
                                 <select id="bagianTKJP" class="form-control select2 d-block" disabled></select>
 								<input id="fungsiTKJP" type="hidden">
 								@* <label for ="FungsiPekerjaTKJP">Fungsi</label>
-								<input id="fungsiTKJP" type="text" class="form-control" required disabled /> *@
-								@* <input type="text" class="form-control" required disabled /> *@
-							</div>
+								<input id="fungsiTKJP" type="text" class="form-control" required disabled /> 
+								@* <input type="text" class="form-control" required disabled /> 
+							</div>*@
 						</div>
 						<div class="col-md-6 mt-2 mt-md-0">
 							<div class="form-group">

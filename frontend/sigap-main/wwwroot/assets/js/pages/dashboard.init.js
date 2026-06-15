@@ -100,30 +100,52 @@ function ChartColorChangeSparkLine(series, chartupdate, chartId) {
     },
 
     //creates Donut chart
+    // Dashboard.prototype.createDonutChart = function (element, data, colors, select) {
+    //     // var total = data.reduce((sum, item) => sum + item.value, 0);
+    //     var donutChart = Morris.Donut({
+    //         element: element,
+    //         data: data,
+    //         resize: true,
+    //         colors: colors,
+    //         formatter: function (value) {
+    //             // return Math.round((value / total) * 100) + '%';
+    //             return value + '%';
+    //         },
+    //     click: function (i, row) {
+    //         const modalEl = document.getElementById('donutModal');
+    //         if (!modalEl) return;
+
+    //         const donutModal = new bootstrap.Modal(modalEl);
+    //         donutModal.show();
+    //     }
+    //     });
+    //     donutChart.select(select);
+    //     ChartColorChange(donutChart,'morris-donut');
+
+    //     //return donutChart;
+    // },
+
     Dashboard.prototype.createDonutChart = function (element, data, colors, select) {
-        // var total = data.reduce((sum, item) => sum + item.value, 0);
-        var donutChart = Morris.Donut({
-            element: element,
-            data: data,
-            resize: true,
-            colors: colors,
-            formatter: function (value) {
-                // return Math.round((value / total) * 100) + '%';
-                return value + '%';
-            },
-        //    click: function (i, row) {
-        //        console.log('Clicked donut segment:', row);
+    var donutChart = Morris.Donut({
+        element: element,
+        data: data,
+        resize: true,
+        colors: colors,
+        formatter: function (value) {
+            return value + '%';
+        },
+        click: function (i, row) {
+            const modalEl = document.getElementById('donutModal');
+            if (!modalEl) return;
 
-        //        const donutModal = new bootstrap.Modal(document.getElementById('donutModal'));
-        //        donutModal.show();
-        //        //$('#donutModal').modal('show')
-        //    }
-        });
-        donutChart.select(select);
-        ChartColorChange(donutChart,'morris-donut');
+            const donutModal = new bootstrap.Modal(modalEl);
+            donutModal.show();
+        }
+    });
 
-        //return donutChart;
-    },
+    donutChart.select(select);
+    ChartColorChange(donutChart, 'morris-donut');
+};  
 
     //creates Stacked chart
     Dashboard.prototype.createStackedChart  = function(element, data, xkey, ykeys, labels, lineColors) {
@@ -261,186 +283,488 @@ $(function () {
 
 });
 
+// function loadData() {
+//     const tbody = $("#donutModal tbody");
+
+//     // Optionally show spinner over donut chart as well
+//     // const donutContainer = $("#morris-donut");
+//     // donutContainer.html(`
+//     //     <div class="d-flex justify-content-center align-items-center" style="height:200px;">
+//     //         <div class="spinner-border text-secondary" role="status"></div>
+//     //     </div>
+//     // `);
+
+//     const donutContainer = $("#donut-container");
+//     // donutContainer.html(`
+//     //     <div class="d-flex flex-column justify-content-center align-items-center" style="height: 250px;">
+//     //         <div class="spinner-border text-secondary" role="status" style="width: 5rem; height: 5rem;"></div>
+//     //         <span class="mt-3 fw-semibold fs-6 text-secondary">Memuat data...</span>
+//     //     </div>
+//     // `);
+
+//     // $("#wrapper-dashboard").append(`
+//     //     <div class="spinner-overlay">
+//     //         <div class="spinner-border" role="status"></div>
+//     //     </div>
+//     // `);
+
+//     // let wrapper = $("#wrapper-dashboard");
+//     // let originalContent = wrapper.html();
+//     // wrapper.html(`
+//     //     <div class="d-flex justify-content-center p-5">
+//     //         <div class="spinner-border" role="status"></div>
+//     //     </div>
+//     // `);
+//     // wrapper.removeAttr("hidden");
+
+//     // $.ajax({
+//     //     url: '/api/Dashboard/readiness', // change to your actual endpoint
+//     //     method: 'GET',
+//     //     dataType: 'json',
+//     //     success: function (res) {
+//     //         tbody.empty();
+//     //         let totalJumlahBarang = 0;
+//     //         let totalMSLBarang = 0;
+
+//     //         const categories = res.data || [];
+
+//     //         if (categories.length === 0) {
+//     //             tbody.html(`<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>`);
+//     //             donutContainer.html(`
+//     //                 <p class="text-black">Tidak ada data.</p>
+//     //             `);
+//     //             return;
+//     //         }
+
+//     //         categories.forEach((category, index) => {
+//     //             if (!category.itemDto || category.itemDto.length === 0) return;
+
+//     //             const collapseId = `category${index + 1}`;
+//     //             let totalJumlahBarangPerKategori = 0;
+//     //             let totalMSLBarangPerKategori = 0;
+
+//     //             const itemsRows = (category.itemDto || []).map((item, i) => {
+//     //                 const readiness = Math.round(
+//     //                     (item.jumlah_barang / (item.msl_barang || 1)) * 100
+//     //                 );
+//     //                 totalJumlahBarangPerKategori += item.jumlah_barang;
+//     //                 totalMSLBarangPerKategori += item.msl_barang;
+
+//     //                 return `
+//     //                     <tr>
+//     //                         <td>${i + 1}</td>
+//     //                         <td>${item.nama_barang}</td>
+//     //                         <td>${item.jumlah_barang}</td>
+//     //                         <td>${item.msl_barang}</td>
+//     //                         <td><span class="badge ${getBadgeClass(readiness)}">${readiness}%</span></td>
+//     //                     </tr>
+//     //                 `;
+//     //             }).join("");
+
+//     //             const readinessCategory = Math.round(
+//     //                 (totalJumlahBarangPerKategori / (totalMSLBarangPerKategori || 1)) * 100
+//     //             );
+
+//     //             const categoryRow = `
+//     //                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+//     //                     <td>
+//     //                         <a href="#${collapseId}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="${collapseId}">
+//     //                             <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
+//     //                         </a>
+//     //                     </td>
+//     //                     <td class="text-start">${category.namakategoribar}</td>
+//     //                     <td><span class="badge ${getBadgeClass(readinessCategory)}">${readinessCategory}%</span></td>
+//     //                 </tr>
+//     //             `;
+
+//     //             const collapseRow = `
+//     //                 <tr class="collapse" id="${collapseId}">
+//     //                     <td colspan="3" class="p-0">
+//     //                         <div class="collapse ps-custom" id="${collapseId}">
+//     //                             <table class="table table-bordered table-sm mb-0 align-middle nested-table">
+//     //                                 <thead class="table-dark text-white">
+//     //                                     <tr>
+//     //                                         <th>No</th>
+//     //                                         <th>Nama Material</th>
+//     //                                         <th>Stock</th>
+//     //                                         <th>MSL</th>
+//     //                                         <th>Readiness Stock</th>
+//     //                                     </tr>
+//     //                                 </thead>
+//     //                                 <tbody class="tbody-custom">${itemsRows}</tbody>
+//     //                             </table>
+//     //                         </div>
+//     //                     </td>
+//     //                 </tr>
+//     //             `;
+
+//     //             totalJumlahBarang += totalJumlahBarangPerKategori;
+//     //             totalMSLBarang += totalMSLBarangPerKategori;
+
+//     //             tbody.append(categoryRow + collapseRow);
+//     //         });
+
+//     //         bindCollapseIcons();
+//     //         // var donutEXChartColors = getChartColorsArray("morris-donut");
+//     //         // if (donutEXChartColors) {
+//     //         //     var $donutData = [
+//     //         //         {label: "Barang Tersedia", value: 144},
+//     //         //         {label: "Tidak Tersedia", value: 56},
+//     //         //     ];
+//     //         //     $.Dashboard.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
+//     //         //     //window.myDonut = this.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
+//     //         // }
+
+//     //         // donutContainer.html(`
+//     //         //     <div id="morris-donut"
+//     //         //         data-colors='["#3BFF3B","#FF3B3E"]'
+//     //         //         class="morris-charts morris-donut"
+//     //         //         dir="ltr">
+// 	// 		// 	</div>
+// 	// 		// 	<p class="text-black">Klik untuk melihat detail</p>
+//     //         // `);
+
+//     //         // $("#wrapper-dashboard .spinner-overlay").remove();
+
+//     //         wrapper.html(originalContent);
+
+//     //         var divider = totalMSLBarang || 1;
+//     //         if(totalJumlahBarang <= 0)
+//     //             $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#FF3B3E'], 0);
+//     //         else if(totalJumlahBarang >= totalMSLBarang)
+//     //             $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#3BFF3B'], 0);
+//     //         else
+//     //             $.Dashboard.createDonutChart('morris-donut', [
+//     //                 {label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)},
+//     //                 {label: "Tidak Tersedia", value: Math.round(((totalMSLBarang-totalJumlahBarang)/divider) * 100)}
+//     //             ], ['#3BFF3B','#FF3B3E'], 0);
+//     //     },
+//     //     error: function (xhr) {
+//     //         let res = xhr.responseJSON;
+//     //         let msg = res?.message || 'Gagal memuat data readiness.';
+
+//     //         if (res?.errors) {
+//     //             // Get first error key and its first message
+//     //             const firstKey = Object.keys(res.errors)[0];
+//     //             const firstError = res.errors[firstKey]?.[0];
+
+//     //             if (firstError) {
+//     //                 msg = firstError; // show only that message
+//     //             }
+//     //         }
+
+//     //         donutContainer.html(`
+// 	// 			<p class="text-danger">Gagal memuat data readiness.</p>
+//     //         `);
+//     //     }
+//     // });
+
+//     let wrapper = $("#wrapper-dashboard");
+//     // let originalContent = wrapper.html();
+//     wrapper.before(`
+//         <div class="d-flex justify-content-center p-5">
+//             <div class="spinner-border" role="status"></div>
+//         </div>
+//     `);
+
+//     const requestDashboardData = $.ajax({
+//         url: '/api/Dashboard',
+//         method: 'GET',
+//         dataType: 'json',
+//     }).fail(function(xhr) {
+//         let res = xhr.responseJSON;
+//         let msg = res?.message || 'Gagal memuat data dashboard.';
+
+//         if (res?.errors) {
+//             // Get first error key and its first message
+//             const firstKey = Object.keys(res.errors)[0];
+//             const firstError = res.errors[firstKey]?.[0];
+
+//             if (firstError) {
+//                 msg = firstError; // show only that message
+//             }
+//         }
+
+//         $('#error-dashboard').removeAttr("hidden");
+//     });
+
+//     const requestReadinessData = $.ajax({
+//         url: '/api/Dashboard/readiness',
+//         method: 'GET',
+//         dataType: 'json',
+//     }).fail(function(xhr) {
+//         let res = xhr.responseJSON;
+//         let msg = res?.message || 'Gagal memuat data readiness.';
+
+//         if (res?.errors) {
+//             // Get first error key and its first message
+//             const firstKey = Object.keys(res.errors)[0];
+//             const firstError = res.errors[firstKey]?.[0];
+
+//             if (firstError) {
+//                 msg = firstError; // show only that message
+//             }
+//         }
+
+//         donutContainer.html(`
+//             <p class="text-danger">Gagal memuat data readiness.</p>
+//         `);
+//     });
+
+//     // $.when(requestDashboardData, requestReadinessData).done(function (resDashboardData, resReadinessData) {
+//     //     const dashboardData = resDashboardData[0].data || {};
+//     //     if (dashboardData.length === 0) {
+//     //         $('#transact_in_cnt').html('Tidak ada data.');
+//     //         $('#transact_out_cnt').html('Tidak ada data.');
+//     //         $('#transact_pending_cnt').html('Tidak ada data.');
+//     //         $('#item_low_stock_cnt').html('Tidak ada data.');
+//     //         $('#pemasukkan-terbaru').append(`<li>Tidak ada data pemasukkan terbaru.</li>`);
+//     //         $('#pengeluaran-terbaru').append(`<li>Tidak ada data pengeluaran terbaru.</li>`);
+//     //         $('#tombol-riwayat-transaksi').hide();
+//     //         $('#tombol-riwayat-stock').hide();
+//     //         return;
+//     //     }
+
+//     //     $('#transact_in_cnt').html(dashboardData.transact_in_cnt);
+//     //     $('#transact_out_cnt').html(dashboardData.transact_out_cnt);
+//     //     $('#transact_pending_cnt').html(dashboardData.transact_pending_cnt);
+//     //     $('#item_low_stock_cnt').html(dashboardData.item_low_stock_cnt);
+//     //     renderLatestActivities(dashboardData);
+
+//     //     // ========================================================================================
+
+//     //     tbody.empty();
+//     //     let totalJumlahBarang = 0;
+//     //     let totalMSLBarang = 0;
+
+//     //     const categories = resReadinessData[0].data || [];
+
+//     //     if (categories.length === 0) {
+//     //         tbody.html(`<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>`);
+//     //         donutContainer.html(`
+//     //             <p class="text-black">Tidak ada data.</p>
+//     //         `);
+//     //         return;
+//     //     }
+
+//     //     categories.forEach((category, index) => {
+//     //         if (!category.itemDto || category.itemDto.length === 0) return;
+
+//     //         const collapseId = `category${index + 1}`;
+//     //         let totalJumlahBarangPerKategori = 0;
+//     //         let totalMSLBarangPerKategori = 0;
+
+//     //         const itemsRows = (category.itemDto || []).map((item, i) => {
+//     //             const readiness = Math.round(
+//     //                 (item.jumlah_barang / (item.msl_barang || 1)) * 100
+//     //             );
+//     //             totalJumlahBarangPerKategori += item.jumlah_barang;
+//     //             totalMSLBarangPerKategori += item.msl_barang;
+
+//     //             return `
+//     //                 <tr>
+//     //                     <td>${i + 1}</td>
+//     //                     <td>${item.nama_barang}</td>
+//     //                     <td>${item.jumlah_barang - item.booked_qty}</td>
+//     //                     <td>${item.booked_qty}</td>
+//     //                     <td>${item.jumlah_barang}</td>
+//     //                     <td>${item.msl_barang}</td>
+//     //                     <td><span class="badge ${getBadgeClass(readiness)}">${readiness}%</span></td>
+//     //                 </tr>
+//     //             `;
+//     //         }).join("");
+
+//     //         const readinessCategory = Math.round(
+//     //             (totalJumlahBarangPerKategori / (totalMSLBarangPerKategori || 1)) * 100
+//     //         );
+
+//     //         const categoryRow = `
+//     //             <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+//     //                 <td>
+//     //                     <a href="#${collapseId}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="${collapseId}">
+//     //                         <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
+//     //                     </a>
+//     //                 </td>
+//     //                 <td class="text-start">${category.namakategoribar}</td>
+//     //                 <td><span class="badge ${getBadgeClass(readinessCategory)}">${readinessCategory}%</span></td>
+//     //             </tr>
+//     //         `;
+
+//     //         const collapseRow = `
+//     //             <tr class="collapse" id="${collapseId}">
+//     //                 <td colspan="3" class="p-0">
+//     //                     <div class="collapse ps-custom" id="${collapseId}">
+//     //                         <table class="table table-bordered table-sm mb-0 align-middle nested-table">
+//     //                             <thead class="table-dark text-white">
+//     //                                 <tr>
+//     //                                     <th style="width:5%">No</th>
+//     //                                     <th style="width:30%">Nama Material</th>
+//     //                                     <th style="width:10%">Stok</th>
+//     //                                     <th style="width:10%">Booked</th>
+//     //                                     <th style="width:10%">Jumlah</th>
+//     //                                     <th style="width:10%">MSL</th>
+//     //                                     <th style="width:25%">Readiness Stock</th>
+//     //                                 </tr>
+//     //                             </thead>
+//     //                             <tbody class="tbody-custom">${itemsRows}</tbody>
+//     //                         </table>
+//     //                     </div>
+//     //                 </td>
+//     //             </tr>
+//     //         `;
+
+//     //         totalJumlahBarang += totalJumlahBarangPerKategori;
+//     //         totalMSLBarang += totalMSLBarangPerKategori;
+
+//     //         tbody.append(categoryRow + collapseRow);
+//     //     });
+
+//     //     bindCollapseIcons();
+//     //     // var donutEXChartColors = getChartColorsArray("morris-donut");
+//     //     // if (donutEXChartColors) {
+//     //     //     var $donutData = [
+//     //     //         {label: "Barang Tersedia", value: 144},
+//     //     //         {label: "Tidak Tersedia", value: 56},
+//     //     //     ];
+//     //     //     $.Dashboard.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
+//     //     //     //window.myDonut = this.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
+//     //     // }
+
+//     //     donutContainer.html(`
+//     //         <div id="morris-donut"
+//     //             data-colors='["#3BFF3B","#FF3B3E"]'
+//     //             class="morris-charts morris-donut"
+//     //             dir="ltr">
+//     //         </div>
+//     //         <p class="text-black">Klik untuk melihat detail</p>
+//     //     `);
+
+//     //     // $("#wrapper-dashboard .spinner-overlay").remove();
+//     //     wrapper.prev().remove();
+//     //     wrapper.removeAttr("hidden");
+
+//     //     var divider = totalMSLBarang || 1;
+//     //     if(totalJumlahBarang <= 0)
+//     //         $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#FF3B3E'], 0);
+//     //     else if(totalJumlahBarang >= totalMSLBarang)
+//     //         $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#3BFF3B'], 0);
+//     //     else
+//     //         $.Dashboard.createDonutChart('morris-donut', [
+//     //             {label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)},
+//     //             {label: "Tidak Tersedia", value: Math.round(((totalMSLBarang-totalJumlahBarang)/divider) * 100)}
+//     //         ], ['#3BFF3B','#FF3B3E'], 0);
+
+//     //     // wrapper.html(originalContent);
+//     // });
+
+//     $.when(requestDashboardData, requestReadinessData).done(function (resDashboardData, resReadinessData) {
+//         const dashboardData = resDashboardData[0].data || {};
+//         const categories = resReadinessData[0].data || [];
+//         let wrapper = $("#wrapper-dashboard");
+
+//         // if (!dashboardData || Object.keys(dashboardData).length === 0) {
+//         //     $('#transact_in_cnt').html('Tidak ada data.');
+//         //     $('#transact_out_cnt').html('Tidak ada data.');
+//         //     $('#transact_pending_cnt').html('Tidak ada data.');
+//         //     $('#item_low_stock_cnt').html('Tidak ada data.');
+//         //     $('#pemasukkan-terbaru').append(`
+//         //         <div class="text-muted">Tidak ada data.</div>
+//         //     `);
+//         //     return;
+//         // }
+
+//         if (!dashboardData || Object.keys(dashboardData).length === 0) {
+//             $('#transact_in_cnt').html('Tidak ada data.');
+//             $('#transact_out_cnt').html('Tidak ada data.');
+//             $('#transact_pending_cnt').html('Tidak ada data.');
+//             $('#item_low_stock_cnt').html('Tidak ada data.');
+//             $('#pemasukkan-terbaru').html('<div class="text-muted">Tidak ada data.</div>');
+//             $('#pengeluaran-terbaru').html('<div class="text-muted">Tidak ada data.</div>');
+//             return;
+//         }
+
+//         let readyItemCount = 0;
+//         let belowItemCount = 0;
+
+//         categories.forEach((category, index) => {
+//             if (!category.itemDto || category.itemDto.length === 0) return;
+
+//             const collapseId = `category${index + 1}`;
+
+//             const itemsRows = (category.itemDto || []).map((item, i) => {
+//                 const readiness = Math.round(
+//                     ((item.jumlah_barang || 0) / (item.msl_barang || 1)) * 100
+//                 );
+
+//                 if (readiness >= 115) {
+//                     readyItemCount++;
+//                 } else {
+//                     belowItemCount++;
+//                 }
+
+//                 return `
+//                     <tr>
+//                         <td>${i + 1}</td>
+//                         <td>${item.nama_barang ?? '-'}</td>
+//                         <td>${item.stock_awal ?? item.jumlah_barang ?? 0}</td>
+//                         <td>${item.booked_qty ?? 0}</td>
+//                         <td>${item.jumlah_barang ?? 0}</td>
+//                         <td>${item.msl_barang ?? 0}</td>
+//                         <td>
+//                             <span class="badge ${getBadgeClass(readiness)}">
+//                                 ${readiness}%
+//                             </span>
+//                         </td>
+//                     </tr>
+//                 `;
+//             }).join('');
+
+//             if (document.getElementById(collapseId)) {
+//                 $(`#${collapseId} tbody`).html(itemsRows);
+//             }
+//         });
+
+//         wrapper.prev().remove();
+//         wrapper.removeAttr("hidden");
+
+//         const totalItems = readyItemCount + belowItemCount;
+//         const readyPercent = totalItems > 0
+//             ? Math.round((readyItemCount / totalItems) * 100)
+//             : 0;
+//         const belowPercent = totalItems > 0
+//             ? 100 - readyPercent
+//             : 0;
+
+//         if (document.getElementById('morris-donut')) {
+//             $('#morris-donut').empty();
+
+//             $.Dashboard.createDonutChart(
+//                 'morris-donut',
+//                 [
+//                     { label: "Barang Tersedia", value: readyPercent },
+//                     { label: "Tidak Tersedia", value: belowPercent }
+//                 ],
+//                 ['#3BFF3B', '#FF3B3E'],
+//                 0
+//             );
+//         }
+
+//         $('#transact_in_cnt').html(dashboardData.transact_in_cnt ?? 0);
+//         $('#transact_out_cnt').html(dashboardData.transact_out_cnt ?? 0);
+//         $('#transact_pending_cnt').html(dashboardData.transact_pending_cnt ?? 0);
+//         $('#item_low_stock_cnt').html(dashboardData.item_low_stock_cnt ?? 0);
+
+//         renderLatestActivities(dashboardData);
+//     });
+// }
+
 function loadData() {
     const tbody = $("#donutModal tbody");
-
-    // Optionally show spinner over donut chart as well
-    // const donutContainer = $("#morris-donut");
-    // donutContainer.html(`
-    //     <div class="d-flex justify-content-center align-items-center" style="height:200px;">
-    //         <div class="spinner-border text-secondary" role="status"></div>
-    //     </div>
-    // `);
-
     const donutContainer = $("#donut-container");
-    // donutContainer.html(`
-    //     <div class="d-flex flex-column justify-content-center align-items-center" style="height: 250px;">
-    //         <div class="spinner-border text-secondary" role="status" style="width: 5rem; height: 5rem;"></div>
-    //         <span class="mt-3 fw-semibold fs-6 text-secondary">Memuat data...</span>
-    //     </div>
-    // `);
+    const wrapper = $("#wrapper-dashboard");
 
-    // $("#wrapper-dashboard").append(`
-    //     <div class="spinner-overlay">
-    //         <div class="spinner-border" role="status"></div>
-    //     </div>
-    // `);
-
-    // let wrapper = $("#wrapper-dashboard");
-    // let originalContent = wrapper.html();
-    // wrapper.html(`
-    //     <div class="d-flex justify-content-center p-5">
-    //         <div class="spinner-border" role="status"></div>
-    //     </div>
-    // `);
-    // wrapper.removeAttr("hidden");
-
-    // $.ajax({
-    //     url: '/api/Dashboard/readiness', // change to your actual endpoint
-    //     method: 'GET',
-    //     dataType: 'json',
-    //     success: function (res) {
-    //         tbody.empty();
-    //         let totalJumlahBarang = 0;
-    //         let totalMSLBarang = 0;
-
-    //         const categories = res.data || [];
-
-    //         if (categories.length === 0) {
-    //             tbody.html(`<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>`);
-    //             donutContainer.html(`
-    //                 <p class="text-black">Tidak ada data.</p>
-    //             `);
-    //             return;
-    //         }
-
-    //         categories.forEach((category, index) => {
-    //             if (!category.itemDto || category.itemDto.length === 0) return;
-
-    //             const collapseId = `category${index + 1}`;
-    //             let totalJumlahBarangPerKategori = 0;
-    //             let totalMSLBarangPerKategori = 0;
-
-    //             const itemsRows = (category.itemDto || []).map((item, i) => {
-    //                 const readiness = Math.round(
-    //                     (item.jumlah_barang / (item.msl_barang || 1)) * 100
-    //                 );
-    //                 totalJumlahBarangPerKategori += item.jumlah_barang;
-    //                 totalMSLBarangPerKategori += item.msl_barang;
-
-    //                 return `
-    //                     <tr>
-    //                         <td>${i + 1}</td>
-    //                         <td>${item.nama_barang}</td>
-    //                         <td>${item.jumlah_barang}</td>
-    //                         <td>${item.msl_barang}</td>
-    //                         <td><span class="badge ${getBadgeClass(readiness)}">${readiness}%</span></td>
-    //                     </tr>
-    //                 `;
-    //             }).join("");
-
-    //             const readinessCategory = Math.round(
-    //                 (totalJumlahBarangPerKategori / (totalMSLBarangPerKategori || 1)) * 100
-    //             );
-
-    //             const categoryRow = `
-    //                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}">
-    //                     <td>
-    //                         <a href="#${collapseId}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="${collapseId}">
-    //                             <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
-    //                         </a>
-    //                     </td>
-    //                     <td class="text-start">${category.namakategoribar}</td>
-    //                     <td><span class="badge ${getBadgeClass(readinessCategory)}">${readinessCategory}%</span></td>
-    //                 </tr>
-    //             `;
-
-    //             const collapseRow = `
-    //                 <tr class="collapse" id="${collapseId}">
-    //                     <td colspan="3" class="p-0">
-    //                         <div class="collapse ps-custom" id="${collapseId}">
-    //                             <table class="table table-bordered table-sm mb-0 align-middle nested-table">
-    //                                 <thead class="table-dark text-white">
-    //                                     <tr>
-    //                                         <th>No</th>
-    //                                         <th>Nama Material</th>
-    //                                         <th>Stock</th>
-    //                                         <th>MSL</th>
-    //                                         <th>Readiness Stock</th>
-    //                                     </tr>
-    //                                 </thead>
-    //                                 <tbody class="tbody-custom">${itemsRows}</tbody>
-    //                             </table>
-    //                         </div>
-    //                     </td>
-    //                 </tr>
-    //             `;
-
-    //             totalJumlahBarang += totalJumlahBarangPerKategori;
-    //             totalMSLBarang += totalMSLBarangPerKategori;
-
-    //             tbody.append(categoryRow + collapseRow);
-    //         });
-
-    //         bindCollapseIcons();
-    //         // var donutEXChartColors = getChartColorsArray("morris-donut");
-    //         // if (donutEXChartColors) {
-    //         //     var $donutData = [
-    //         //         {label: "Barang Tersedia", value: 144},
-    //         //         {label: "Tidak Tersedia", value: 56},
-    //         //     ];
-    //         //     $.Dashboard.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
-    //         //     //window.myDonut = this.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
-    //         // }
-
-    //         // donutContainer.html(`
-    //         //     <div id="morris-donut"
-    //         //         data-colors='["#3BFF3B","#FF3B3E"]'
-    //         //         class="morris-charts morris-donut"
-    //         //         dir="ltr">
-	// 		// 	</div>
-	// 		// 	<p class="text-black">Klik untuk melihat detail</p>
-    //         // `);
-
-    //         // $("#wrapper-dashboard .spinner-overlay").remove();
-
-    //         wrapper.html(originalContent);
-
-    //         var divider = totalMSLBarang || 1;
-    //         if(totalJumlahBarang <= 0)
-    //             $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#FF3B3E'], 0);
-    //         else if(totalJumlahBarang >= totalMSLBarang)
-    //             $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#3BFF3B'], 0);
-    //         else
-    //             $.Dashboard.createDonutChart('morris-donut', [
-    //                 {label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)},
-    //                 {label: "Tidak Tersedia", value: Math.round(((totalMSLBarang-totalJumlahBarang)/divider) * 100)}
-    //             ], ['#3BFF3B','#FF3B3E'], 0);
-    //     },
-    //     error: function (xhr) {
-    //         let res = xhr.responseJSON;
-    //         let msg = res?.message || 'Gagal memuat data readiness.';
-
-    //         if (res?.errors) {
-    //             // Get first error key and its first message
-    //             const firstKey = Object.keys(res.errors)[0];
-    //             const firstError = res.errors[firstKey]?.[0];
-
-    //             if (firstError) {
-    //                 msg = firstError; // show only that message
-    //             }
-    //         }
-
-    //         donutContainer.html(`
-	// 			<p class="text-danger">Gagal memuat data readiness.</p>
-    //         `);
-    //     }
-    // });
-
-    let wrapper = $("#wrapper-dashboard");
-    // let originalContent = wrapper.html();
     wrapper.before(`
-        <div class="d-flex justify-content-center p-5">
+        <div class="d-flex justify-content-center p-5" id="dashboard-loading">
             <div class="spinner-border" role="status"></div>
         </div>
     `);
@@ -449,190 +773,234 @@ function loadData() {
         url: '/api/Dashboard',
         method: 'GET',
         dataType: 'json',
-    }).fail(function(xhr) {
+    }).fail(function (xhr) {
         let res = xhr.responseJSON;
         let msg = res?.message || 'Gagal memuat data dashboard.';
 
         if (res?.errors) {
-            // Get first error key and its first message
             const firstKey = Object.keys(res.errors)[0];
             const firstError = res.errors[firstKey]?.[0];
-
-            if (firstError) {
-                msg = firstError; // show only that message
-            }
+            if (firstError) msg = firstError;
         }
 
         $('#error-dashboard').removeAttr("hidden");
+        console.error(msg);
     });
 
     const requestReadinessData = $.ajax({
         url: '/api/Dashboard/readiness',
         method: 'GET',
         dataType: 'json',
-    }).fail(function(xhr) {
+    }).fail(function (xhr) {
         let res = xhr.responseJSON;
         let msg = res?.message || 'Gagal memuat data readiness.';
 
         if (res?.errors) {
-            // Get first error key and its first message
             const firstKey = Object.keys(res.errors)[0];
             const firstError = res.errors[firstKey]?.[0];
-
-            if (firstError) {
-                msg = firstError; // show only that message
-            }
+            if (firstError) msg = firstError;
         }
 
-        donutContainer.html(`
-            <p class="text-danger">Gagal memuat data readiness.</p>
-        `);
+        donutContainer.html(`<p class="text-danger">${msg}</p>`);
+        console.error(msg);
     });
 
     $.when(requestDashboardData, requestReadinessData).done(function (resDashboardData, resReadinessData) {
-        const dashboardData = resDashboardData[0].data || {};
-        if (dashboardData.length === 0) {
+        const dashboardData = resDashboardData[0]?.data || {};
+        const categories = resReadinessData[0]?.data || [];
+
+        $('#dashboard-loading').remove();
+        wrapper.removeAttr("hidden");
+
+        if (!dashboardData || Object.keys(dashboardData).length === 0) {
             $('#transact_in_cnt').html('Tidak ada data.');
             $('#transact_out_cnt').html('Tidak ada data.');
             $('#transact_pending_cnt').html('Tidak ada data.');
             $('#item_low_stock_cnt').html('Tidak ada data.');
-            $('#pemasukkan-terbaru').append(`<li>Tidak ada data pemasukkan terbaru.</li>`);
-            $('#pengeluaran-terbaru').append(`<li>Tidak ada data pengeluaran terbaru.</li>`);
-            $('#tombol-riwayat-transaksi').hide();
-            $('#tombol-riwayat-stock').hide();
+            $('#pemasukkan-terbaru').html('<div class="text-muted">Tidak ada data.</div>');
+            $('#pengeluaran-terbaru').html('<div class="text-muted">Tidak ada data.</div>');
+            tbody.html('<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>');
             return;
         }
 
-        $('#transact_in_cnt').html(dashboardData.transact_in_cnt);
-        $('#transact_out_cnt').html(dashboardData.transact_out_cnt);
-        $('#transact_pending_cnt').html(dashboardData.transact_pending_cnt);
-        $('#item_low_stock_cnt').html(dashboardData.item_low_stock_cnt);
-        renderLatestActivities(dashboardData);
-
-        // ========================================================================================
+        let readyItemCount = 0;
+        let warningItemCount = 0;
+        let belowItemCount = 0;
 
         tbody.empty();
-        let totalJumlahBarang = 0;
-        let totalMSLBarang = 0;
 
-        const categories = resReadinessData[0].data || [];
+        if (!categories || categories.length === 0) {
+            tbody.html('<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>');
+            donutContainer.html('<p class="text-black">Tidak ada data.</p>');
+        } else {
+            categories.forEach((category, index) => {
+                if (!category.itemDto || category.itemDto.length === 0) return;
 
-        if (categories.length === 0) {
-            tbody.html(`<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data.</td></tr>`);
-            donutContainer.html(`
-                <p class="text-black">Tidak ada data.</p>
-            `);
-            return;
+                const pageCollapseId = `category${index + 1}`;
+                const modalCollapseId = `modalCategory${index + 1}`;
+
+                let totalJumlahBarangPerKategori = 0;
+                let totalMSLBarangPerKategori = 0;
+
+                const itemsRows = (category.itemDto || []).map((item, i) => {
+                    const jumlahBarang = item.jumlah_barang ?? 0;
+                    const mslBarang = item.msl_barang ?? 0;
+                    const bookedQty = item.booked_qty ?? 0;
+                    const stockAwal = item.stock_awal ?? jumlahBarang;
+                    const readiness = Math.round((jumlahBarang / (mslBarang || 1)) * 100);
+
+                    if (readiness >= 115) {
+                        readyItemCount++;
+                    } else if (readiness >= 100) {
+                        warningItemCount++;
+                    } else {
+                        belowItemCount++;
+                    }
+
+                    totalJumlahBarangPerKategori += jumlahBarang;
+                    totalMSLBarangPerKategori += mslBarang;
+
+                    return `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${item.nama_barang ?? '-'}</td>
+                            <td>${stockAwal}</td>
+                            <td>${bookedQty}</td>
+                            <td>${jumlahBarang}</td>
+                            <td>${mslBarang}</td>
+                            <td>
+                                <span class="badge ${getBadgeClass(readiness)}">
+                                    ${readiness}%
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const readinessCategory = Math.round(
+                    (totalJumlahBarangPerKategori / (totalMSLBarangPerKategori || 1)) * 100
+                );
+
+                if (document.getElementById(pageCollapseId)) {
+                    $(`#${pageCollapseId} tbody`).html(itemsRows);
+                }
+
+                // tbody.append(`
+                //     <tr>
+                //         <td>
+                //             <a href="#${modalCollapseId}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="${modalCollapseId}">
+                //                 <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
+                //             </a>
+                //         </td>
+                //         <td class="text-start">${category.namakategoribar ?? '-'}</td>
+                //         <td>
+                //             <span class="badge ${getBadgeClass(readinessCategory)}">
+                //                 ${readinessCategory}%
+                //             </span>
+                //         </td>
+                //     </tr>
+                //     <tr>
+                //         <td colspan="3" class="p-0">
+                //             <div class="collapse ps-custom" id="${modalCollapseId}">
+                //                 <table class="table table-bordered table-sm mb-0 align-middle nested-table">
+                //                     <thead class="table-dark text-white">
+                //                         <tr>
+                //                             <th style="width:5%">No</th>
+                //                             <th style="width:30%">Nama Material</th>
+                //                             <th style="width:10%">Stok</th>
+                //                             <th style="width:10%">Booked</th>
+                //                             <th style="width:10%">Jumlah</th>
+                //                             <th style="width:10%">MSL</th>
+                //                             <th style="width:25%">Readiness Stock</th>
+                //                         </tr>
+                //                     </thead>
+                //                     <tbody class="tbody-custom">
+                //                         ${itemsRows}
+                //                     </tbody>
+                //                 </table>
+                //             </div>
+                //         </td>
+                //     </tr>
+                // `);
+                tbody.append(`
+                    <tr class="cursor-pointer"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#${modalCollapseId}"
+                        aria-expanded="false"
+                        aria-controls="${modalCollapseId}">
+                        <td>
+                            <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
+                        </td>
+                        <td class="text-start">${category.namakategoribar ?? '-'}</td>
+                        <td>
+                            <span class="badge ${getBadgeClass(readinessCategory)}">
+                                ${readinessCategory}%
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="p-0">
+                            <div class="collapse ps-custom" id="${modalCollapseId}">
+                                <table class="table table-bordered table-sm mb-0 align-middle nested-table">
+                                    <thead class="table-dark text-white">
+                                        <tr>
+                                            <th style="width:5%">No</th>
+                                            <th style="width:30%">Nama Material</th>
+                                            <th style="width:10%">Stok</th>
+                                            <th style="width:10%">Booked</th>
+                                            <th style="width:10%">Jumlah</th>
+                                            <th style="width:10%">MSL</th>
+                                            <th style="width:25%">Readiness Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tbody-custom">
+                                        ${itemsRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+
+            const totalItems = readyItemCount + warningItemCount + belowItemCount;
+
+            const readyPercent = totalItems > 0
+                ? Math.round((readyItemCount / totalItems) * 100)
+                : 0;
+
+            const warningPercent = totalItems > 0
+                ? Math.round((warningItemCount / totalItems) * 100)
+                : 0;
+
+            const belowPercent = totalItems > 0
+                ? 100 - readyPercent - warningPercent
+                : 0;
+
+            if (document.getElementById('morris-donut')) {
+                $('#morris-donut').empty();
+
+                $.Dashboard.createDonutChart(
+                    'morris-donut',
+                    [
+                        { label: "Safe Stock", value: readyPercent },
+                        { label: "Warning Stock", value: warningPercent },
+                        { label: "Critical Stock", value: belowPercent }
+                    ],
+                    ['#3BFF3B', '#FFA500', '#FF3B3E'],
+                    0
+                );
+            }
+
+            bindCollapseIcons();
         }
 
-        categories.forEach((category, index) => {
-            if (!category.itemDto || category.itemDto.length === 0) return;
+        $('#transact_in_cnt').html(dashboardData.transact_in_cnt ?? 0);
+        $('#transact_out_cnt').html(dashboardData.transact_out_cnt ?? 0);
+        $('#transact_pending_cnt').html(dashboardData.transact_pending_cnt ?? 0);
+        $('#item_low_stock_cnt').html(dashboardData.item_low_stock_cnt ?? 0);
 
-            const collapseId = `category${index + 1}`;
-            let totalJumlahBarangPerKategori = 0;
-            let totalMSLBarangPerKategori = 0;
-
-            const itemsRows = (category.itemDto || []).map((item, i) => {
-                const readiness = Math.round(
-                    (item.jumlah_barang / (item.msl_barang || 1)) * 100
-                );
-                totalJumlahBarangPerKategori += item.jumlah_barang;
-                totalMSLBarangPerKategori += item.msl_barang;
-
-                return `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${item.nama_barang}</td>
-                        <td>${item.jumlah_barang - item.booked_qty}</td>
-                        <td>${item.booked_qty}</td>
-                        <td>${item.jumlah_barang}</td>
-                        <td>${item.msl_barang}</td>
-                        <td><span class="badge ${getBadgeClass(readiness)}">${readiness}%</span></td>
-                    </tr>
-                `;
-            }).join("");
-
-            const readinessCategory = Math.round(
-                (totalJumlahBarangPerKategori / (totalMSLBarangPerKategori || 1)) * 100
-            );
-
-            const categoryRow = `
-                <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}">
-                    <td>
-                        <a href="#${collapseId}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="${collapseId}">
-                            <i class="mdi mdi-custom mdi-chevron-right text-black"></i>
-                        </a>
-                    </td>
-                    <td class="text-start">${category.namakategoribar}</td>
-                    <td><span class="badge ${getBadgeClass(readinessCategory)}">${readinessCategory}%</span></td>
-                </tr>
-            `;
-
-            const collapseRow = `
-                <tr class="collapse" id="${collapseId}">
-                    <td colspan="3" class="p-0">
-                        <div class="collapse ps-custom" id="${collapseId}">
-                            <table class="table table-bordered table-sm mb-0 align-middle nested-table">
-                                <thead class="table-dark text-white">
-                                    <tr>
-                                        <th style="width:5%">No</th>
-                                        <th style="width:30%">Nama Material</th>
-                                        <th style="width:10%">Stok</th>
-                                        <th style="width:10%">Booked</th>
-                                        <th style="width:10%">Jumlah</th>
-                                        <th style="width:10%">MSL</th>
-                                        <th style="width:25%">Readiness Stock</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="tbody-custom">${itemsRows}</tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            `;
-
-            totalJumlahBarang += totalJumlahBarangPerKategori;
-            totalMSLBarang += totalMSLBarangPerKategori;
-
-            tbody.append(categoryRow + collapseRow);
-        });
-
-        bindCollapseIcons();
-        // var donutEXChartColors = getChartColorsArray("morris-donut");
-        // if (donutEXChartColors) {
-        //     var $donutData = [
-        //         {label: "Barang Tersedia", value: 144},
-        //         {label: "Tidak Tersedia", value: 56},
-        //     ];
-        //     $.Dashboard.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
-        //     //window.myDonut = this.createDonutChart('morris-donut', $donutData, donutEXChartColors, 0);
-        // }
-
-        donutContainer.html(`
-            <div id="morris-donut"
-                data-colors='["#3BFF3B","#FF3B3E"]'
-                class="morris-charts morris-donut"
-                dir="ltr">
-            </div>
-            <p class="text-black">Klik untuk melihat detail</p>
-        `);
-
-        // $("#wrapper-dashboard .spinner-overlay").remove();
-        wrapper.prev().remove();
-        wrapper.removeAttr("hidden");
-
-        var divider = totalMSLBarang || 1;
-        if(totalJumlahBarang <= 0)
-            $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#FF3B3E'], 0);
-        else if(totalJumlahBarang >= totalMSLBarang)
-            $.Dashboard.createDonutChart('morris-donut', [{label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)}], ['#3BFF3B'], 0);
-        else
-            $.Dashboard.createDonutChart('morris-donut', [
-                {label: "Barang Tersedia", value: Math.round((totalJumlahBarang/divider) * 100)},
-                {label: "Tidak Tersedia", value: Math.round(((totalMSLBarang-totalJumlahBarang)/divider) * 100)}
-            ], ['#3BFF3B','#FF3B3E'], 0);
-
-        // wrapper.html(originalContent);
+        renderLatestActivities(dashboardData);
     });
 }
 
@@ -690,37 +1058,92 @@ function bindCollapseIcons() {
 // }
 
 function renderLatestActivities(data) {
+    const LIMIT = 3; // show LIMIT number of transaction
+    const pemasukkan = data.latestTransactionInDto || [];
+    const pengeluaran = data.latestTransactionOutDto || [];
 
-    // Ambil 5 data teratas (karena backend sudah sorted)
-    const pemasukkan = (data.latestTransactionInDto || []).slice(0, 5);
-    const pengeluaran = (data.latestTransactionOutDto || []).slice(0, 5);
-
-    const pemasukkanContainer = $("#pemasukkan-terbaru");
-    const pengeluaranContainer = $("#pengeluaran-terbaru");
+    const pemasukkanContainer = $('#pemasukkan-terbaru');
+    const pengeluaranContainer = $('#pengeluaran-terbaru');
 
     pemasukkanContainer.empty();
     pengeluaranContainer.empty();
 
     if (pemasukkan.length === 0) {
-        pemasukkanContainer.append(`<li>Tidak ada data Pemasukkan.</li>`);
+        pemasukkanContainer.append('<li class="feed-item"><div class="text-muted">Tidak ada data Pemasukkan.</div></li>');
     } else {
-        pemasukkan.forEach(t => pemasukkanContainer.append(generateFeedItemHTML(t)));
+        pemasukkan.slice(0, LIMIT).forEach(t => {
+            pemasukkanContainer.append(generateFeedItemHTML(t));
+        });
     }
 
     if (pengeluaran.length === 0) {
-        pengeluaranContainer.append(`<li>Tidak ada data Pengeluaran.</li>`);
+        pengeluaranContainer.append('<li class="feed-item"><div class="text-muted">Tidak ada data Pengeluaran.</div></li>');
     } else {
-        pengeluaran.forEach(t => pengeluaranContainer.append(generateFeedItemHTML(t)));
+        pengeluaran.slice(0, LIMIT).forEach(t => {
+            pengeluaranContainer.append(generateFeedItemHTML(t));
+        });
     }
 }
 
-function generateFeedItemHTML(trans) {
+// function generateFeedItemHTML(trans) {
 
+//     const date = formatDateToWIB(trans.created_at);
+
+//     // Build detail items (barang)
+//     let detailsHTML = "";
+//     let status = trans.status;
+//     trans.transactionDetailDto.forEach(d => {
+//         const barang = d.itemDto?.nama_barang ?? "-";
+//         const jumlah = d.jumlah_bar ?? 0;
+//         const uom = d.itemDto?.satuanbar_id ?? "";
+
+//         detailsHTML += `
+//             <div class="d-flex justify-content-between gap-3">
+//                 <p>${barang}</p>
+//                 <p>${jumlah}${uom.toLowerCase()}</p>
+//             </div>
+//         `;
+//     });
+
+//     switch (status) {
+//         case "Menunggu Approval Supervisor":
+//         case "Diproses Gudang":
+//         case "Menunggu Konfirmasi Gudang":
+//             status = '<span class="badge bg-warning">Pending</span>';
+//             break;
+//         case "Approval Section Head Rejected":
+//         case "Approval Safety Rejected":
+//         case "Approval Gudang Rejected":
+//         case "Ditolak Supervisor":
+//         case "Ditolak Gudang":
+//             status = '<span class="badge bg-danger">Rejected</span>';
+//             break;
+//         case "Done":
+//         case "Request Selesai":
+//             status = '<span class="badge bg-success">Done</span>';
+//             break;
+//         default:
+//             status = `<span class="badge bg-secondary">${status ?? '-'}</span>`;
+//             break;
+//     }
+
+//     return `
+//         <li class="feed-item">
+//             <div class="feed-item-list">
+//                 <div>
+//                     <div class="date">${date}</div>
+//                     <div class="d-flex mb-3">${status}</div>
+//                     ${detailsHTML}
+//                 </div>
+//             </div>
+//         </li>
+//     `;
+// }
+
+function generateFeedItemHTML(trans) {
     const date = formatDateToWIB(trans.created_at);
 
-    // Build detail items (barang)
     let detailsHTML = "";
-    let status = trans.status;
     trans.transactionDetailDto.forEach(d => {
         const barang = d.itemDto?.nama_barang ?? "-";
         const jumlah = d.jumlah_bar ?? 0;
@@ -734,27 +1157,33 @@ function generateFeedItemHTML(trans) {
         `;
     });
 
-    switch (status) {
-        case 'Waiting Section Head Approval':
-            status = `<span class="badge bg-warning">Pending</span>`;
+    const rawStatus = (trans.status ?? "").toString().trim();
+    const normalizedStatus = rawStatus.toLowerCase();
+
+    let statusBadge = "";
+
+    switch (normalizedStatus) {
+        case "menunggu approval supervisor":
+        case "diproses gudang":
+        case "menunggu konfirmasi gudang":
+            statusBadge = '<span class="badge bg-warning text-dark">Pending</span>';
             break;
-        case 'Waiting Safety Approval':
-            status = `<span class="badge bg-warning">Pending</span>`;
+
+        case "approval section head rejected":
+        case "approval safety rejected":
+        case "approval gudang rejected":
+        case "ditolak supervisor":
+        case "ditolak gudang":
+            statusBadge = '<span class="badge bg-danger">Rejected</span>';
             break;
-        case 'Menunggu Konfirmasi Gudang':
-            status = `<span class="badge bg-warning">Pending</span>`;
+
+        case "done":
+        case "request selesai":
+            statusBadge = '<span class="badge bg-success">Done</span>';
             break;
-        case 'Approval Section Head Rejected':
-            status = `<span class="badge bg-danger">Rejected</span>`;
-            break;
-        case 'Approval Safety Rejected':
-            status = `<span class="badge bg-danger">Rejected</span>`;
-            break;
-        case 'Approval Gudang Rejected':
-            status = `<span class="badge bg-danger">Rejected</span>`;
-            break;
-        case 'Done':
-            status = `<span class="badge bg-success">Done</span>`;
+
+        default:
+            statusBadge = `<span class="badge bg-secondary">${rawStatus || '-'}</span>`;
             break;
     }
 
@@ -763,7 +1192,7 @@ function generateFeedItemHTML(trans) {
             <div class="feed-item-list">
                 <div>
                     <div class="date">${date}</div>
-                    <div class="d-flex mb-3">${status}</div>
+                    <div class="d-flex mb-3">${statusBadge}</div>
                     ${detailsHTML}
                 </div>
             </div>

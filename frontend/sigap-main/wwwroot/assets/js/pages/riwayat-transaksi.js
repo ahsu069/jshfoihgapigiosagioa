@@ -87,29 +87,47 @@
 
             //kolom gambar + nama pekerja
             {
-                data: null,
+                data: "usersCacheDto.nama_pekerja",
                 title: "Nama Pekerja",
                 render: function (data, type, row) {
-                    let nama_pekerja = '';
+                    const nama =
+                        row.employeeDto?.nama_pekerja ??
+                        row.usersCacheDto?.nama_pekerja ??
+                        "-";
 
-                    if (row.employeeDto)
-                        nama_pekerja = row.employeeDto.nama_pekerja;
-                    else
-                        nama_pekerja = row.usersCacheDto.nama_pekerja;
+                    const foto = row.gambar || "/assets/images/pngwing.png";
 
                     return `
-                            <div class="d-flex img-cell align-items-center gap-1">
-                                <img 
-                                    src="${row.gambar}"
-                                    alt="${nama_pekerja}"
-                                    class="rounded-circle header-profile-user me-2"
-                                    onerror="this.onerror=null; this.src='/assets/images/pngwing.png';">
-                                <span>${nama_pekerja}</span>
-                            </div>
-                        `;
+                        <div class="d-flex img-cell align-items-center gap-1">
+                            <img 
+                                src="${foto}"
+                                alt="${nama}"
+                                class="rounded-circle header-profile-user me-2"
+                                onerror="this.onerror=null; this.src='/assets/images/pngwing.png';">
+                            <span>${nama}</span>
+                        </div>
+                    `;
                 },
                 orderable: true,
                 searchable: true
+            },
+            {
+                data: "employeeDto.nama_pekerja",
+                visible: false,
+                searchable: true,
+                orderable: false
+            },
+            {
+                data: "usersCacheDto.bagian_pekerja",
+                visible: false,
+                searchable: true,
+                orderable: false
+            },
+            {
+                data: "employeeDto.bagianUserDto.nama",
+                visible: false,
+                searchable: true,
+                orderable: false
             },
 
             //kolom pegawai
@@ -174,18 +192,14 @@
             // //kolom bagian 
             // { data: "bagian", title: "Bagian" },
             //kolom fungsi 
-            { 
-                // data: null,
+            {
                 data: "usersCacheDto.bagian_pekerja",
                 title: "Bagian",
                 render: function (data, type, row) {
-                    let bagian = '';
-
-                    if (row.employeeDto)
-                        bagian = row.employeeDto.bagianUserDto.nama;
-                    else
-                        bagian = row.usersCacheDto.bagian_pekerja;
-
+                    const bagian =
+                        row.employeeDto?.bagianUserDto?.nama ??
+                        row.usersCacheDto?.bagian_pekerja ??
+                        "-";
                     return `<span class="dt-wrap">${bagian}</span>`;
                 },
                 orderable: true,
@@ -238,10 +252,10 @@
                         // case 'Done':
                         //     return `<span class="badge bg-info">${data}</span>`;
                         //     break;
-                        case 'Waiting Safety Approval':
+                        case 'Menunggu Approval Supervisor':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
-                        case 'Waiting Section Head Approval':
+                        case 'Diproses Gudang':
                             return `<span class="badge bg-warning">Pending</span>`;
                             break;
                         case 'Menunggu Konfirmasi Gudang':
@@ -579,51 +593,49 @@
                     $('#statustransaksi').addClass('mb-1');
                     $('#labelstatustransaksi').addClass('mb-1');
                     switch (statustransaksi) {
-                        case 'Waiting Section Head Approval':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
+                        // Pending states (new flow)
+                        case 'Menunggu Approval Supervisor':
+                        case 'Diproses Gudang': // gunakan nama status tengah yang kamu pakai di backend
+                            $('#keterangan').removeClass('alert-danger').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;
-                            namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
-                            fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
+
+                            if (statustransaksi === 'Menunggu Approval Supervisor') {
+                                // Supervisor penanggung jawab
+                                namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
+                                fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
+                            } else {
+                                // Admin Gudang penanggung jawab saat proses gudang
+                                namapenanggungjawab = data.approvalGudangIdDto.usersCacheDto.nama_pekerja;
+                                fungsipenanggungjawab = data.approvalGudangIdDto.usersCacheDto.fungsi_pekerja;
+                            }
                             break;
-                        case 'Waiting Safety Approval':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
-                            badge = `<span class="badge bg-warning">Pending</span>`;
-                            namapenanggungjawab = data.approvalSectionheadIdDto.usersCacheDto.nama_pekerja;
-                            fungsipenanggungjawab = data.approvalSectionheadIdDto.usersCacheDto.fungsi_pekerja;
-                            break;
-                        case 'Menunggu Konfirmasi Gudang':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
-                            badge = `<span class="badge bg-warning">Pending</span>`;
-                            namapenanggungjawab = data.approvalGudangIdDto.usersCacheDto.nama_pekerja;
-                            fungsipenanggungjawab = data.approvalGudangIdDto.usersCacheDto.fungsi_pekerja;
-                            break;
-                        case 'Approval Section Head Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
-                            badge = `<span class="badge bg-danger">Rejected</span>`;
-                            namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
-                            fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
-                            statustransaksi = data.approvalManajemenPekerjaIdDto.remark || statustransaksi;
-                            break;
-                        case 'Approval Section Head Safety Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
+
+                        // Rejected states (tetap sama)
+                        // case 'Approval Section Head Rejected':
+                        //     $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
+                        //     badge = `<span class="badge bg-danger">Rejected</span>`;
+                        //     namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.nama_pekerja;
+                        //     fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsi_pekerja;
+                        //     statustransaksi = data.approvalManajemenPekerjaIdDto.remark || statustransaksi;
+                        //     break;
+
+                        case 'Ditolak Supervisor':
+                            $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
                             badge = `<span class="badge bg-danger">Rejected</span>`;
                             namapenanggungjawab = data.approvalSectionheadIdDto.usersCacheDto.nama_pekerja;
                             fungsipenanggungjawab = data.approvalSectionheadIdDto.usersCacheDto.fungsi_pekerja;
                             statustransaksi = data.approvalSectionheadIdDto.remark || statustransaksi;
                             break;
-                        case 'Approval Gudang Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
+
+                        case 'Ditolak Gudang':
+                            $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
                             badge = `<span class="badge bg-danger">Rejected</span>`;
                             namapenanggungjawab = data.approvalGudangIdDto.usersCacheDto.nama_pekerja;
                             fungsipenanggungjawab = data.approvalGudangIdDto.usersCacheDto.fungsi_pekerja;
                             statustransaksi = data.approvalGudangIdDto.remark || statustransaksi;
                             break;
+
+                        // Done
                         case 'Done':
                             badge = `<span class="badge bg-success">Done</span>`;
                             namapenanggungjawab = data.approvalGudangIdDto.usersCacheDto.nama_pekerja;
@@ -631,6 +643,11 @@
                             $('#keterangan').hide();
                             $('#statustransaksi').removeClass('mb-1');
                             $('#labelstatustransaksi').removeClass('mb-1');
+                            break;
+
+                        default:
+                            // fallback agar kalau ada status baru tidak blank
+                            badge = `<span class="badge bg-secondary">${statustransaksi || '-'}</span>`;
                             break;
                     }
 
@@ -702,44 +719,43 @@
                     $('#statustransaksi').addClass('mb-1');
                     $('#labelstatustransaksi').addClass('mb-1');
                     switch (statustransaksi) {
-                        case 'Waiting Section Head Approval':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
+                        // Pending (new flow)
+                        case 'Menunggu Approval Supervisor':
+                        case 'Diproses Gudang': // sesuaikan dengan nama status tengah di backend
+                            $('#keterangan').removeClass('alert-danger').addClass('alert-warning');
                             badge = `<span class="badge bg-warning">Pending</span>`;
                             break;
-                        case 'Waiting Safety Approval':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
-                            badge = `<span class="badge bg-warning">Pending</span>`;
-                            break;
-                        case 'Menunggu Konfirmasi Gudang':
-                            $('#keterangan').removeClass('alert-danger');
-                            $('#keterangan').addClass('alert-warning');
-                            badge = `<span class="badge bg-warning">Pending</span>`;
-                            break;
-                        case 'Approval Section Head Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
-                            badge = `<span class="badge bg-danger">Rejected</span>`;
-                            statustransaksi = data.approvalManajemenPekerjaIdDto.remark || statustransaksi;
-                            break;
-                        case 'Approval Section Head Safety Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
-                            badge = `<span class="badge bg-danger">Rejected</span>`;
+
+                        // Rejected
+                        // case 'Approval Section Head Rejected':
+                        //     $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
+                        //     badge = `<span class="badge bg-danger">Rejected</span>`;
+                        //     statustransaksi = data.approvalManajemenPekerjaIdDto.remark || statustransaksi;
+                        //     break;
+
+                        case 'Ditolak Supervisor':
+                            $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
+                            badge = `<span class="badge bg-danger">Rejected Spv</span>`;
                             statustransaksi = data.approvalSectionheadIdDto.remark || statustransaksi;
                             break;
-                        case 'Approval Gudang Rejected':
-                            $('#keterangan').removeClass('alert-warning');
-                            $('#keterangan').addClass('alert-danger');
-                            badge = `<span class="badge bg-danger">Rejected</span>`;
+
+                        case 'Ditolak Gudang':
+                            $('#keterangan').removeClass('alert-warning').addClass('alert-danger');
+                            badge = `<span class="badge bg-danger">Rejected Gudang</span>`;
                             statustransaksi = data.approvalGudangIdDto.remark || statustransaksi;
                             break;
+
+                        // Done
                         case 'Done':
                             badge = `<span class="badge bg-success">Done</span>`;
                             $('#keterangan').hide();
                             $('#statustransaksi').removeClass('mb-1');
                             $('#labelstatustransaksi').removeClass('mb-1');
+                            break;
+
+                        default:
+                            // fallback supaya status baru tidak bikin tampilan kosong
+                            badge = `<span class="badge bg-secondary">${statustransaksi || '-'}</span>`;
                             break;
                     }
 

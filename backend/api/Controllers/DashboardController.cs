@@ -49,7 +49,7 @@ namespace api.Controllers
                 .ToList();
 
                 dashboardDto.transact_out_cnt = _context.TransactionHistories.Count(o => CategoryTransOut.Contains(o.kategori_transact_id)
-                    && o.status.ToLower() == "done"
+                    && o.status.ToLower() == "request selesai"
                 );
                 dashboardDto.LatestTransactionOutDto = _context.TransactionHistories
                 .Include(o => o.CategoryTransactionsDto)
@@ -71,12 +71,22 @@ namespace api.Controllers
                 .Skip(0).Take(10)
                 .ToList();
 
-                dashboardDto.transact_pending_cnt = _context.TransactionHistories.Count(o => true
-                    && o.status.ToLower() != "done" && !o.status.ToLower().Contains("rejected")
+                dashboardDto.transact_pending_cnt = _context.TransactionHistories.Count(o => 
+                    o.status == "Menunggu Approval Supervisor" ||
+                    o.status == "Diproses Gudang"
                 );
-                dashboardDto.item_low_stock_cnt = _context.Items.Count(o => o.jumlah_barang <= o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
-                dashboardDto.item_ready_stock_cnt = _context.Items.Count(o => o.jumlah_barang > o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
+                // dashboardDto.item_low_stock_cnt = _context.Items.Count(o => o.jumlah_barang <= o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
+                // dashboardDto.item_ready_stock_cnt = _context.Items.Count(o => o.jumlah_barang > o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
                 // dashboardDto.readiness_item = (dashboardDto.total_item_ready_stock + dashboardDto.total_item_low_stock) == 0 ? Math.Round((decimal)0,2) : Math.Round((decimal)(dashboardDto.total_item_ready_stock / (dashboardDto.total_item_ready_stock + dashboardDto.total_item_low_stock)) * 100, 2);
+                var validItems = _context.Items.Where(o => !o.is_deleted && o.msl_barang.HasValue && o.msl_barang.Value > 0);
+
+                dashboardDto.item_ready_stock_cnt = validItems.Count(o =>
+                    o.jumlah_barang >= (int)Math.Ceiling(o.msl_barang.Value * 1.15m)
+                );
+
+                dashboardDto.item_low_stock_cnt = validItems.Count(o =>
+                    o.jumlah_barang < (int)Math.Ceiling(o.msl_barang.Value * 1.15m)
+                );
 
                 return Ok(ApiResponse<DashboardDto>.Ok("Dashboard retrieved successfully", dashboardDto));
             }
@@ -130,8 +140,10 @@ namespace api.Controllers
                                     join h in _context.TransactionHistories
                                         on d.transact_id equals h.transact_id
                                     where d.barang_id == i.barang_id
-                                        && h.status.ToLower() != "done"
-                                        && !h.status.ToLower().Contains("rejected")
+                                        && (
+                                            h.status == "Menunggu Approval Supervisor" ||
+                                            h.status == "Diproses Gudang"
+                                        )
                                     select (int?)d.jumlah_bar
                                 ).Sum() ?? 0
                             })
