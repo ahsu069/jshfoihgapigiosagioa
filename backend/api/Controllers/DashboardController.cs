@@ -72,8 +72,8 @@ namespace api.Controllers
                 .ToList();
 
                 dashboardDto.transact_pending_cnt = _context.TransactionHistories.Count(o => 
-                    o.status == "Menunggu Approval Supervisor" ||
-                    o.status == "Diproses Gudang"
+                    o.status == TransactionStatus.PENDING_SUPERVISOR ||
+                    o.status == TransactionStatus.DIPROSES_GUDANG
                 );
                 // dashboardDto.item_low_stock_cnt = _context.Items.Count(o => o.jumlah_barang <= o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
                 // dashboardDto.item_ready_stock_cnt = _context.Items.Count(o => o.jumlah_barang > o.msl_barang.GetValueOrDefault(0) && !o.is_deleted);
@@ -141,8 +141,8 @@ namespace api.Controllers
                                         on d.transact_id equals h.transact_id
                                     where d.barang_id == i.barang_id
                                         && (
-                                            h.status == "Menunggu Approval Supervisor" ||
-                                            h.status == "Diproses Gudang"
+                                            h.status ==  TransactionStatus.PENDING_SUPERVISOR ||
+                                            h.status == TransactionStatus.DIPROSES_GUDANG
                                         )
                                     select (int?)d.jumlah_bar
                                 ).Sum() ?? 0

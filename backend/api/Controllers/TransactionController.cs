@@ -486,11 +486,11 @@ namespace api.Controllers
 
                 if (request.kategori_transact_id == "OUT")
                 {
-                    status = "Menunggu Approval Supervisor";
+                    status = TransactionStatus.PENDING_SUPERVISOR;
                 }
                 else
                 {
-                    status = "Done";
+                    status = TransactionStatus.DONE;
                 }
                 data.transact_id = Guid.NewGuid();
                 data.CategoryTransactionsDto = _context.CategoryTransactions.FirstOrDefault(b => b.kategori_transact_id == data.kategori_transact_id);
@@ -605,7 +605,7 @@ namespace api.Controllers
                 {
                     Errors?.Add("transact_id", new[] { "The field 'transact_id' value is not found."} );
                     return NotFound(ApiResponse<object>.Fail("Update transaction failed", Errors));
-                }else if(data.status != "Menunggu Approval Supervisor")
+                }else if(data.status != TransactionStatus.PENDING_SUPERVISOR)
                 {
                     Errors?.Add("transact_id", new[] { "The transaction approval is on processing or done."} );
                     return StatusCode(400, ApiResponse<object>.Fail("Can't update this transaction.", Errors));
@@ -748,14 +748,14 @@ namespace api.Controllers
 
                 if (request.kategori_transact_id == "OUT")
                 {
-                    if (data.status == "Menunggu Approval Supervisor")
+                    if (data.status == TransactionStatus.PENDING_SUPERVISOR)
                     {
-                        status = "Menunggu Approval Supervisor";
+                        status = TransactionStatus.PENDING_SUPERVISOR;
                     }
                 }
                 else
                 {
-                    status = "Done";
+                    status = TransactionStatus.DONE;
                 }
                 data.kategori_transact_id = request.kategori_transact_id;
                 data.CategoryTransactionsDto = _context.CategoryTransactions.FirstOrDefault(b => b.kategori_transact_id == data.kategori_transact_id);
@@ -967,5 +967,41 @@ namespace api.Controllers
                 data = data.Select(r => r.MapToDto(Request, User))
             });
         }
+
+        // [HttpPost("cancel")]
+        // public IActionResult CancelRequest([FromBody] Guid transactId)
+        // {
+        //     try
+        //     {
+        //         var tokenUserid = User.Identity?.Name;
+
+        //         var th = _context.TransactionHistories
+        //             .FirstOrDefault(o => o.transact_id == transactId);
+
+        //         if (th == null)
+        //         {
+        //             return NotFound(ApiResponse<object>.Fail("Cancel request failed: transact_id not found"));
+        //         }
+
+        //         // Only allow cancel by the original requester, and only while pending supervisor
+        //         if (th.users_cache_id != tokenUserid ||
+        //             th.status != TransactionStatus.PENDING_SUPERVISOR)
+        //         {
+        //             return StatusCode(400, ApiResponse<object>.Fail("Cancel request failed: not allowed in current state"));
+        //         }
+
+        //         th.status = TransactionStatus.CANCELLED;
+        //         th.updated_at = DateTime.Now;
+
+        //         _context.TransactionHistories.Update(th);
+        //         _context.SaveChanges();
+
+        //         return Ok(ApiResponse<object>.Ok("Request cancelled successfully"));
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, ApiResponse<object>.Fail("Internal server error: " + ex.Message));
+        //     }
+        // }
     }
 }

@@ -107,13 +107,13 @@ namespace api.Controllers
                             (
                                 o.ApprovalManajemenPekerjaIdDto!.user_id == tokenUserid &&
                                 o.ApprovalManajemenPekerjaIdDto.is_approved == null &&
-                                o.status == "Menunggu Approval Supervisor"
+                                o.status == TransactionStatus.PENDING_SUPERVISOR
                             )
                             ||
                             (
                                 o.ApprovalGudangIdDto!.user_id == tokenUserid &&
                                 o.ApprovalGudangIdDto.is_approved == null &&
-                                o.status == "Diproses Gudang"
+                                o.status == TransactionStatus.DIPROSES_GUDANG
                             )
                         )
                     );
@@ -184,13 +184,13 @@ namespace api.Controllers
                         if (role_type == "1")
                         {
                             // Supervisor approved → warehouse will process
-                            d.status = "Diproses Gudang";
+                            d.status = TransactionStatus.DIPROSES_GUDANG;
                             d.updated_at = DateTime.Now;
                         }
                         else if (role_type == "2" || role_type == "3")
                         {
                             // Warehouse finished processing → request is complete
-                            d.status = "done";
+                            d.status = TransactionStatus.DONE;
                             d.updated_at = DateTime.Now;
 
                             // Stock deduction on final approval (similar to old role_type == "3" logic)
@@ -216,11 +216,11 @@ namespace api.Controllers
                     {
                         if (role_type == "1")
                         {
-                            d.status = "Ditolak Supervisor";
+                            d.status = TransactionStatus.DITOLAK_SUPERVISOR;
                         }
                         else if (role_type == "2" || role_type == "3")
                         {
-                            d.status = "Ditolak Gudang";
+                            d.status = TransactionStatus.DITOLAK_GUDANG;
                         }
                         d.updated_at = DateTime.Now;
                     }

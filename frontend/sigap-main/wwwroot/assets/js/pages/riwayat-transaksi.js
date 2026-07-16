@@ -237,9 +237,11 @@
             },
             // //kolom status
             {
-                data: "status", title: "Status",
+                data: null, 
+                title: "Status",
                 render: function (data, type, row) {
-                    switch (data) {
+                const status = row.status || row.Status || '-';
+                    switch (status) {
                         // case 'Pending':
                         //     return `<span class="badge bg-warning">${data}</span>`;
                         //     break;
@@ -253,26 +255,24 @@
                         //     return `<span class="badge bg-info">${data}</span>`;
                         //     break;
                         case 'Menunggu Approval Supervisor':
-                            return `<span class="badge bg-warning">Pending</span>`;
-                            break;
                         case 'Diproses Gudang':
-                            return `<span class="badge bg-warning">Pending</span>`;
-                            break;
                         case 'Menunggu Konfirmasi Gudang':
                             return `<span class="badge bg-warning">Pending</span>`;
-                            break;
+
                         case 'Approval Section Head Rejected':
-                            return `<span class="badge bg-danger">Rejected</span>`;
-                            break;
                         case 'Approval Safety Rejected':
-                            return `<span class="badge bg-danger">Rejected</span>`;
-                            break;
                         case 'Approval Gudang Rejected':
+                        case 'Ditolak Supervisor':
+                        case 'Ditolak Gudang':
                             return `<span class="badge bg-danger">Rejected</span>`;
-                            break;
+
+                        case 'done':
                         case 'Done':
+                        case 'Request Selesai':
                             return `<span class="badge bg-success">Done</span>`;
-                            break;
+
+                        default:
+                            return `<span class="badge bg-secondary">${status}</span>`;
                     }
                 },
                 // orderable: false,
@@ -560,6 +560,11 @@
             success: function (res) {
                 Swal.close();
                 const data = res.data || res;
+                // document.getElementById("riwayat-keterangan").textContent = data.keterangan || '-';
+                const riwayatKeteranganEl = document.getElementById("riwayat-keterangan");
+                if (riwayatKeteranganEl) {
+                    riwayatKeteranganEl.textContent = data.keterangan || '-';
+                }
                 const tanggal = data.created_at.split(' ')[0];
                 const details = data.transactionDetailDto || [];
                 const tbody = $('#detailModal tbody');

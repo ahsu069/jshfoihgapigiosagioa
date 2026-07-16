@@ -173,7 +173,7 @@
                     switch (data) {
                         // New flow: treat all non-rejected, non-done states as "Pending"
                         case "Menunggu Approval Supervisor":
-                            return `<span class="badge bg-warning">Menunggu Supervisor</span>`;
+                            return `<span class="badge bg-warning">Menunggu Approval Spv</span>`;
                             break;
                         case "Diproses Gudang":
                             return `<span class="badge bg-primary">Diproses Gudang</span>`;
@@ -188,7 +188,9 @@
                             return `<span class="badge bg-danger">Rejected Gudang</span>`;
                             break;
 
-                        case 'Request Selesai':
+                        case "Done":
+                        case "done":
+                        case "Request Selesai":
                             return `<span class="badge bg-success">Done</span>`;
                             break;
 
@@ -294,7 +296,9 @@
                         .join(', ');
 
                     return `<span class="dt-wrap line-clamp-4">${items}</span>`;
-                }
+                },
+                orderable: true,
+                searchable: true
             },
             //kolom jumlah
             { 
@@ -665,6 +669,12 @@
             success: function (res) {
                 Swal.close();
                 const data = res.data || res;
+                
+                const detailKeteranganEl = document.getElementById("detail-keterangan");
+                if (detailKeteranganEl) {
+                    detailKeteranganEl.textContent = data.keterangan || '-';
+                }
+
                 const tanggal = data.created_at.split(' ')[0];
                 const details = data.transactionDetailDto || [];
                 const tbody = $('#detailModal tbody');
@@ -699,13 +709,13 @@
                 switch (statustransaksi) {
                     // Pending states
                     case "Menunggu Approval Supervisor":
-                        keterangan.removeClass('alert-danger').addClass('alert-warning');
+                        $('#keterangan').removeClass('alert-danger').addClass('alert-warning');
                         badge = `<span class="badge bg-warning">Menunggu Supervisor</span>`;
                         namapenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.namapekerja;
                         fungsipenanggungjawab = data.approvalManajemenPekerjaIdDto.usersCacheDto.fungsipekerja;
                         break;
                     case "Diproses Gudang":
-                        keterangan.removeClass('alert-dan   ger').addClass('alert-info');
+                        $('#keterangan').removeClass('alert-danger').addClass('alert-info');
                         badge = `<span class="badge bg-primary">Diproses Gudang</span>`;
                         namapenanggungjawab = data.approvalGudangIdDto.usersCacheDto.namapekerja;
                         fungsipenanggungjawab = data.approvalGudangIdDto.usersCacheDto.fungsipekerja;
@@ -743,6 +753,7 @@
                         break;
 
                     // Done
+                    case 'done':
                     case 'Done':
                         $('#approveDetail').hide();
                         $('#rejectDetail').hide();
