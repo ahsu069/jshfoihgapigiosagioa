@@ -967,41 +967,5 @@ namespace api.Controllers
                 data = data.Select(r => r.MapToDto(Request, User))
             });
         }
-
-        // [HttpPost("cancel")]
-        // public IActionResult CancelRequest([FromBody] Guid transactId)
-        // {
-        //     try
-        //     {
-        //         var tokenUserid = User.Identity?.Name;
-
-        //         var th = _context.TransactionHistories
-        //             .FirstOrDefault(o => o.transact_id == transactId);
-
-        //         if (th == null)
-        //         {
-        //             return NotFound(ApiResponse<object>.Fail("Cancel request failed: transact_id not found"));
-        //         }
-
-        //         // Only allow cancel by the original requester, and only while pending supervisor
-        //         if (th.users_cache_id != tokenUserid ||
-        //             th.status != TransactionStatus.PENDING_SUPERVISOR)
-        //         {
-        //             return StatusCode(400, ApiResponse<object>.Fail("Cancel request failed: not allowed in current state"));
-        //         }
-
-        //         th.status = TransactionStatus.CANCELLED;
-        //         th.updated_at = DateTime.Now;
-
-        //         _context.TransactionHistories.Update(th);
-        //         _context.SaveChanges();
-
-        //         return Ok(ApiResponse<object>.Ok("Request cancelled successfully"));
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, ApiResponse<object>.Fail("Internal server error: " + ex.Message));
-        //     }
-        // }
     }
 }

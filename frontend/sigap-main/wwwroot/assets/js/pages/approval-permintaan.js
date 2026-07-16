@@ -675,6 +675,18 @@
                     detailKeteranganEl.textContent = data.keterangan || '-';
                 }
 
+                // 🔹 Setup Cancel button (only for Menunggu Approval Supervisor)
+                const cancelBtn = document.querySelector('.btn-canceler');
+                if (cancelBtn) {
+                    cancelBtn.dataset.transactId = data.transact_id;
+
+                    if (data.status === 'Menunggu Approval Supervisor') {
+                        cancelBtn.style.display = 'inline-block';
+                    } else {
+                        cancelBtn.style.display = 'none';
+                    }
+                }
+
                 const tanggal = data.created_at.split(' ')[0];
                 const details = data.transactionDetailDto || [];
                 const tbody = $('#detailModal tbody');
@@ -1152,4 +1164,6 @@
             }
         });
     });
+
+
 });
