@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
+using api.Commons;
 namespace api.Models.Mappers
 {
     public static class TransactionHistoryMappers
@@ -45,10 +46,16 @@ namespace api.Models.Mappers
                     updated_at = o.updated_at.ToString("dd/MM/yyyy HH:mm:ss"),
                 }).ToList(),
                 is_allow_to_approve =
-                (dto?.ApprovalManajemenPekerjaIdDto?.user_id == tokenUserid && dto?.ApprovalManajemenPekerjaIdDto?.is_approved == null) ? true :
-                (dto?.ApprovalSectionheadIdDto?.user_id == tokenUserid && dto?.ApprovalSectionheadIdDto?.is_approved == null && dto?.ApprovalManajemenPekerjaIdDto?.is_approved == "A") ? true :
-                (dto?.ApprovalGudangIdDto?.user_id == tokenUserid && dto?.ApprovalGudangIdDto?.is_approved == null && dto?.ApprovalManajemenPekerjaIdDto?.is_approved == "A" && dto?.ApprovalSectionheadIdDto?.is_approved == "A") ? true :
-                false
+                    // Supervisor's turn
+                    (dto?.status == TransactionStatus.PENDING_SUPERVISOR &&
+                    dto?.ApprovalManajemenPekerjaIdDto?.user_id == tokenUserid &&
+                    dto?.ApprovalManajemenPekerjaIdDto?.is_approved == null) ? true :
+                    // Admin Gudang's turn
+                    (dto?.status == TransactionStatus.DIPROSES_GUDANG &&
+                    dto?.ApprovalGudangIdDto?.user_id == tokenUserid &&
+                    dto?.ApprovalGudangIdDto?.is_approved == null) ? true :
+                    false
+
             };
         }
         public static TransactionHistory MapToDtoFromCreate(this TransactionHistoryRequest? dto)

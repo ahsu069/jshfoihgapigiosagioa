@@ -777,7 +777,11 @@
                         $('#labelstatustransaksi').removeClass('mb-1');
                         break;
                 }
-
+                // After the switch block 
+                if (!data.is_allow_to_approve) {
+                    $('#approveDetail').hide();
+                    $('#rejectDetail').hide();
+                }
                 const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
                 $('body').css('padding-right', scrollbarWidth + 'px');
 
