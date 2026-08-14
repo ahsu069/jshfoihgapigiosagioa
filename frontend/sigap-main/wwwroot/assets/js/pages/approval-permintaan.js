@@ -778,9 +778,12 @@
                         break;
                 }
                 // After the switch block 
-                if (!data.is_allow_to_approve) {
-                    $('#approveDetail').hide();
-                    $('#rejectDetail').hide();
+                if (data.is_allow_to_approve) {
+                    $('#btnApprove').show();
+                    $('#btnReject').show();
+                } else {
+                    $('#btnApprove').hide();
+                    $('#btnReject').hide();
                 }
                 const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
                 $('body').css('padding-right', scrollbarWidth + 'px');

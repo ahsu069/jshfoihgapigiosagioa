@@ -87,6 +87,7 @@ namespace api.Models
         public string updated_at { get; set; } = string.Empty;
         public List<TransactionDetailDto> TransactionDetailDto { get; set; } = new List<TransactionDetailDto>();
         public bool is_allow_to_approve { get; set; } = false;
+        public bool is_allow_to_reject { get; set; } = false;
     }
 
     public class TransactionRequest

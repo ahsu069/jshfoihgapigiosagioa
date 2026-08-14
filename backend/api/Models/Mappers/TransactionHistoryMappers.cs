@@ -46,15 +46,30 @@ namespace api.Models.Mappers
                     updated_at = o.updated_at.ToString("dd/MM/yyyy HH:mm:ss"),
                 }).ToList(),
                 is_allow_to_approve =
-                    // Supervisor's turn
-                    (dto?.status == TransactionStatus.PENDING_SUPERVISOR &&
-                    dto?.ApprovalManajemenPekerjaIdDto?.user_id == tokenUserid &&
-                    dto?.ApprovalManajemenPekerjaIdDto?.is_approved == null) ? true :
-                    // Admin Gudang's turn
-                    (dto?.status == TransactionStatus.DIPROSES_GUDANG &&
-                    dto?.ApprovalGudangIdDto?.user_id == tokenUserid &&
-                    dto?.ApprovalGudangIdDto?.is_approved == null) ? true :
-                    false
+                // Supervisor's turn
+                (dto?.status == TransactionStatus.PENDING_SUPERVISOR &&
+                dto?.ApprovalManajemenPekerjaIdDto?.user_id == tokenUserid &&
+                dto?.ApprovalManajemenPekerjaIdDto?.is_approved == null) ? true :
+                // Admin Gudang normal processing turn
+                (dto?.status == TransactionStatus.DIPROSES_GUDANG &&
+                dto?.ApprovalGudangIdDto?.user_id == tokenUserid &&
+                dto?.ApprovalGudangIdDto?.is_approved == null) ? true :
+                false,
+
+                is_allow_to_reject =
+                // Supervisor can reject on pending supervisor
+                (dto?.status == TransactionStatus.PENDING_SUPERVISOR &&
+                dto?.ApprovalManajemenPekerjaIdDto?.user_id == tokenUserid &&
+                dto?.ApprovalManajemenPekerjaIdDto?.is_approved == null) ? true :
+                // Admin Gudang can reject on diproses gudang
+                (dto?.status == TransactionStatus.DIPROSES_GUDANG &&
+                dto?.ApprovalGudangIdDto?.user_id == tokenUserid &&
+                dto?.ApprovalGudangIdDto?.is_approved == null) ? true :
+                // Admin Gudang early cancel / reject while still pending supervisor
+                (dto?.status == TransactionStatus.PENDING_SUPERVISOR &&
+                dto?.ApprovalGudangIdDto?.user_id == tokenUserid &&
+                dto?.ApprovalGudangIdDto?.is_approved == null) ? true :
+                false
 
             };
         }

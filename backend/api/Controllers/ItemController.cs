@@ -69,7 +69,10 @@ namespace api.Controllers
                             join h in _context.TransactionHistories
                                 on d.transact_id equals h.transact_id
                             where d.barang_id == x.barang_id
-                                && (h.status.ToLower() != "done" && !h.status.ToLower().Contains("rejected"))
+                                && h.status != TransactionStatus.DONE &&
+                                    h.status != TransactionStatus.CANCELLED &&
+                                    h.status != TransactionStatus.DITOLAK_SUPERVISOR &&
+                                    !h.status.ToLower().Contains("rejected")
                             select (int?)d.jumlah_bar
                         ).Sum() ?? 0
                     }).ToList().Select(r => r.MapToDto(Request));
@@ -111,7 +114,10 @@ namespace api.Controllers
                             join h in _context.TransactionHistories
                                 on d.transact_id equals h.transact_id
                             where d.barang_id == x.barang_id
-                                && (h.status.ToLower() != "done" && !h.status.ToLower().Contains("rejected"))
+                                && h.status != TransactionStatus.DONE &&
+                                    h.status != TransactionStatus.CANCELLED &&
+                                    h.status != TransactionStatus.DITOLAK_SUPERVISOR &&
+                                    !h.status.ToLower().Contains("rejected")
                             select (int?)d.jumlah_bar
                         ).Sum() ?? 0
                         })

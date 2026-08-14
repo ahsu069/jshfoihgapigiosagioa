@@ -65,7 +65,9 @@ namespace api.Controllers
                                     th => th.transact_id,
                                     (td, th) => new { td, th })
                                 .Where(joined =>
-                                    joined.th.status.ToLower() != "done" &&
+                                    joined.th.status != TransactionStatus.DONE &&
+                                    joined.th.status != TransactionStatus.CANCELLED &&
+                                    joined.th.status != TransactionStatus.DITOLAK_SUPERVISOR &&
                                     !joined.th.status.ToLower().Contains("rejected"))
                                 .Sum(joined => (int?)joined.td.jumlah_bar) ?? 0;
                     }
@@ -125,7 +127,9 @@ namespace api.Controllers
                                 th => th.transact_id,
                                 (td, th) => new { td, th })
                             .Where(joined =>
-                                joined.th.status.ToLower() != "done" &&
+                                joined.th.status != TransactionStatus.DONE &&
+                                joined.th.status != TransactionStatus.CANCELLED &&
+                                joined.th.status != TransactionStatus.DITOLAK_SUPERVISOR &&
                                 !joined.th.status.ToLower().Contains("rejected"))
                             .Sum(joined => (int?)joined.td.jumlah_bar) ?? 0;
                 }
@@ -203,7 +207,10 @@ namespace api.Controllers
                                     join h in _context.TransactionHistories
                                         on d.transact_id equals h.transact_id
                                     where d.barang_id == x.barang_id
-                                        && (h.status.ToLower() != "done" && !h.status.ToLower().Contains("rejected"))
+                                        && h.status != TransactionStatus.DONE
+                                        && h.status != TransactionStatus.CANCELLED
+                                        && h.status != TransactionStatus.DITOLAK_SUPERVISOR
+                                        && !h.status.ToLower().Contains("rejected")
                                     select (int?)d.jumlah_bar
                                 ).Sum() ?? 0
                             })
@@ -289,39 +296,65 @@ namespace api.Controllers
             //         validationRequest.errValidate.Add("pekerja_temp_id", new[] { EmployeesErrors });
             // }
 
-            if(request.kategori_transact_id == "OUT")
+            if (request.kategori_transact_id == "OUT")
             {
-                for(int i=1; i <=3; i++)
+                var requiredCodes = new[] { "1", "3" };
+                var optionalCodes = new[] { "2" };
+
+                foreach (var code in requiredCodes)
                 {
-                    ApprovalRoleMap? legacy = approvalRoleMaps.FirstOrDefault(x => x.legacy_code == i.ToString());
+                    ApprovalRoleMap? legacy = approvalRoleMaps.FirstOrDefault(x => x.legacy_code == code);
                     if (legacy == null)
-                        validationRequest.errValidate.Add("approval_legacy" + i.ToString(), new[] { "The field 'approval_legacy' value is not found!" });
-                    else
                     {
-                        UserRole? userLegacy = _context.UserRoles
-                            .FromSqlRaw("SELECT * FROM user_role WHERE role_id = {0}", legacy.role_id)
-                            .FirstOrDefault();
-
-                        if (userLegacy == null)
-                        {
-                            validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found?" });
-                        }
-                        else
-                        {
-                            string targetUserId = userLegacy.user_id.ToString().ToLower();
-                            UsersCache? usersCache = _context.UsersCaches
-                                .FirstOrDefault(o => o.user_id.ToLower() == targetUserId);
-
-                            if (usersCache == null)
-                                validationRequest.errValidate.Add("user_legacy" + i.ToString(), new[] { "The field 'user_legacy' value is not found." });
-                            else
-                            {
-                                validationRequest.legacyRoleId.Add(legacy.role_id);
-                                validationRequest.legacyUserId.Add(userLegacy.user_id);
-                                validationRequest.usersCaches.Add(usersCache);
-                            }
-                        }
+                        validationRequest.errValidate.Add("approval_legacy" + code, new[] { "The field 'approval_legacy' value is not found!" });
+                        continue;
                     }
+
+                    UserRole? userLegacy = _context.UserRoles
+                        .FromSqlRaw("SELECT * FROM user_role WHERE role_id = {0}", legacy.role_id)
+                        .FirstOrDefault();
+
+                    if (userLegacy == null)
+                    {
+                        validationRequest.errValidate.Add("user_legacy" + code, new[] { "The field 'user_legacy' value is not found." });
+                        continue;
+                    }
+
+                    string targetUserId = userLegacy.user_id.ToString().ToLower();
+                    UsersCache? usersCache = _context.UsersCaches
+                        .FirstOrDefault(o => o.user_id.ToLower() == targetUserId);
+
+                    if (usersCache == null)
+                    {
+                        validationRequest.errValidate.Add("user_legacy" + code, new[] { "The field 'user_legacy' value is not found." });
+                        continue;
+                    }
+
+                    validationRequest.legacyRoleId.Add(legacy.role_id);
+                    validationRequest.legacyUserId.Add(userLegacy.user_id);
+                    validationRequest.usersCaches.Add(usersCache);
+                }
+
+                foreach (var code in optionalCodes)
+                {
+                    ApprovalRoleMap? legacy = approvalRoleMaps.FirstOrDefault(x => x.legacy_code == code);
+                    if (legacy == null) continue;
+
+                    UserRole? userLegacy = _context.UserRoles
+                        .FromSqlRaw("SELECT * FROM user_role WHERE role_id = {0}", legacy.role_id)
+                        .FirstOrDefault();
+
+                    if (userLegacy == null) continue;
+
+                    string targetUserId = userLegacy.user_id.ToString().ToLower();
+                    UsersCache? usersCache = _context.UsersCaches
+                        .FirstOrDefault(o => o.user_id.ToLower() == targetUserId);
+
+                    if (usersCache == null) continue;
+
+                    validationRequest.legacyRoleId.Add(legacy.role_id);
+                    validationRequest.legacyUserId.Add(userLegacy.user_id);
+                    validationRequest.usersCaches.Add(usersCache);
                 }
             }
             return validationRequest;
@@ -378,8 +411,9 @@ namespace api.Controllers
                 }
                 if (Errors?.Any() == true)
                     return StatusCode(400, ApiResponse<object>.Fail("Create transaction failed", Errors));
-                else if (validationRequest.legacyRoleId.Count() != 3 && validationRequest.legacyUserId.Count() != 3 && request.kategori_transact_id == "OUT")
-                    return StatusCode(400, ApiResponse<object>.Fail("Create transaction failed", Errors));
+                else if (request.kategori_transact_id == "OUT" &&
+                    (validationRequest.legacyRoleId.Count() < 2 || validationRequest.legacyUserId.Count() < 2))
+                return StatusCode(400, ApiResponse.Fail("Create transaction failed", Errors));
 
                 if (employeeRequest != null)
                 {
@@ -465,21 +499,30 @@ namespace api.Controllers
                 List<ApprovalStatus> approvalLegacy = new List<ApprovalStatus>();
                 if(request.kategori_transact_id == "OUT")
                 {
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        approvalLegacy.Add(new ApprovalStatus
-                        {
-                            approval_id = Guid.NewGuid()
-                            , user_id = validationRequest.legacyUserId[i - 1].ToString()
-                            , role_type = i.ToString()
-                            , approval_role_id = validationRequest.legacyRoleId[i - 1]
-                            , is_approved = null
-                            , created_at = DateTime.Now
-                            , updated_at = DateTime.Now
-                            , usersCacheDto = _context.UsersCaches.FirstOrDefault(o => o.user_id == validationRequest.legacyUserId[i - 1].ToString())
-                        });
-                    }   
+                    data.approval_manajemen_pekerja_id = approvalLegacy.FirstOrDefault(x => x.role_type == "1")!.approval_id;
+                    data.ApprovalManajemenPekerjaIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "1");
+                    data.approval_sectionhead_id = approvalLegacy.FirstOrDefault(x => x.role_type == "2")!.approval_id;
+                    data.ApprovalSectionheadIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "2");
+                    data.approval_gudang_id = approvalLegacy.FirstOrDefault(x => x.role_type == "3")!.approval_id;
+                    data.ApprovalGudangIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "3");
                 }
+                // if(request.kategori_transact_id == "OUT")
+                // {
+                //     for (int i = 1; i <= 3; i++)
+                //     {
+                //         approvalLegacy.Add(new ApprovalStatus
+                //         {
+                //             approval_id = Guid.NewGuid()
+                //             , user_id = validationRequest.legacyUserId[i - 1].ToString()
+                //             , role_type = i.ToString()
+                //             , approval_role_id = validationRequest.legacyRoleId[i - 1]
+                //             , is_approved = null
+                //             , created_at = DateTime.Now
+                //             , updated_at = DateTime.Now
+                //             , usersCacheDto = _context.UsersCaches.FirstOrDefault(o => o.user_id == validationRequest.legacyUserId[i - 1].ToString())
+                //         });
+                //     }   
+                // }
 
                 TransactionHistory data = request.MapToDtoFromCreate();
                 string status = "";
@@ -648,7 +691,7 @@ namespace api.Controllers
                 }
                 if (Errors?.Any() == true)
                     return StatusCode(400, ApiResponse<object>.Fail("Update transaction failed", Errors));
-                else if (validationRequest.legacyRoleId.Count() != 3 && validationRequest.legacyUserId.Count() != 3 && request.kategori_transact_id == "OUT")
+                else if (request.kategori_transact_id == "OUT" && (validationRequest.legacyRoleId.Count() < 2 || validationRequest.legacyUserId.Count() < 2))
                     return StatusCode(400, ApiResponse<object>.Fail("Update transaction failed", Errors));
 
                 // reset data
@@ -721,27 +764,12 @@ namespace api.Controllers
 
                 if(request.kategori_transact_id == "OUT")
                 {
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        approvalLegacy.Add(new ApprovalStatus
-                        {
-                            approval_id = Guid.NewGuid()
-                            ,
-                            user_id = validationRequest.legacyUserId[i - 1].ToString()
-                            ,
-                            role_type = i.ToString()
-                            ,
-                            approval_role_id = validationRequest.legacyRoleId[i - 1]
-                            ,
-                            is_approved = null
-                            ,
-                            created_at = DateTime.Now
-                            ,
-                            updated_at = DateTime.Now
-                            ,
-                            usersCacheDto = _context.UsersCaches.FirstOrDefault(o => o.user_id == validationRequest.legacyUserId[i - 1].ToString())
-                        });
-                    }
+                    data.approval_manajemen_pekerja_id = approvalLegacy.FirstOrDefault(x => x.role_type == "1")!.approval_id;
+                    data.ApprovalManajemenPekerjaIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "1");
+                    data.approval_sectionhead_id = approvalLegacy.FirstOrDefault(x => x.role_type == "2")!.approval_id;
+                    data.ApprovalSectionheadIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "2");
+                    data.approval_gudang_id = approvalLegacy.FirstOrDefault(x => x.role_type == "3")!.approval_id;
+                    data.ApprovalGudangIdDto = approvalLegacy.FirstOrDefault(x => x.role_type == "3");
                 }
                 
                 string status = data.status; // default keep current
@@ -843,7 +871,7 @@ namespace api.Controllers
                 {
                     Errors?.Add("transact_id", new[] { "The field 'transact_id' value is not found." });
                     return NotFound(ApiResponse<object>.Fail("Delete transaction failed", Errors));
-                }else if(data.status != "Approval 1 Pending")
+                }else if(data.status != TransactionStatus.PENDING_SUPERVISOR)
                 {
                     Errors?.Add("transact_id", new[] { "The transaction approval is on progress or done."} );
                     return StatusCode(400, ApiResponse<object>.Fail("Can't delete this transaction.", Errors));
@@ -954,7 +982,9 @@ namespace api.Controllers
                                 th => th.transact_id,
                                 (td, th) => new { td, th })
                             .Where(joined =>
-                                joined.th.status.ToLower() != "done" &&
+                                joined.th.status != TransactionStatus.DONE &&
+                                joined.th.status != TransactionStatus.CANCELLED &&
+                                joined.th.status != TransactionStatus.DITOLAK_SUPERVISOR &&
                                 !joined.th.status.ToLower().Contains("rejected"))
                             .Sum(joined => (int?)joined.td.jumlah_bar) ?? 0;
                 }

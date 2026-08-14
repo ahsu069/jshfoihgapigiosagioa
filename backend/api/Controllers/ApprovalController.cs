@@ -100,7 +100,6 @@ namespace api.Controllers
 
                 if (!isSuperAdmin)
                 {
-                    // Non-superadmin: only their own pending slot, with status matching new 2-level flow
                     query = query.Where(o =>
                         request.transact_id!.Contains(o.transact_id) &&
                         (
@@ -113,7 +112,10 @@ namespace api.Controllers
                             (
                                 o.ApprovalGudangIdDto!.user_id == tokenUserid &&
                                 o.ApprovalGudangIdDto.is_approved == null &&
-                                o.status == TransactionStatus.DIPROSES_GUDANG
+                                (
+                                    (request.is_approved == "R" && o.status == TransactionStatus.PENDING_SUPERVISOR) ||
+                                    (request.is_approved == "A" && o.status == TransactionStatus.DIPROSES_GUDANG)
+                                )
                             )
                         )
                     );
@@ -152,8 +154,6 @@ namespace api.Controllers
                         // SUPER_ADMIN: pick the first pending slot in order 1 → 2 → 3
                         if (d.ApprovalManajemenPekerjaIdDto?.is_approved == null)
                             target = d.ApprovalManajemenPekerjaIdDto;
-                        else if (d.ApprovalSectionheadIdDto?.is_approved == null)
-                            target = d.ApprovalSectionheadIdDto;
                         else if (d.ApprovalGudangIdDto?.is_approved == null)
                             target = d.ApprovalGudangIdDto;
                     }
@@ -164,8 +164,6 @@ namespace api.Controllers
                             target = d.ApprovalManajemenPekerjaIdDto;
                         else if (d.ApprovalGudangIdDto!.user_id == tokenUserid && d.ApprovalGudangIdDto.is_approved == null)
                             target = d.ApprovalGudangIdDto;
-                        else if (d.ApprovalSectionheadIdDto!.user_id == tokenUserid && d.ApprovalSectionheadIdDto.is_approved == null)
-                            target = d.ApprovalSectionheadIdDto;
                     }
 
                     if (target == null)
@@ -179,23 +177,78 @@ namespace api.Controllers
                     role_type = target.role_type;
 
                     // 2‑level approval flow
+                    // if (request?.is_approved == "A")
+                    // {
+                    //     if (role_type == "1")
+                    //     {
+                    //         // Supervisor approved → warehouse will process
+                    //         d.status = TransactionStatus.DIPROSES_GUDANG;
+                    //         d.updated_at = DateTime.Now;
+                    //     }
+                    //     else if (role_type == "2" || role_type == "3")
+                    //     {
+                    //         // Warehouse finished processing → request is complete
+                    //         d.status = TransactionStatus.DONE;
+                    //         d.updated_at = DateTime.Now;
+
+                    //         // Stock deduction on final approval (similar to old role_type == "3" logic)
+                    //         List<Item> items = new List<Item>();
+                    //         foreach (var (d2, index2) in d.TransactionDetails.Select((value, index) => (value, index)))
+                    //         {
+                    //             Item? item = _context.Items.FirstOrDefault(o => o.barang_id == d2.barang_id);
+                    //             if (item != null)
+                    //             {
+                    //                 item.updated_at = DateTime.Now;
+                    //                 if (CategoryTransOut.Contains(d.kategori_transact_id))
+                    //                 {
+                    //                     item.jumlah_barang = item.jumlah_barang - d2.jumlah_bar;
+                    //                 }
+                    //                 items.Add(item);
+                    //             }
+                    //         }
+                    //         _context.Items.UpdateRange(items);
+                    //         _context.SaveChanges();
+                    //     }
+                    // }
+                    // else if (request?.is_approved == "R")
+                    // {
+                    //     if (role_type == "1")
+                    //     {
+                    //         d.status = TransactionStatus.DITOLAK_SUPERVISOR;
+                    //     }
+                    //     else if (role_type == "2" || role_type == "3")
+                    //     {
+                    //         d.status = TransactionStatus.CANCELLED;
+                    //     }
+
+                    //     d.updated_at = DateTime.Now;
+                    // }
                     if (request?.is_approved == "A")
                     {
                         if (role_type == "1")
                         {
-                            // Supervisor approved → warehouse will process
+                            if (d.status != TransactionStatus.PENDING_SUPERVISOR)
+                            {
+                                Errors?.Add("status", new[] { "Supervisor can only approve pending supervisor requests." });
+                                continue;
+                            }
+
                             d.status = TransactionStatus.DIPROSES_GUDANG;
                             d.updated_at = DateTime.Now;
                         }
-                        else if (role_type == "2" || role_type == "3")
+                        else if (role_type == "3")
                         {
-                            // Warehouse finished processing → request is complete
+                            if (d.status != TransactionStatus.DIPROSES_GUDANG)
+                            {
+                                Errors?.Add("status", new[] { "Admin gudang can only complete requests that are already approved by supervisor." });
+                                continue;
+                            }
+
                             d.status = TransactionStatus.DONE;
                             d.updated_at = DateTime.Now;
 
-                            // Stock deduction on final approval (similar to old role_type == "3" logic)
-                            List<Item> items = new List<Item>();
-                            foreach (var (d2, index2) in d.TransactionDetails.Select((value, index) => (value, index)))
+                            List<Item> items = new();
+                            foreach (var d2 in d.TransactionDetails)
                             {
                                 Item? item = _context.Items.FirstOrDefault(o => o.barang_id == d2.barang_id);
                                 if (item != null)
@@ -208,6 +261,7 @@ namespace api.Controllers
                                     items.Add(item);
                                 }
                             }
+
                             _context.Items.UpdateRange(items);
                             _context.SaveChanges();
                         }
@@ -216,12 +270,25 @@ namespace api.Controllers
                     {
                         if (role_type == "1")
                         {
+                            if (d.status != TransactionStatus.PENDING_SUPERVISOR)
+                            {
+                                Errors?.Add("status", new[] { "Supervisor can only reject pending supervisor requests." });
+                                continue;
+                            }
+
                             d.status = TransactionStatus.DITOLAK_SUPERVISOR;
                         }
-                        else if (role_type == "2" || role_type == "3")
+                        else if (role_type == "3")
                         {
-                            d.status = TransactionStatus.DITOLAK_GUDANG;
+                            if (d.status != TransactionStatus.PENDING_SUPERVISOR)
+                            {
+                                Errors?.Add("status", new[] { "Admin gudang can only self-cancel before supervisor approval." });
+                                continue;
+                            }
+
+                            d.status = TransactionStatus.CANCELLED;
                         }
+
                         d.updated_at = DateTime.Now;
                     }
                 }
@@ -306,6 +373,9 @@ namespace api.Controllers
 
                 _context.ApprovalStatuses.UpdateRange(approvalStatuses);
                 _context.TransactionHistories.UpdateRange(transactionHistories);
+
+                if (Errors?.Any() == true)
+                    return StatusCode(400, ApiResponse.Fail("Approval process failed", Errors));
 
                 _context.SaveChanges();
                 
